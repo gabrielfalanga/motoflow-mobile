@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CadastroMotoScreen() {
 
+    // dropdown tipo de moto
     const [open, setOpen] = useState(false);
     const [tipoMoto, setTipoMoto] = useState<string | null>(null);
     const [opcoes, setOpcoes] = useState([
@@ -21,19 +22,23 @@ export default function CadastroMotoScreen() {
         { label: 'Mottu Sport', value: 'Mottu Sport' },
         { label: 'Mottu Pop', value: 'Mottu Pop' },
     ]);
+    // ano e placa
+    const [ano, setAno] = useState<number>();
+    const [placa, setPlaca] = useState<string>();
 
-    // tipo, ano, placa, preço aluguel
+    const cadastrar = () => {
+        if (!tipoMoto || !ano || !placa) return;
 
-    const [nome, setNome] = useState("");
-    const [email, setEmail] = useState("");
-    const [mensagem, setMensagem] = useState("");
-    const enviarMensagem = () => {
         Alert.alert(
             "Mensagem enviada!",
-            `Nome: ${nome}\nEmail: ${email}\nMensagem: ${mensagem}`,
+            `Tipo: ${tipoMoto}\nAno: ${ano}\nPlaca: ${placa}`,
             [{ text: "OK", onPress: () => console.log("OK Pressed") }],
             { cancelable: false },
         );
+
+        setTipoMoto(null);
+        setAno(undefined);
+        setPlaca(undefined);
     };
 
     return (
@@ -69,27 +74,24 @@ export default function CadastroMotoScreen() {
                     style={styles.dropdown}
                     dropDownContainerStyle={styles.opcoesDropdown}
                 />
+                <TextInput
+                    placeholder="Ano"
+                    style={styles.input}
+                    value={ano?.toString()}
+                    onChangeText={(value) => setAno(value ? Number(value) : undefined)}
+                    keyboardType="numeric"
+                    maxLength={4}
+                />
+                <TextInput
+                    placeholder="Placa (sem traço)"
+                    style={styles.input}
+                    value={placa}
+                    onChangeText={(value) => setPlaca(value.toUpperCase())}
+                    maxLength={7}
+                    autoCapitalize="characters"
+                />
 
-                <TextInput
-                    placeholder="Nome"
-                    style={styles.input}
-                    value={nome}
-                    onChangeText={(value) => setNome(value)}
-                />
-                <TextInput
-                    placeholder="E-mail"
-                    style={styles.input}
-                    value={email}
-                    onChangeText={(value) => setEmail(value)}
-                />
-                <TextInput
-                    placeholder="Mensagem"
-                    style={styles.inputMaior}
-                    multiline={true}
-                    value={mensagem}
-                    onChangeText={(value) => setMensagem(value)}
-                />
-                <TouchableOpacity style={styles.btn} onPress={enviarMensagem}>
+                <TouchableOpacity style={styles.btn} onPress={cadastrar}>
                     <Text style={{ color: "#fff" }}>Enviar</Text>
                 </TouchableOpacity>
             </View>
@@ -125,8 +127,7 @@ const styles = StyleSheet.create({
         textAlignVertical: "top",
     },
     btn: {
-        borderWidth: 1,
-        backgroundColor: "#0066cc",
+        backgroundColor: "#05AF31",
         width: 300,
         marginTop: 30,
         borderRadius: 15,
@@ -145,6 +146,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         marginTop: 10,
         marginHorizontal: 'auto',
+        backgroundColor: 'transparent'
     },
     opcoesDropdown: {
         width: 300,
@@ -152,6 +154,6 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginHorizontal: 'auto',
         alignSelf: 'center',
-        marginTop: 10
+        marginTop: 10,
     }
 });
