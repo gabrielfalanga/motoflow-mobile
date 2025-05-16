@@ -1,4 +1,5 @@
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { StatusBar } from 'expo-status-bar';
 
 export default function DevsScreen() {
     const developers = [
@@ -42,9 +43,10 @@ const styles = StyleSheet.create({
         backgroundColor: "#f9f9f9",
     },
     title: {
-        fontSize: 24,
-        marginBottom: 20,
-        color: "#333",
+        fontSize: 22,
+        fontWeight: "600",
+        color: "#05AF31",
+        marginBottom: 25,
     },
     devCard: {
         alignItems: "center",
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         shadowColor: "#05AF31",
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 1,
+        shadowOpacity: 0.5,
         shadowRadius: 6,
         elevation: 5,
         width: "100%",
