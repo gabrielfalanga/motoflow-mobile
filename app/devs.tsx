@@ -1,5 +1,4 @@
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import { StatusBar } from 'expo-status-bar';
 
 export default function DevsScreen() {
     const developers = [
