@@ -27,31 +27,36 @@ export default function CadastroMotoScreen() {
     const [placa, setPlaca] = useState<string>();
 
     const cadastrar = () => {
-        if (!tipoMoto || !ano || !placa) return;
+        // se tiver algum campo vazio
+        if (!tipoMoto || !ano || !placa) {
+            Alert.alert(
+                "Oops!",
+                "Preencha todos os campos corretamente.",
+                [{ text: "OK" }],
+                { cancelable: false },
+            );
+        }
 
-        Alert.alert(
-            "Mensagem enviada!",
-            `Tipo: ${tipoMoto}\nAno: ${ano}\nPlaca: ${placa}`,
-            [{ text: "OK", onPress: () => console.log("OK Pressed") }],
-            { cancelable: false },
-        );
-
-        setTipoMoto(null);
-        setAno(undefined);
-        setPlaca(undefined);
+        else {
+            Alert.alert(
+                "Moto cadastrada!",
+                `Tipo: ${tipoMoto}\nAno: ${ano}\nPlaca: ${placa}`,
+                [{
+                    text: "OK", onPress: () => {
+                        setTipoMoto(null);
+                        setAno(undefined);
+                        setPlaca(undefined);
+                    }
+                }],
+                { cancelable: false }
+            );
+        }
     };
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={styles.container}>
             <View style={styles.form}>
-                <View
-                    style={{
-                        width: 290,
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        marginBottom: 10,
-                    }}
-                >
+                <View style={styles.header}>
                     <Image
                         source={require("../assets/moto-esquerda.png")}
                         style={styles.img}
@@ -70,7 +75,7 @@ export default function CadastroMotoScreen() {
                     setOpen={setOpen}
                     setValue={setTipoMoto}
                     setItems={setOpcoes}
-                    placeholder="Selecione uma opção"
+                    placeholder="Selecione o tipo da moto"
                     style={styles.dropdown}
                     dropDownContainerStyle={styles.opcoesDropdown}
                 />
@@ -100,6 +105,19 @@ export default function CadastroMotoScreen() {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#f9f9f9',
+        paddingHorizontal: 20,
+        paddingTop: 40,
+    },
+    header: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: 20,
+        gap: 25,
+    },
     form: {
         marginTop: 50,
         justifyContent: "center",
@@ -107,24 +125,18 @@ const styles = StyleSheet.create({
     },
     txtForm: {
         fontSize: 22,
+        fontWeight: "600",
+        color: "#05AF31",
     },
     input: {
         borderWidth: 1,
         width: 300,
         height: 50,
         borderRadius: 15,
+        borderColor: "#ccc",
         paddingLeft: 10,
         marginTop: 10,
-    },
-    inputMaior: {
-        borderWidth: 1,
-        width: 300,
-        height: 200,
-        borderRadius: 15,
-        paddingLeft: 10,
-        marginTop: 10,
-        justifyContent: "flex-start",
-        textAlignVertical: "top",
+        backgroundColor: "#fff"
     },
     btn: {
         backgroundColor: "#05AF31",
@@ -143,10 +155,11 @@ const styles = StyleSheet.create({
         width: 300,
         height: 50,
         borderRadius: 15,
+        borderColor: "#ccc",
         paddingLeft: 10,
         marginTop: 10,
         marginHorizontal: 'auto',
-        backgroundColor: 'transparent'
+        backgroundColor: "#fff"
     },
     opcoesDropdown: {
         width: 300,
