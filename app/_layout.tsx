@@ -1,40 +1,56 @@
-import { Tabs } from "expo-router";
+import { Tabs } from "expo-router/tabs";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Layout() {
     return (
-        <Tabs screenOptions={{ tabBarActiveTintColor: '#05AF31' }}>
-            <Tabs.Screen name="index" options={{ title: "Home" }} />
-            <Tabs.Screen name="cadastro-moto" options={{ title: "Cadastro de Moto" }} />
-            <Tabs.Screen name="devs" options={{ title: "Developers" }} />
+        <Tabs screenOptions={{ tabBarActiveTintColor: '#05AF31', headerShown: false }}>
+            <Tabs.Screen name="index"
+                options={{
+                    title: "Home",
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <Ionicons name={focused ? "home" : "home-outline"} size={size} color={color} />
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="cadastro-moto"
+                options={{
+                    title: "Cadastrar Moto",
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <Ionicons
+                            name={focused ? "add-circle" : "add-circle-outline"}
+                            size={size}
+                            color={color}
+                        />
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="busca-moto"
+                options={{
+                    title: "Buscar Motos",
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <Ionicons
+                            name={focused ? "search" : "search-outline"}
+                            size={size}
+                            color={color}
+                        />
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="devs"
+                options={{
+                    title: "Developers",
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <Ionicons
+                            name={focused ? "people" : "people-outline"}
+                            size={size}
+                            color={color}
+                        />
+                    )
+                }}
+            />
         </Tabs>
     );
 }
-
-// EXEMPLO DE USO DAS 3 NAVEGAÇÕES
-
-// import { Drawer } from 'expo-router/drawer';
-// import { Stack } from 'expo-router/stack';
-// import { Tabs } from 'expo-router/tabs';
-
-// export default function Layout() {
-//   return (
-//     <Drawer>
-//       {/* Tela inicial com Drawer */}
-//       <Drawer.Screen name="home" options={{ title: "Home" }} />
-      
-//       {/* Tela de Profile com Stack aninhado */}
-//       <Drawer.Screen name="profile" options={{ title: "Profile" }}>
-//         <Stack>
-//           <Stack.Screen name="profileDetails" options={{ title: "Profile Details" }} />
-//           <Stack.Screen name="profileSettings" options={{ title: "Profile Settings" }} />
-          
-//           {/* Tabs dentro de Profile */}
-//           <Tabs>
-//             <Tabs.Screen name="overview" options={{ title: "Overview" }} />
-//             <Tabs.Screen name="settings" options={{ title: "Settings" }} />
-//           </Tabs>
-//         </Stack>
-//       </Drawer.Screen>
-//     </Drawer>
-//   );
-// }
