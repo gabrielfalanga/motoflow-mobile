@@ -1,9 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
+import { useTheme } from "../contexts/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
+
+    const { theme, toggleTheme } = useTheme();
+
     // dados mockados
     const nomeOperador = "Fernando";
     const nomePatio = "Pátio Central";
@@ -33,9 +38,21 @@ export default function HomeScreen() {
     ];
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.greeting}>Olá, {nomeOperador}!</Text>
-            <Text style={styles.patioName}>{nomePatio}</Text>
+        <SafeAreaView className="flex-1 bg-[#f9f9f9] dark:bg-[#333] px-5 pt-[100px]">
+
+            <View className="flex-row items-start justify-between">
+                <View>
+                    <Text className="text-[24px] font-semibold mb-2 text-[#05AF31]">Olá, {nomeOperador}!</Text>
+                    <Text style={styles.patioName}>{nomePatio}</Text>
+                </View>
+                <Ionicons
+                    className="mt-1 mr-2"
+                    name={theme == "light" ? "moon-outline" : "sunny-outline"}
+                    size={theme == "light" ? 30 : 35}
+                    color={theme == "light" ? "#333" : "#bbb"}
+                    onPress={toggleTheme}
+                />
+            </View>
 
             <View style={styles.cardContainer}>
                 <View style={styles.card}>
@@ -69,18 +86,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f9f9f9',
-        paddingHorizontal: 20,
-        paddingTop: 40,
-    },
-    greeting: {
-        fontSize: 24,
-        fontWeight: '600',
-        marginBottom: 8,
-        color: '#05AF31',
-    },
     patioName: {
         fontSize: 18,
         color: '#333',
