@@ -30,31 +30,39 @@ export default function CadastroMotoScreen() {
     const [placa, setPlaca] = useState<string>();
 
     const cadastrar = () => {
-        // se tiver algum campo vazio
-        if (!tipoMoto || !ano || !placa) {
-            Alert.alert(
-                "Oops!",
-                "Preencha todos os campos corretamente.",
-                [{ text: "OK" }],
-                { cancelable: false },
-            );
+        const anoAtual = new Date().getFullYear();
+        const anoMaximo = anoAtual + 1;
+
+        if (!tipoMoto) {
+            Alert.alert("Erro", "Selecione o tipo da moto.");
+            return;
         }
 
-        else {
-            Alert.alert(
-                "Moto cadastrada!",
-                `Tipo: ${tipoMoto}\nAno: ${ano}\nPlaca: ${placa}`,
-                [{
-                    text: "OK", onPress: () => {
-                        setTipoMoto(null);
-                        setAno(undefined);
-                        setPlaca(undefined);
-                    }
-                }],
-                { cancelable: false }
-            );
+        if (!ano || isNaN(ano) || ano.toString().length !== 4 || ano < 1950 || ano > anoMaximo) {
+            Alert.alert("Erro", "Digite um ano válido.");
+            return;
         }
+
+        const placaRegex = /^[A-Z0-9]{7}$/;
+        if (!placa || !placaRegex.test(placa)) {
+            Alert.alert("Erro", "Digite uma placa válida (sem espaços ou símbolos).");
+            return;
+        }
+
+        Alert.alert(
+            "Moto cadastrada!",
+            `Tipo: ${tipoMoto}\nAno: ${ano}\nPlaca: ${placa}`,
+            [{
+                text: "OK", onPress: () => {
+                    setTipoMoto(null);
+                    setAno(undefined);
+                    setPlaca(undefined);
+                }
+            }],
+            { cancelable: false }
+        );
     };
+
 
     return (
         <SafeAreaView className="flex-1 bg-[#f9f9f9] dark:bg-[#333] px-5 pt-10">
@@ -62,12 +70,12 @@ export default function CadastroMotoScreen() {
                 <View className="flex-row items-center justify-center mb-5 gap-7">
                     <Image
                         source={require("../assets/moto-esquerda.png")}
-                        style={{width: 40, height: 40}}
+                        style={{ width: 40, height: 40 }}
                     />
                     <Text className="text-[24px] font-semibold text-[#05AF31]">Cadastre a moto</Text>
                     <Image
                         source={require("../assets/moto-direita.png")}
-                        style={{width: 40, height: 40}}
+                        style={{ width: 40, height: 40 }}
                     />
                 </View>
 
@@ -105,7 +113,7 @@ export default function CadastroMotoScreen() {
                     autoCapitalize="characters"
                 />
 
-                <TouchableOpacity 
+                <TouchableOpacity
                     className="w-[300px] h-[50px] mt-7 rounded-[15px] bg-[#05AF31] items-center justify-center"
                     onPress={cadastrar}
                 >
