@@ -20,7 +20,7 @@ function InnerLayout() {
         tabBarActiveTintColor: "#05AF31",
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: theme === "dark" ? "#111" : "#fff",
+          backgroundColor: theme === "dark" ? "#111" : "#ddd",
         },
         tabBarInactiveTintColor: theme === "dark" ? "#aaa" : "#888",
       }}
