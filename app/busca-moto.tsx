@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
 import {
     FlatList,
     StyleSheet,
@@ -8,6 +9,7 @@ import {
 import DropDownPicker from "react-native-dropdown-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
+
 
 // dados mockados de motos cadastradas
 const motosMock = [
@@ -48,7 +50,7 @@ const motosMock = [
     },
 ];
 
-// Mapeamento tipo -> imagem
+// mapeamento tipo -> imagem
 const imagensMotos = {
     "Mottu Sport": require("../assets/mottu-sport.png"),
     "Mottu E": require("../assets/mottu-e.png"),
@@ -56,6 +58,9 @@ const imagensMotos = {
 };
 
 export default function BuscaMotoScreen() {
+    
+    const { theme, toggleTheme } = useTheme();
+    
     const [open, setOpen] = useState(false);
     const [tipoSelecionado, setTipoSelecionado] = useState<string | null>(null);
     const [opcoes, setOpcoes] = useState([
@@ -75,29 +80,29 @@ export default function BuscaMotoScreen() {
     }, [tipoSelecionado]);
 
     const renderMotoCard = ({ item }: { item: typeof motosMock[0] }) => (
-        <View style={styles.card}>
+        <View className="flex-row items-center bg-[#05AF31dd] rounded-[12px] p-3 mb-3 shadow-md">
             <Image
                 source={imagensMotos[item.tipo as keyof typeof imagensMotos]}
-                style={styles.motoImage}
+                style={{width: 70, height: 70, marginRight: 15}}
                 contentFit="contain"
             />
-            <View style={styles.infoContainer}>
-                <Text style={styles.tipo}>{item.tipo}</Text>
-                <View style={styles.boxPosicao}>
-                    <Text style={styles.posicao}>Posição:</Text>
-                    <View style={styles.posicaoXY}>
-                        <Text style={{ fontSize: 18 }}>{`${item.posicao.x}${item.posicao.y}`}</Text>
+            <View className="flex-1">
+                <Text className="text-[18px] font-bold text-white mb-1.5">{item.tipo}</Text>
+                <View className="flex-row items-center gap-[10px] mb-[5px] flex-1">
+                    <Text className="text-[16px] font-semibold text-white">Posição:</Text>
+                    <View className="bg-white rounded px-1.5 py-[1px]">
+                        <Text className="text-[18px]">{`${item.posicao.x}${item.posicao.y}`}</Text>
                     </View>
                 </View>
-                <Text style={styles.anoPlaca}>Ano: {item.ano}</Text>
-                <Text style={styles.anoPlaca}>Placa: {item.placa}</Text>
+                <Text className="text-[14px] font-medium text-[#e0e0e0]">Ano: {item.ano}</Text>
+                <Text className="text-[14px] font-medium text-[#e0e0e0]">Placa: {item.placa}</Text>
             </View>
         </View >
     );
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.titulo}>Encontre as posições das motos</Text>
+        <SafeAreaView className="flex-1 bg-[#f9f9f9] dark:bg-[#333] px-7 pt-12">
+            <Text className="text-[22px] font-semibold text-[#05AF31] mb-[15px] ml-[5px]">Encontre as posições das motos</Text>
             <DropDownPicker
                 open={open}
                 value={tipoSelecionado}
@@ -106,12 +111,18 @@ export default function BuscaMotoScreen() {
                 setValue={setTipoSelecionado}
                 setItems={setOpcoes}
                 placeholder="Selecione o tipo da moto"
-                style={styles.dropdown}
-                dropDownContainerStyle={styles.dropdownContainer}
+                style={[
+                    styles.dropdown,
+                    theme === "dark" && { backgroundColor: "#eee" }
+                ]}
+                dropDownContainerStyle={[
+                    styles.opcoesDropdown,
+                    theme === "dark" && { backgroundColor: "#eee" }
+                ]}
             />
 
             {tipoSelecionado && motosFiltradas.length === 0 && (
-                <Text style={styles.emptyText}>Nenhuma moto desse tipo disponível.</Text>
+                <Text className="mt-5 text-[16px] text-[#999] text-center">Nenhuma moto desse tipo disponível.</Text>
             )}
 
             <FlatList
@@ -125,82 +136,13 @@ export default function BuscaMotoScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#f9f9f9",
-        paddingHorizontal: 20,
-        paddingTop: 40,
-    },
-    titulo: {
-        fontSize: 22,
-        fontWeight: "600",
-        color: "#05AF31",
-        marginBottom: 15,
-        marginLeft: 5
-    },
     dropdown: {
         height: 50,
         borderRadius: 15,
         borderColor: "#ccc",
         backgroundColor: "#fff",
     },
-    dropdownContainer: {
+    opcoesDropdown: {
         borderRadius: 15,
-    },
-    emptyText: {
-        marginTop: 20,
-        fontSize: 16,
-        color: "#999",
-        textAlign: "center",
-    },
-    card: {
-        flexDirection: "row",
-        backgroundColor: "#05AF31dd",
-        borderRadius: 12,
-        padding: 12,
-        marginBottom: 12,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOpacity: 0.15,
-        shadowOffset: { width: 0, height: 3 },
-        shadowRadius: 5,
-        elevation: 4,
-    },
-    motoImage: {
-        width: 70,
-        height: 70,
-        marginRight: 15,
-    },
-    infoContainer: {
-        flex: 1,
-    },
-    tipo: {
-        fontSize: 18,
-        fontWeight: "700",
-        color: "#fff",
-        marginBottom: 6,
-    },
-    boxPosicao: {
-        flex: 1,
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-        marginBottom: 5
-    },
-    posicao: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#fff",
-    },
-    posicaoXY: {
-        backgroundColor: "#fff",
-        borderRadius: 4,
-        paddingHorizontal: 6,
-        paddingVertical: 1
-    },
-    anoPlaca: {
-        fontSize: 14,
-        fontWeight: "500",
-        color: "#e0e0e0",
-    },
+    }
 });

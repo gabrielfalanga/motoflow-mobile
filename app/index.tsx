@@ -43,109 +43,44 @@ export default function HomeScreen() {
             <View className="flex-row items-start justify-between">
                 <View>
                     <Text className="text-[24px] font-semibold mb-2 text-[#05AF31]">Olá, {nomeOperador}!</Text>
-                    <Text style={styles.patioName}>{nomePatio}</Text>
+                    <Text className="text-[18px] text-[#333] dark:text-[#ccc] mb-6">{nomePatio}</Text>
                 </View>
                 <Ionicons
                     className="mt-1 mr-2"
                     name={theme == "light" ? "moon-outline" : "sunny-outline"}
                     size={theme == "light" ? 30 : 35}
-                    color={theme == "light" ? "#333" : "#bbb"}
+                    color={theme == "light" ? "#333" : "#ccc"}
                     onPress={toggleTheme}
                 />
             </View>
 
-            <View style={styles.cardContainer}>
-                <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Motos no Pátio</Text>
-                    <Text style={styles.cardValue}>{motosNoPatio} / {capacidadePatio}</Text>
+            <View className="gap-5 mb-6">
+                <View className="bg-[#05AF31] p-5 rounded-xl shadow-md">
+                    <Text className="text-white dark:text-[#ddd] text-[16px] mb-2">Motos no Pátio</Text>
+                    <Text className="text-white dark:text-[#ddd] text-[24px] font-bold">{motosNoPatio} / {capacidadePatio}</Text>
                 </View>
 
-                <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Motos Alugadas</Text>
-                    <Text style={styles.cardValue}>{motosAlugadas}</Text>
+                <View className="bg-[#05AF31] p-5 rounded-xl shadow-md">
+                    <Text className="text-white dark:text-[#ddd] text-[16px] mb-2">Motos Alugadas</Text>
+                    <Text className="text-white dark:text-[#ddd] text-[24px] font-bold">{motosAlugadas}</Text>
                 </View>
             </View>
 
-            <Text style={styles.sectionTitle}>Por Tipo de Moto</Text>
-            <View style={styles.tipoContainer}>
+            <Text className="text-[18px] font-semibold mb-4 text-[#05AF31]">Por Tipo de Moto</Text>
+            <View className="flex-row justify-between gap-3.5">
                 {tiposMotos.map((tipo, index) => (
-                    <View key={index} style={styles.tipoCard}>
+                    <View key={index} className="flex-1 bg-[#ccc] dark:bg-[#aaa] rounded-xl p-2.5 items-center">
                         <Image
                             source={tipo.imagem}
-                            style={styles.motoImage}
+                            style={{width: 60, height: 60, marginBottom: 8}}
                             contentFit="contain"
                         />
-                        <Text style={styles.tipoNome}>{tipo.nome}</Text>
-                        <Text style={styles.tipoInfo}>Pátio: {tipo.noPatio}</Text>
-                        <Text style={styles.tipoInfo}>Alugadas: {tipo.alugadas}</Text>
+                        <Text className="text-[14px] text-[#000] font-semibold mb-1 text-center">{tipo.nome}</Text>
+                        <Text className="text-[12px] text-[#111]">Pátio: {tipo.noPatio}</Text>
+                        <Text className="text-[12px] text-[#111]">Alugadas: {tipo.alugadas}</Text>
                     </View>
                 ))}
             </View>
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    patioName: {
-        fontSize: 18,
-        color: '#333',
-        marginBottom: 24,
-    },
-    cardContainer: {
-        gap: 16,
-        marginBottom: 24,
-    },
-    card: {
-        backgroundColor: '#05AF31',
-        padding: 20,
-        borderRadius: 12,
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 4,
-    },
-    cardTitle: {
-        color: '#fff',
-        fontSize: 16,
-        marginBottom: 8,
-    },
-    cardValue: {
-        color: '#fff',
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        marginBottom: 12,
-        color: '#05AF31',
-    },
-    tipoContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 12,
-    },
-    tipoCard: {
-        flex: 1,
-        backgroundColor: '#F0F0F0',
-        borderRadius: 12,
-        padding: 10,
-        alignItems: 'center',
-    },
-    motoImage: {
-        width: 60,
-        height: 60,
-        marginBottom: 8,
-    },
-    tipoNome: {
-        fontSize: 14,
-        fontWeight: '600',
-        marginBottom: 4,
-        textAlign: 'center',
-    },
-    tipoInfo: {
-        fontSize: 12,
-        color: '#333',
-    },
-});

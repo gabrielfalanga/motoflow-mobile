@@ -1,5 +1,6 @@
 import { Image } from "expo-image";
 import { useState } from "react";
+import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
 import {
     Alert,
     StyleSheet,
@@ -13,6 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function CadastroMotoScreen() {
+
+    const { theme, toggleTheme } = useTheme();
 
     // dropdown tipo de moto
     const [open, setOpen] = useState(false);
@@ -54,17 +57,17 @@ export default function CadastroMotoScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.form}>
-                <View style={styles.header}>
+        <SafeAreaView className="flex-1 bg-[#f9f9f9] dark:bg-[#333] px-5 pt-10">
+            <View className="mt-[50px] items-center justify-center">
+                <View className="flex-row items-center justify-center mb-5 gap-7">
                     <Image
                         source={require("../assets/moto-esquerda.png")}
-                        style={styles.img}
+                        style={{width: 40, height: 40}}
                     />
-                    <Text style={styles.txtForm}>Cadastre a moto</Text>
+                    <Text className="text-[24px] font-semibold text-[#05AF31]">Cadastre a moto</Text>
                     <Image
                         source={require("../assets/moto-direita.png")}
-                        style={styles.img}
+                        style={{width: 40, height: 40}}
                     />
                 </View>
 
@@ -76,12 +79,18 @@ export default function CadastroMotoScreen() {
                     setValue={setTipoMoto}
                     setItems={setOpcoes}
                     placeholder="Selecione o tipo da moto"
-                    style={styles.dropdown}
-                    dropDownContainerStyle={styles.opcoesDropdown}
+                    style={[
+                        styles.dropdown,
+                        theme === "dark" && { backgroundColor: "#eee" }
+                    ]}
+                    dropDownContainerStyle={[
+                        styles.opcoesDropdown,
+                        theme === "dark" && { backgroundColor: "#eee" }
+                    ]}
                 />
                 <TextInput
                     placeholder="Ano"
-                    style={styles.input}
+                    className="w-[300px] h-[50px] mt-4 rounded-[15px] border border-[#ccc] pl-2.5 bg-white dark:bg-[#eee]"
                     value={ano?.toString()}
                     onChangeText={(value) => setAno(value ? Number(value) : undefined)}
                     keyboardType="numeric"
@@ -89,14 +98,17 @@ export default function CadastroMotoScreen() {
                 />
                 <TextInput
                     placeholder="Placa (sem traço)"
-                    style={styles.input}
+                    className="w-[300px] h-[50px] mt-4 rounded-[15px] border border-[#ccc] pl-2.5 bg-white dark:bg-[#eee]"
                     value={placa}
                     onChangeText={(value) => setPlaca(value.toUpperCase())}
                     maxLength={7}
                     autoCapitalize="characters"
                 />
 
-                <TouchableOpacity style={styles.btn} onPress={cadastrar}>
+                <TouchableOpacity 
+                    className="w-[300px] h-[50px] mt-7 rounded-[15px] bg-[#05AF31] items-center justify-center"
+                    onPress={cadastrar}
+                >
                     <Text style={{ color: "#fff" }}>Enviar</Text>
                 </TouchableOpacity>
             </View>
@@ -105,52 +117,6 @@ export default function CadastroMotoScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f9f9f9',
-        paddingHorizontal: 20,
-        paddingTop: 40,
-    },
-    header: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        marginBottom: 20,
-        gap: 25,
-    },
-    form: {
-        marginTop: 50,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    txtForm: {
-        fontSize: 22,
-        fontWeight: "600",
-        color: "#05AF31",
-    },
-    input: {
-        borderWidth: 1,
-        width: 300,
-        height: 50,
-        borderRadius: 15,
-        borderColor: "#ccc",
-        paddingLeft: 10,
-        marginTop: 10,
-        backgroundColor: "#fff"
-    },
-    btn: {
-        backgroundColor: "#05AF31",
-        width: 300,
-        marginTop: 30,
-        borderRadius: 15,
-        height: 50,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    img: {
-        width: 40,
-        height: 40,
-    },
     dropdown: {
         width: 300,
         height: 50,
