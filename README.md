@@ -34,6 +34,8 @@ A Mottu, referência no aluguel acessível de motos para trabalhadores de apps, 
 
 🧠 Interface intuitiva e escalável: Um app de fácil uso para os operadores, adaptável a qualquer layout de pátio.
 
+🕶 Temas light e dark: Preferência do usuário salva no `async storage`.
+
 ### 🎯 Objetivo
 Garantir eficiência, escalabilidade e precisão na operação dos pátios da Mottu, promovendo:
 
