@@ -1,19 +1,40 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router/tabs";
+import { Stack } from "expo-router";
 import "../global.css";
 
 import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
 import { useColorScheme } from "nativewind";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function InnerLayout() {
   const { theme } = useTheme();
   const { setColorScheme } = useColorScheme();
+  const [isLogged, setIsLogged] = useState<boolean | null>(null);
 
   useEffect(() => {
     setColorScheme(theme);
   }, [theme]);
 
+  useEffect(() => {
+    AsyncStorage.getItem("tokenOperador").then(token => {
+      setIsLogged(!!token);
+    });
+  }, []);
+
+  if (isLogged === null) return null; // loading
+
+  if (!isLogged) {
+    // Mostra só a tela de login, sem tabs
+    return (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="login" />
+      </Stack>
+    );
+  }
+
+  // Tabs normais do app
   return (
     <Tabs
       screenOptions={{
