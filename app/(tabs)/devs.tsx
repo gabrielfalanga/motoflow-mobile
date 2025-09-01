@@ -21,9 +21,7 @@ export default function DevsScreen() {
 
   return (
     <ScrollView contentContainerClassName="flex-1 items-center justify-center p-5 bg-[#f9f9f9] dark:bg-[#333]">
-      <Text className="text-[24px] font-semibold text-[#05AF31] mb-[25px]">
-        Desenvolvedores
-      </Text>
+      <Text className="text-[24px] font-semibold text-[#05AF31] mb-[25px]">Desenvolvedores</Text>
 
       {developers.map((dev) => (
         <View
@@ -31,10 +29,7 @@ export default function DevsScreen() {
           className="items-center mb-7 bg-white dark:bg-[#333] p-[15px] rounded-[10px] shadow-md w-full max-w-[300px]"
           style={{ shadowColor: "#05AF31" }}
         >
-          <Image
-            source={{ uri: dev.imageUrl }}
-            className="w-[80px] h-[80px] rounded-full mb-2.5"
-          />
+          <Image source={{ uri: dev.imageUrl }} className="w-[80px] h-[80px] rounded-full mb-2.5" />
           <Text className="text-[18px] font-semibold text-[#333] dark:text-[#eee] mb-[5px]">
             {dev.name}
           </Text>
