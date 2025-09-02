@@ -15,19 +15,21 @@ export default function LoginScreen() {
     try {
       // MOCK: login local para testes
       if (username === "operador" && password === "1234") {
-        AsyncStorage.setItem("tokenOperador", "mock");
-        router.replace("/");
+        await AsyncStorage.setItem("tokenOperador", "mock");
+        router.replace("/(tabs)");
         return;
       }
       const result = await login({ username, password });
-      if (result?.token) {
-        await AsyncStorage.setItem("tokenOperador", result.token);
-        router.replace("/");
+      if (result.status === 200 && result.data?.token) {
+        await AsyncStorage.setItem("tokenOperador", result.data.token);
+        router.replace("/(tabs)");
       } else {
-        Alert.alert("Erro", "Usuário ou senha inválidos.");
+        const msg = result.data?.message || result.error || "Usuário ou senha inválidos.";
+        const status = result.status ? ` (Status: ${result.status})` : "";
+        Alert.alert("Erro", msg + status);
       }
-    } catch (e) {
-      Alert.alert("Erro", "Usuário ou senha inválidos.");
+    } catch (e: any) {
+      Alert.alert("Erro", e.message || "Erro inesperado: " + e.toString());
     } finally {
       setLoading(false);
     }

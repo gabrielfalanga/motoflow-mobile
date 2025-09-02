@@ -18,6 +18,8 @@ function InnerLayout() {
   }, [theme]);
 
   useEffect(() => {
+    // usar para testar login
+    // AsyncStorage.clear();
     AsyncStorage.getItem("tokenOperador").then((token) => {
       setIsLogged(!!token);
       setLoading(false);
