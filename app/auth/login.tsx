@@ -13,12 +13,6 @@ export default function LoginScreen() {
   async function handleLogin() {
     setLoading(true);
     try {
-      // MOCK: login local para testes
-      if (username === "operador" && password === "1234") {
-        await AsyncStorage.setItem("tokenOperador", "mock");
-        router.replace("/(tabs)");
-        return;
-      }
       const result = await login({ username, password });
       if (result.status === 200 && result.data?.token) {
         await AsyncStorage.setItem("tokenOperador", result.data.token);
