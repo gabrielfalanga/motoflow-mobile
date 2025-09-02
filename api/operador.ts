@@ -23,9 +23,44 @@ export async function login(loginPayload: LoginPayload) {
   }
 }
 
+export async function logout() {
+  try {
+    await AsyncStorage.removeItem("tokenOperador");
+    return { status: 200, error: null };
+  } catch (error: any) {
+    return {
+      status: 500,
+      error: error.message,
+    };
+  }
+}
+
+export async function buscarDadosOperadorLogado() {
+  try {
+    const token = await AsyncStorage.getItem("tokenOperador");
+    const response = await axios.get(`${apiUrl}/operador/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return { data: response.data, status: response.status, error: null };
+  } catch (error: any) {
+    return {
+      data: error.response?.data,
+      status: error.response?.status || 500,
+      error: error.message,
+    };
+  }
+}
+
 export async function cadastrarOperador(novoOperador: Operador) {
   try {
-    const response = await axios.post(`${apiUrl}/operador`, novoOperador);
+    const token = await AsyncStorage.getItem("tokenOperador");
+    const response = await axios.post(`${apiUrl}/operador`, novoOperador, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return { data: response.data, status: response.status, error: null };
   } catch (error: any) {
     return {
@@ -39,7 +74,47 @@ export async function cadastrarOperador(novoOperador: Operador) {
 export async function editarOperador(dadosAtualizados: Operador) {
   try {
     const token = await AsyncStorage.getItem("tokenOperador");
-    const response = await axios.put(`${apiUrl}/operador/me`, dadosAtualizados);
+    const response = await axios.put(`${apiUrl}/operador/me`, dadosAtualizados, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return { data: response.data, status: response.status, error: null };
+  } catch (error: any) {
+    return {
+      data: error.response?.data,
+      status: error.response?.status || 500,
+      error: error.message,
+    };
+  }
+}
+
+export async function deletarOperador(id: number) {
+  try {
+    const token = await AsyncStorage.getItem("tokenOperador");
+    const response = await axios.delete(`${apiUrl}/operador/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return { data: response.data, status: response.status, error: null };
+  } catch (error: any) {
+    return {
+      data: error.response?.data,
+      status: error.response?.status || 500,
+      error: error.message,
+    };
+  }
+}
+
+export async function promoverOperadorParaAdmin(id: number) {
+  try {
+    const token = await AsyncStorage.getItem("tokenOperador");
+    const response = await axios.put(`${apiUrl}/operador/${id}/admin`, null, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return { data: response.data, status: response.status, error: null };
   } catch (error: any) {
     return {
