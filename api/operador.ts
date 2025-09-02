@@ -1,8 +1,9 @@
 import { LoginPayload } from "./../interfaces/interfaces";
 import axios from "axios";
 import { apiUrl } from "../constants/apiUrl";
-import { Operador } from "../interfaces/interfaces";
+import { Operador, NovoOperador } from "../interfaces/interfaces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 export async function login(loginPayload: LoginPayload) {
   try {
@@ -24,8 +25,11 @@ export async function login(loginPayload: LoginPayload) {
 }
 
 export async function logout() {
+  const router = useRouter();
+
   try {
     await AsyncStorage.removeItem("tokenOperador");
+    router.push("/auth/login");
     return { status: 200, error: null };
   } catch (error: any) {
     return {
@@ -53,7 +57,7 @@ export async function buscarDadosOperadorLogado() {
   }
 }
 
-export async function cadastrarOperador(novoOperador: Operador) {
+export async function cadastrarOperador(novoOperador: NovoOperador) {
   try {
     const token = await AsyncStorage.getItem("tokenOperador");
     const response = await axios.post(`${apiUrl}/operador`, novoOperador, {
@@ -71,7 +75,7 @@ export async function cadastrarOperador(novoOperador: Operador) {
   }
 }
 
-export async function editarOperador(dadosAtualizados: Operador) {
+export async function editarOperador(dadosAtualizados: NovoOperador) {
   try {
     const token = await AsyncStorage.getItem("tokenOperador");
     const response = await axios.put(`${apiUrl}/operador/me`, dadosAtualizados, {
