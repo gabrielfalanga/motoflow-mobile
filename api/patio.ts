@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export async function buscarTodosPatios() {
   try {
     const token = await AsyncStorage.getItem("tokenOperador");
-    const response = await axios.get(`${apiUrl}/patios`, {
+    const response = await axios.get(`${apiUrl}/patio`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -23,7 +23,7 @@ export async function buscarTodosPatios() {
 export async function buscarPatioPorId(id: number) {
   try {
     const token = await AsyncStorage.getItem("tokenOperador");
-    const response = await axios.get(`${apiUrl}/patios/${id}`, {
+    const response = await axios.get(`${apiUrl}/patio/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
