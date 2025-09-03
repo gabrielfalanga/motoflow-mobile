@@ -74,7 +74,7 @@ export function Header() {
             className="h-10 w-10 items-center justify-center rounded-full bg-green-100"
             onPress={() => setSheetVisible(true)}
           >
-            <Ionicons name="person" size={24} color="#22c55e" />
+            <Ionicons name="person" size={24} color="#05AF31" />
           </TouchableOpacity>
         </View>
       </View>
@@ -87,7 +87,7 @@ export function Header() {
         onRequestClose={() => setSheetVisible(false)}
       >
         <Pressable style={{ flex: 1 }} onPress={() => setSheetVisible(false)}>
-          <View className="absolute right-0 bottom-0 left-0 items-center rounded-t-2xl bg-white p-2 pb-12 shadow-lg">
+          <View className="absolute right-0 bottom-0 left-0 items-center rounded-t-2xl border-black border-x border-t bg-[#f9f9f9] p-2 pb-10 dark:border-white dark:bg-[#333] dark:shadow-2xl dark:shadow-white">
             <Pressable
               className="mb-4 w-full flex-row items-center justify-center border-gray-400 border-b py-6"
               onPress={handleConta}
@@ -95,7 +95,7 @@ export function Header() {
               <Ionicons
                 name="person-circle-outline"
                 size={22}
-                color="#22c55e"
+                color="#05AF31"
                 style={{ marginRight: 8 }}
               />
               <Text className="font-semibold text-green-700 text-lg">

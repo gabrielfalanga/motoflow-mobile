@@ -1,14 +1,23 @@
 import { Header } from "@components/Header"
 import { Ionicons } from "@expo/vector-icons"
 import { Drawer } from "expo-router/drawer"
+import { useTheme } from "@/context/ThemeContext"
 
 export default function DrawerLayout() {
+  const { theme } = useTheme()
+
   return (
     <Drawer
       screenOptions={{
         header: () => <Header />,
-        drawerActiveTintColor: "blue",
-        drawerInactiveTintColor: "gray",
+        drawerActiveTintColor: "#05AF31",
+        drawerInactiveTintColor: theme === "dark" ? "#ccc" : "#888",
+        drawerStyle: {
+          backgroundColor: theme === "dark" ? "#333" : "#f9f9f9",
+        },
+        drawerLabelStyle: {
+          color: theme === "dark" ? "#ccc" : "#333",
+        },
       }}
     >
       <Drawer.Screen
@@ -25,7 +34,7 @@ export default function DrawerLayout() {
         options={{
           title: "Motos",
           drawerIcon: ({ color, size }) => (
-            <Ionicons name="newspaper-outline" color={color} size={size} />
+            <Ionicons name="bicycle" color={color} size={size} />
           ),
         }}
       />

@@ -39,12 +39,12 @@ export default function LoginScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View className="flex-1 items-center justify-center bg-[#f9f9f9] px-7 dark:bg-[#333]">
-        <View className="w-full max-w-[350px] rounded-2xl bg-white p-8 shadow-md dark:bg-[#222]">
-          <Text className="mb-8 text-center font-bold text-[#05AF31] text-[26px]">
+        <View className="w-full max-w-96 rounded-2xl bg-white p-8 shadow-md dark:bg-[#222]">
+          <Text className="mb-8 text-center font-bold text-3xl text-[#05AF31]">
             Login do Operador
           </Text>
           <TextInput
-            className="mb-5 h-[50px] w-full rounded-[15px] border border-[#ccc] bg-white pl-3 text-[16px] dark:bg-[#eee]"
+            className="mb-5 h-12 w-full rounded-2xl border border-[#ccc] bg-white pl-3 dark:bg-[#eee]"
             placeholder="Usuário"
             value={username}
             onChangeText={setUsername}
@@ -52,24 +52,24 @@ export default function LoginScreen() {
             placeholderTextColor="#888"
           />
           <TextInput
-            className="mb-7 h-[50px] w-full rounded-[15px] border border-[#ccc] bg-white pl-3 text-[16px] dark:bg-[#eee]"
+            className="mb-7 h-12 w-full rounded-2xl border border-[#ccc] bg-white pl-3 dark:bg-[#eee]"
             placeholder="Senha"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
             placeholderTextColor="#888"
+            onSubmitEditing={handleLogin}
+            returnKeyType="done"
           />
           <TouchableOpacity
-            className="h-[50px] w-full items-center justify-center rounded-[15px] bg-[#05AF31]"
+            className="h-12 w-full items-center justify-center rounded-2xl bg-[#05AF31]"
             onPress={handleLogin}
             disabled={loading}
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="font-semibold text-[18px] text-white">
-                Entrar
-              </Text>
+              <Text className="font-semibold text-lg text-white">Entrar</Text>
             )}
           </TouchableOpacity>
         </View>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import type { Operador } from "@/interfaces/interfaces"
-import { editarOperador } from "@/api/operador"
 import {
   View,
   Text,
@@ -52,7 +51,7 @@ export default function PerfilScreen() {
   }
 
   const submitPasswordChange = async () => {
-    if (!operador) return
+    if (!operador || !token) return
     if (!newPassword.trim()) {
       Alert.alert("Erro", "Digite a nova senha")
       return
@@ -75,20 +74,15 @@ export default function PerfilScreen() {
         patioId: operador.patio.id,
         senha: newPassword,
       }
-      const result = await editarOperador(updatedOperador)
-
-      if (result.status === 200) {
-        Alert.alert("Sucesso", "Senha alterada com sucesso!")
-        setModalVisible(false)
-        setNewPassword("")
-        setConfirmPassword("")
-      } else {
-        const msg =
-          result.data?.message || result.error || "Erro ao alterar senha"
-        Alert.alert("Erro", msg)
-      }
-    } catch (error: any) {
-      Alert.alert("Erro", error.message || "Erro inesperado")
+      await request("/operador/me", "put", updatedOperador, {
+        authToken: token,
+      })
+      Alert.alert("Sucesso", "Senha alterada com sucesso!")
+      setModalVisible(false)
+      setNewPassword("")
+      setConfirmPassword("")
+    } catch (error) {
+      Alert.alert("Houve um erro ao alterar a senha")
     } finally {
       setLoading(false)
     }
