@@ -31,7 +31,6 @@ export default function PerfilScreen() {
 
   useEffect(() => {
     if (!token) {
-      console.error("Token não encontrado. Usuário não está autenticado.")
       return
     }
     const fetchData = async () => {

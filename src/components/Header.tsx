@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/auth-context"
+import { useTheme } from "@/context/ThemeContext"
 import { Ionicons } from "@expo/vector-icons"
 import type { DrawerNavigationProp } from "@react-navigation/drawer"
 import { useNavigation } from "@react-navigation/native"
@@ -22,6 +23,7 @@ export function Header() {
   const router = useRouter()
   const navigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>()
   const [sheetVisible, setSheetVisible] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   const handleLogout = async () => {
     Alert.alert("Sair", "Tem certeza que deseja sair?", [
@@ -32,7 +34,7 @@ export function Header() {
         onPress: async () => {
           setSheetVisible(false)
           await logout()
-          router.replace("/(auth)/login")
+          router.replace("/auth/login")
         },
       },
     ])
@@ -49,20 +51,32 @@ export function Header() {
         {/* Botão para abrir o Drawer */}
         <View>
           <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            <Ionicons name="menu" size={28} color="#000000" />
+            <Ionicons
+              name="menu"
+              size={28}
+              color={theme === "light" ? "#333" : "#ccc"}
+            />
           </TouchableOpacity>
         </View>
 
         {/* Título centralizado */}
-        <Text className="font-bold text-green-700 text-xl">MotoFlow</Text>
+        <Text className="ml-14 font-bold text-green-700 text-xl">MotoFlow</Text>
 
         {/* Botão de perfil/bolinha com bottom sheet */}
-        <TouchableOpacity
-          className="h-10 w-10 items-center justify-center rounded-full bg-green-100"
-          onPress={() => setSheetVisible(true)}
-        >
-          <Ionicons name="person" size={24} color="#22c55e" />
-        </TouchableOpacity>
+        <View className="flex w-full max-w-24 flex-row justify-between">
+          <Ionicons
+            name={theme === "light" ? "moon-outline" : "sunny-outline"}
+            size={theme === "light" ? 30 : 35}
+            color={theme === "light" ? "#333" : "#ccc"}
+            onPress={toggleTheme}
+          />
+          <TouchableOpacity
+            className="h-10 w-10 items-center justify-center rounded-full bg-green-100"
+            onPress={() => setSheetVisible(true)}
+          >
+            <Ionicons name="person" size={24} color="#22c55e" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Bottom Sheet */}

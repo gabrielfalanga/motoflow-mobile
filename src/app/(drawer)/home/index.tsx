@@ -1,9 +1,6 @@
 import type { Operador, PatioInfoPosicoes } from "@/interfaces/interfaces"
 import { ActivityIndicator, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { useTheme } from "@/context/ThemeContext"
-import { Ionicons } from "@expo/vector-icons"
-import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { useAuth } from "@/context/auth-context"
 import { request } from "@/helper/request"
@@ -14,13 +11,10 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true)
   const [erroOperador, setErroOperador] = useState<string>("")
   const [erroPatio, setErroPatio] = useState<string>("")
-  const { theme, toggleTheme } = useTheme()
-  const router = useRouter()
   const { token } = useAuth()
 
   useEffect(() => {
     if (!token) {
-      console.error("Token não encontrado. Usuário não está autenticado.")
       return
     }
 
@@ -40,7 +34,6 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (!token) {
-      console.error("Token não encontrado. Usuário não está autenticado.")
       return
     }
     if (!operador) return
@@ -84,53 +77,39 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f9f9f9] px-5 pt-[100px] dark:bg-[#333]">
-      <View className="flex-row items-start justify-between">
-        <View>
-          {erroOperador && (
-            <Text className="mb-2 font-semibold text-red-500">
-              {erroOperador}
-            </Text>
-          )}
-          <Text className="mb-2 font-semibold text-[#05AF31] text-[24px]">
-            Olá, {operador.nome.split(" ")[0]}
+    <SafeAreaView className="flex-1 bg-[#f9f9f9] px-4 dark:bg-[#333]">
+      <View className="items-start justify-between">
+        {erroOperador && (
+          <Text className="mb-2 font-semibold text-red-500">
+            {erroOperador}
           </Text>
-          <Text className="text-[#333] text-[18px] dark:text-[#ccc]">
-            {operador.patio.apelido}
-          </Text>
-          <Text className="mb-6 text-[#333] text-[16px] dark:text-[#ccc]">
-            {`${operador.patio.logradouro}, `}
-            {operador.patio.numero}
-          </Text>
-        </View>
-        <View className="flex-row items-center gap-8">
-          <Ionicons
-            name={theme === "light" ? "moon-outline" : "sunny-outline"}
-            size={theme === "light" ? 30 : 35}
-            color={theme === "light" ? "#333" : "#ccc"}
-            onPress={toggleTheme}
-          />
-        </View>
+        )}
+        <Text className="mb-2 font-semibold text-2xl text-[#05AF31]">
+          Olá, {operador.nome.split(" ")[0]}
+        </Text>
+        <Text className="text-lg dark:text-white">
+          {operador.patio.apelido}
+        </Text>
+        <Text className="mb-6 text-lg dark:text-white">
+          {`${operador.patio.logradouro}, `}
+          {operador.patio.numero}
+        </Text>
       </View>
 
-      <View className="mt-6 mb-6 gap-5">
+      <View className="gap-4">
         {erroPatio && (
           <Text className="mb-2 font-semibold text-red-500">{erroPatio}</Text>
         )}
         <View className="rounded-xl bg-[#05AF31] p-5 shadow-md">
-          <Text className="mb-2 text-[16px] text-white dark:text-[#ddd]">
-            Motos no Pátio
-          </Text>
-          <Text className="font-bold text-[24px] text-white dark:text-[#ddd]">
+          <Text className="mb-2 text-white">Motos no Pátio</Text>
+          <Text className="font-bold text-2xl text-white">
             {patioInfo?.posicoesOcupadas} / {patioInfo?.capacidadeMax}
           </Text>
         </View>
 
         <View className="rounded-xl bg-[#05AF31] p-5 shadow-md">
-          <Text className="mb-2 text-[16px] text-white dark:text-[#ddd]">
-            Posições Disponíveis
-          </Text>
-          <Text className="font-bold text-[24px] text-white dark:text-[#ddd]">
+          <Text className="mb-2 text-white">Posições Disponíveis</Text>
+          <Text className="font-bold text-2xl text-white">
             {patioInfo?.posicoesDisponiveis}
           </Text>
         </View>

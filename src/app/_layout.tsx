@@ -1,4 +1,4 @@
-import { router, Stack, useSegments } from "expo-router"
+import { Stack } from "expo-router"
 import "@/global.css"
 import { ThemeProvider, useTheme } from "@/context/ThemeContext"
 import { useColorScheme } from "nativewind"
@@ -9,24 +9,11 @@ import { ActivityIndicator, View } from "react-native"
 function InitialLayout() {
   const { theme } = useTheme()
   const { setColorScheme } = useColorScheme()
-  const { token, isLoading } = useAuth()
-  const segments = useSegments()
+  const { isLoading } = useAuth()
 
   useEffect(() => {
     setColorScheme(theme)
   }, [theme, setColorScheme])
-
-  useEffect(() => {
-    if (!isLoading) {
-      const inAuthGroup = segments[0] === "(auth)"
-
-      if (!token && !inAuthGroup) {
-        router.replace("/auth/login")
-      } else if (token && inAuthGroup) {
-        router.replace("/(drawer)/home")
-      }
-    }
-  }, [token, isLoading, segments])
 
   if (isLoading) {
     return (
