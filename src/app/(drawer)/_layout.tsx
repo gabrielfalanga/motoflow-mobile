@@ -29,6 +29,17 @@ export default function DrawerLayout() {
           ),
         }}
       />
+
+      <Drawer.Screen
+        name="patio"
+        options={{
+          title: "Pátio",
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="business" color={color} size={size} />
+          ),
+        }}
+      />
+
       <Drawer.Screen
         name="moto"
         options={{
@@ -38,6 +49,7 @@ export default function DrawerLayout() {
           ),
         }}
       />
+
       <Drawer.Screen
         name="account"
         options={{

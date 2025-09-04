@@ -1,4 +1,4 @@
-import type { Operador, PatioInfoPosicoes } from "@/interfaces/interfaces"
+import type { Operador, PatioInfo } from "@/interfaces/interfaces"
 import { ActivityIndicator, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useEffect, useState } from "react"
@@ -7,11 +7,11 @@ import { request } from "@/helper/request"
 
 export default function HomeScreen() {
   const [operador, setOperador] = useState<Operador | null>()
-  const [patioInfo, setPatioInfo] = useState<PatioInfoPosicoes | null>()
+  const [patioInfo, setPatioInfo] = useState<PatioInfo | null>()
   const [loading, setLoading] = useState(true)
   const [erroOperador, setErroOperador] = useState<string>("")
   const [erroPatio, setErroPatio] = useState<string>("")
-  const { token } = useAuth()
+  const { token, patioId } = useAuth()
 
   useEffect(() => {
     if (!token) {
@@ -36,11 +36,10 @@ export default function HomeScreen() {
     if (!token) {
       return
     }
-    if (!operador) return
     const fetchData = async () => {
       try {
-        const response = await request<PatioInfoPosicoes>(
-          `/patio/${operador.patio.id}`,
+        const response = await request<PatioInfo>(
+          `/patio/${patioId}`,
           "get",
           null,
           {
@@ -51,14 +50,13 @@ export default function HomeScreen() {
         setPatioInfo(response)
         setLoading(false)
       } catch (error) {
-        console.log("deu erro aonde?")
         console.log(error)
 
         setErroPatio("Houve um erro ao buscar os dados do pátio")
       }
     }
     fetchData()
-  }, [token, operador])
+  }, [token, patioId])
 
   if (loading) {
     return (
@@ -87,12 +85,10 @@ export default function HomeScreen() {
         <Text className="mb-2 font-semibold text-2xl text-[#05AF31]">
           Olá, {operador.nome.split(" ")[0]}
         </Text>
-        <Text className="text-lg dark:text-white">
-          {operador.patio.apelido}
-        </Text>
+        <Text className="text-lg dark:text-white">{patioInfo?.apelido}</Text>
         <Text className="mb-6 text-lg dark:text-white">
-          {`${operador.patio.logradouro}, `}
-          {operador.patio.numero}
+          {`${patioInfo?.endereco.logradouro}, `}
+          {patioInfo?.endereco.numero}
         </Text>
       </View>
 

@@ -8,11 +8,13 @@ interface JwtPayload {
   sub: string
   nome: string
   email: string
+  patioId: number
   exp: number
 }
 
 interface AuthContextType {
   token: string | null
+  patioId: number | null
   login: (email: string, password: string) => Promise<boolean>
   logout: () => Promise<void>
   isLoading: boolean
@@ -30,6 +32,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null)
+  const [patioId, setPatioId] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -42,10 +45,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (storedToken && isValidJwt(storedToken)) {
         setToken(storedToken)
-        const decodedToken = jwtDecode(storedToken)
-        console.log(decodedToken)
+        const decodedToken = jwtDecode<JwtPayload>(storedToken)
+        setPatioId(decodedToken.patioId)
       } else {
         setToken(null)
+        setPatioId(null)
       }
     } catch (error) {
       console.error("Error checking auth state:", error)
@@ -76,7 +80,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await AsyncStorage.setItem("jwt_token", receivedToken)
         setToken(receivedToken)
         const decodedToken = jwtDecode<JwtPayload>(receivedToken)
-        console.log(decodedToken)
+        setPatioId(decodedToken.patioId)
 
         return true
       }
@@ -97,7 +101,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ token, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ token, login, patioId, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   )
