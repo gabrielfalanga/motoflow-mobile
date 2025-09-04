@@ -60,7 +60,7 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f9f9f9] dark:bg-[#333]">
+      <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#05AF31" />
       </View>
     )
@@ -68,25 +68,25 @@ export default function HomeScreen() {
 
   if (!operador) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f9f9f9] dark:bg-[#333]">
+      <View className="flex-1 items-center justify-center bg-background">
         <Text className="text-red-600">Operador não encontrado.</Text>
       </View>
     )
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f9f9f9] px-4 dark:bg-[#333]">
-      <View className="items-start justify-between">
+    <SafeAreaView className="flex-1 bg-background px-4">
+      <View>
         {erroOperador && (
           <Text className="mb-2 font-semibold text-red-500">
             {erroOperador}
           </Text>
         )}
-        <Text className="mb-2 font-semibold text-2xl text-[#05AF31]">
+        <Text className="mb-2 font-semibold text-2xl text-primary">
           Olá, {operador.nome.split(" ")[0]}
         </Text>
-        <Text className="text-lg dark:text-white">{patioInfo?.apelido}</Text>
-        <Text className="mb-6 text-lg dark:text-white">
+        <Text className="text-lg text-text">{patioInfo?.apelido}</Text>
+        <Text className="mb-6 text-lg text-text">
           {`${patioInfo?.endereco.logradouro}, `}
           {patioInfo?.endereco.numero}
         </Text>
@@ -96,14 +96,14 @@ export default function HomeScreen() {
         {erroPatio && (
           <Text className="mb-2 font-semibold text-red-500">{erroPatio}</Text>
         )}
-        <View className="rounded-xl bg-[#05AF31] p-5 shadow-md">
+        <View className="rounded-xl bg-primary p-5 shadow-md">
           <Text className="mb-2 text-white">Motos no Pátio</Text>
           <Text className="font-bold text-2xl text-white">
             {patioInfo?.posicoesOcupadas} / {patioInfo?.capacidadeMax}
           </Text>
         </View>
 
-        <View className="rounded-xl bg-[#05AF31] p-5 shadow-md">
+        <View className="rounded-xl bg-primary p-5 shadow-md">
           <Text className="mb-2 text-white">Posições Disponíveis</Text>
           <Text className="font-bold text-2xl text-white">
             {patioInfo?.posicoesDisponiveis}

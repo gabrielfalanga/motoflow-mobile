@@ -1,6 +1,6 @@
 import { Stack } from "expo-router"
 import "@/global.css"
-import { ThemeProvider, useTheme } from "@/context/ThemeContext"
+import { ThemeProvider, useTheme } from "@/context/theme-context"
 import { useColorScheme } from "nativewind"
 import { useEffect } from "react"
 import { AuthProvider, useAuth } from "@/context/auth-context"
@@ -17,7 +17,7 @@ function InitialLayout() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#F9F9F9] dark:bg-[#333]">
+      <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#05AF31" />
       </View>
     )

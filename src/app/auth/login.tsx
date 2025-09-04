@@ -62,7 +62,7 @@ export default function LoginScreen() {
             returnKeyType="done"
           />
           <TouchableOpacity
-            className="h-12 w-full items-center justify-center rounded-2xl bg-[#05AF31]"
+            className="h-12 w-full items-center justify-center rounded-2xl bg-primary"
             onPress={handleLogin}
             disabled={loading}
           >

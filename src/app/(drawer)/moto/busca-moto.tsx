@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useTheme } from "@/context/ThemeContext"
+import { useTheme } from "@/context/theme-context"
 import { FlatList, StyleSheet, Text, View } from "react-native"
 import DropDownPicker from "react-native-dropdown-picker"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -73,7 +73,7 @@ export default function BuscaMotoScreen() {
   }, [tipoSelecionado])
 
   const renderMotoCard = ({ item }: { item: (typeof motosMock)[0] }) => (
-    <View className="mb-3 flex-row items-center rounded-[12px] bg-[#05AF31dd] p-3 shadow-md">
+    <View className="mb-3 flex-row items-center rounded-xl bg-[#05AF31dd] p-3 shadow-md">
       <Image
         source={imagensMotos[item.tipo as keyof typeof imagensMotos]}
         style={{ width: 70, height: 70, marginRight: 15 }}

@@ -1,6 +1,6 @@
 import { Image } from "expo-image"
 import { useState } from "react"
-import { useTheme } from "@/context/ThemeContext"
+import { useTheme } from "@/context/theme-context"
 import {
   Alert,
   StyleSheet,
@@ -122,7 +122,7 @@ export default function CadastroMotoScreen() {
         />
 
         <TouchableOpacity
-          className="mt-7 h-[50px] w-[300px] items-center justify-center rounded-[15px] bg-[#05AF31]"
+          className="mt-7 h-[50px] w-[300px] items-center justify-center rounded-[15px] bg-primary"
           onPress={cadastrar}
         >
           <Text style={{ color: "#fff" }}>Enviar</Text>

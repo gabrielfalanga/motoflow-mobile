@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons"
 import { Tabs } from "expo-router/tabs"
-import { useTheme } from "@/context/ThemeContext"
+import { useTheme } from "@/context/theme-context"
 
 export default function TabsLayout() {
   const { theme } = useTheme()

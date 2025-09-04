@@ -1,21 +1,20 @@
-import { useEffect, useState } from "react"
-import { SafeAreaView } from "react-native-safe-area-context"
+import { useAuth } from "@/context/auth-context"
+import { useTheme } from "@/context/theme-context"
+import { request } from "@/helper/request"
 import type { Operador } from "@/interfaces/interfaces"
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  ScrollView,
-  Modal,
-  TextInput,
-  ActivityIndicator,
-} from "react-native"
-import { useTheme } from "@/context/ThemeContext"
 import { Ionicons } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
-import { request } from "@/helper/request"
-import { useAuth } from "@/context/auth-context"
+import { useEffect, useState } from "react"
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 export default function PerfilScreen() {
   const { token } = useAuth()
@@ -71,7 +70,6 @@ export default function PerfilScreen() {
     try {
       const updatedOperador = {
         nome: operador.nome,
-        patioId: operador.patio.id,
         senha: newPassword,
       }
       await request("/operador/me", "put", updatedOperador, {
@@ -95,100 +93,87 @@ export default function PerfilScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f9f9f9] px-5 pt-[100px] dark:bg-[#333]">
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View className="mb-6 flex-row items-start justify-between">
-          <View>
-            <Text className="mb-2 font-semibold text-[#05AF31] text-[24px]">
-              Meu Perfil
-            </Text>
-            <Text className="text-[#333] text-[16px] dark:text-[#ccc]">
-              Informações da conta
-            </Text>
-          </View>
-          <Ionicons
-            className="mt-1 mr-2"
-            name={"home-outline"}
-            size={theme === "light" ? 30 : 35}
-            color={theme === "light" ? "#333" : "#ccc"}
-            onPress={() => router.back()}
-          />
+    <SafeAreaView className="flex-1 bg-background px-5">
+      <View className="mb-6 flex-row items-start justify-between">
+        <View>
+          <Text className="mb-2 font-semibold text-2xl text-primary">
+            Meu Perfil
+          </Text>
+          <Text className="text-base text-foreground">
+            Informações da conta
+          </Text>
         </View>
+        <Ionicons
+          className="mt-1 mr-2"
+          name={"home-outline"}
+          size={theme === "light" ? 30 : 35}
+          color={theme === "light" ? "#333" : "#ccc"}
+          onPress={() => router.back()}
+        />
+      </View>
 
-        {operador && !erro ? (
-          <View className="gap-4">
-            {/* Card de informações do operador */}
-            <View className="rounded-xl bg-white p-5 shadow-md dark:bg-[#222]">
-              <Text className="mb-4 font-semibold text-[#05AF31] text-[18px]">
-                Dados Pessoais
-              </Text>
+      {operador && !erro ? (
+        <View className="gap-4">
+          {/* Card de informações do operador */}
+          <View className="rounded-xl bg-card p-5 shadow-md">
+            <Text className="mb-4 font-semibold text-lg text-primary">
+              Dados Pessoais
+            </Text>
 
-              <View className="gap-3">
-                <View className="flex-row items-center">
-                  <Ionicons name="person" size={20} color="#05AF31" />
-                  <Text className="ml-3 text-[#333] text-[16px] dark:text-[#ccc]">
-                    {operador.nome}
-                  </Text>
-                </View>
+            <View className="gap-3">
+              <View className="flex-row items-center">
+                <Ionicons name="person" size={20} color="#05AF31" />
+                <Text className="ml-3 text-base text-foreground">
+                  {operador.nome}
+                </Text>
+              </View>
 
-                <View className="flex-row items-center">
-                  <Ionicons name="business" size={20} color="#05AF31" />
-                  <Text className="ml-3 text-[#333] text-[16px] dark:text-[#ccc]">
-                    {operador.patio.apelido}
-                  </Text>
-                </View>
+              <View className="flex-row items-center">
+                <Ionicons name="pricetag" size={20} color="#05AF31" />
+                <Text className="ml-3 text-base text-foreground">
+                  {operador.role}
+                </Text>
+              </View>
 
-                <View className="flex-row items-center">
-                  <Ionicons name="pricetag" size={20} color="#05AF31" />
-                  <Text className="ml-3 text-[#333] text-[16px] dark:text-[#ccc]">
-                    {operador.role}
-                  </Text>
-                </View>
-
-                <View className="flex-row items-center">
-                  <Ionicons name="id-card" size={20} color="#05AF31" />
-                  <Text className="ml-3 text-[#333] text-[16px] dark:text-[#ccc]">
-                    RF: {operador.id}
-                  </Text>
-                </View>
+              <View className="flex-row items-center">
+                <Ionicons name="id-card" size={20} color="#05AF31" />
+                <Text className="ml-3 text-base text-foreground">
+                  RF: {operador.id}
+                </Text>
               </View>
             </View>
+          </View>
 
-            {/* Ações do perfil */}
-            <View className="rounded-xl bg-white p-5 shadow-md dark:bg-[#222]">
-              <Text className="mb-4 font-semibold text-[#05AF31] text-[18px]">
-                Configurações
-              </Text>
+          {/* Ações do perfil */}
+          <View className="rounded-xl bg-card p-5 shadow-md">
+            <Text className="mb-4 font-semibold text-lg text-primary">
+              Configurações
+            </Text>
 
-              <TouchableOpacity
-                className="mb-3 flex-row items-center justify-between rounded-lg bg-[#f5f5f5] p-3 dark:bg-[#333]"
-                onPress={handleChangePassword}
-              >
-                <View className="flex-row items-center">
-                  <Ionicons name="key" size={20} color="#05AF31" />
-                  <Text className="ml-3 text-[#333] text-[16px] dark:text-[#ccc]">
-                    Alterar Senha
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color="#666" />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              className="mb-3 flex-row items-center justify-between rounded-lg bg-secondary p-3"
+              onPress={handleChangePassword}
+            >
+              <View className="flex-row items-center">
+                <Ionicons name="key" size={20} color="#05AF31" />
+                <Text className="ml-3 text-base text-foreground">
+                  Alterar Senha
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#666" />
+            </TouchableOpacity>
           </View>
-        ) : (
-          <View className="flex-1 items-center justify-center">
-            <Text className="text-[#666] text-[16px] dark:text-[#aaa]">
-              Carregando perfil...
-            </Text>
-          </View>
-        )}
-        {erro && (
-          <View className="flex-1 items-center justify-center">
-            <Text className="text-[#ff4444] text-[16px] dark:text-[#aaa]">
-              {erro}
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+        </View>
+      ) : (
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-base text-muted">Carregando perfil...</Text>
+        </View>
+      )}
+      {erro && (
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-base text-red-500">{erro}</Text>
+        </View>
+      )}
 
       {/* Modal para alterar senha */}
       <Modal
@@ -198,9 +183,9 @@ export default function PerfilScreen() {
         onRequestClose={closeModal}
       >
         <View className="flex-1 items-center justify-center bg-black/50">
-          <View className="w-[90%] max-w-[400px] rounded-2xl bg-white p-6 dark:bg-[#222]">
+          <View className="w-[90%] max-w-96 rounded-2xl bg-card p-6">
             <View className="mb-6 flex-row items-center justify-between">
-              <Text className="font-semibold text-[#05AF31] text-[20px]">
+              <Text className="font-semibold text-2xl text-primary">
                 Alterar Senha
               </Text>
               <TouchableOpacity onPress={closeModal}>
@@ -210,11 +195,9 @@ export default function PerfilScreen() {
 
             <View className="gap-4">
               <View>
-                <Text className="mb-2 text-[#333] text-[14px] dark:text-[#ccc]">
-                  Nova Senha
-                </Text>
+                <Text className="mb-2 text-foreground text-sm">Nova Senha</Text>
                 <TextInput
-                  className="h-[50px] w-full rounded-[12px] border border-[#ccc] bg-[#f5f5f5] px-3 text-[#333] text-[16px] dark:bg-[#333] dark:text-[#ccc]"
+                  className="h-12 w-full rounded-xl border border-gray-300 bg-secondary px-3 text-base text-foreground"
                   placeholder="Digite a nova senha"
                   value={newPassword}
                   onChangeText={setNewPassword}
@@ -224,11 +207,11 @@ export default function PerfilScreen() {
               </View>
 
               <View>
-                <Text className="mb-2 text-[#333] text-[14px] dark:text-[#ccc]">
+                <Text className="mb-2 text-foreground text-sm">
                   Confirmar Nova Senha
                 </Text>
                 <TextInput
-                  className="h-[50px] w-full rounded-[12px] border border-[#ccc] bg-[#f5f5f5] px-3 text-[#333] text-[16px] dark:bg-[#333] dark:text-[#ccc]"
+                  className="h-12 w-full rounded-xl border border-gray-300 bg-secondary px-3 text-base text-foreground"
                   placeholder="Confirme a nova senha"
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
@@ -239,21 +222,21 @@ export default function PerfilScreen() {
 
               <View className="mt-4 flex-row gap-3">
                 <TouchableOpacity
-                  className="h-[50px] flex-1 items-center justify-center rounded-[12px] border border-[#ccc]"
+                  className="h-12 flex-1 items-center justify-center rounded-xl border border-gray-300"
                   onPress={closeModal}
                 >
-                  <Text className="text-[#666] text-[16px]">Cancelar</Text>
+                  <Text className="text-base text-muted">Cancelar</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="h-[50px] flex-1 items-center justify-center rounded-[12px] bg-[#05AF31]"
+                  className="h-12 flex-1 items-center justify-center rounded-xl bg-primary"
                   onPress={submitPasswordChange}
                   disabled={loading}
                 >
                   {loading ? (
                     <ActivityIndicator color="#fff" />
                   ) : (
-                    <Text className="font-semibold text-[16px] text-white">
+                    <Text className="font-semibold text-base text-white">
                       Alterar
                     </Text>
                   )}

@@ -1,4 +1,6 @@
-import { Image, ScrollView, Text, View } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
+import { Image, Text, View } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 export default function DevsScreen() {
   const developers = [
@@ -20,27 +22,64 @@ export default function DevsScreen() {
   ]
 
   return (
-    <ScrollView contentContainerClassName="flex-1 items-center justify-center p-5 bg-[#f9f9f9] dark:bg-[#333]">
-      <Text className="mb-6 font-semibold text-2xl text-[#05AF31]">
-        Desenvolvedores
-      </Text>
-
-      {developers.map(dev => (
-        <View
-          key={dev.rm}
-          className="mb-6 w-full max-w-80 items-center rounded-xl bg-white p-4 shadow-md dark:bg-[#333]"
-          style={{ shadowColor: "#05AF31" }}
-        >
-          <Image
-            source={{ uri: dev.imageUrl }}
-            className="mb-2.5 size-20 rounded-full"
-          />
-          <Text className="mb-1 font-semibold text-lg dark:text-white">
-            {dev.name}
+    <SafeAreaView className="flex-1 bg-background px-8">
+      <View className="mb-8 items-center">
+        <View className="mb-4 flex-row items-center">
+          <Ionicons name="people-outline" size={28} color="#05AF31" />
+          <Text className="ml-2 font-bold text-3xl text-primary">
+            Desenvolvedores
           </Text>
-          <Text className="text-sm dark:text-white">RM: {dev.rm}</Text>
         </View>
-      ))}
-    </ScrollView>
+        <Text className="text-center text-muted">
+          Conheça a equipe por trás do MotoFlow
+        </Text>
+      </View>
+
+      {/* Developer Cards */}
+      <View className="gap-6">
+        {developers.map(dev => (
+          <View
+            key={dev.rm}
+            className="rounded-2xl bg-card p-6 shadow-sm"
+            style={{
+              shadowColor: "#05AF31",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 3,
+            }}
+          >
+            <View className="flex-row items-center">
+              {/* Avatar */}
+              <View className="mr-4">
+                <Image
+                  source={{ uri: dev.imageUrl }}
+                  className="size-16 rounded-full border-2 border-primary/20"
+                />
+                <View className="-bottom-1 -right-1 absolute rounded-full bg-primary p-1">
+                  <Ionicons name="checkmark" size={12} color="white" />
+                </View>
+              </View>
+
+              {/* Info */}
+              <View className="flex-1">
+                <Text className="font-bold text-lg text-text">{dev.name}</Text>
+                <View className="mt-2 flex-row items-center">
+                  <Ionicons name="school-outline" size={14} color="#666" />
+                  <Text className="ml-1 text-muted text-sm">RM: {dev.rm}</Text>
+                </View>
+              </View>
+
+              {/* GitHub Icon */}
+              <View className="ml-2">
+                <View className="items-center justify-center rounded-full bg-primary/10 p-3">
+                  <Ionicons name="logo-github" size={24} color="#05AF31" />
+                </View>
+              </View>
+            </View>
+          </View>
+        ))}
+      </View>
+    </SafeAreaView>
   )
 }
