@@ -42,3 +42,23 @@ export interface PatioInfo {
     cep: string
   }
 }
+
+export interface PosicaoHorizontalPatio {
+  posicaoHorizontal: string
+}
+
+export interface MotoNaPosicao {
+  id: number
+  placa: string
+  tipoMoto: "MOTTU_SPORT" | "MOTTU_E" | "MOTTU_POP"
+  ano: number
+  statusMoto: "ALUGADA" | "DISPONIVEL" | "MANUTENCAO"
+  posicaoHorizontal: string
+  posicaoVertical: number
+}
+
+export interface PosicaoHorizontalDetalhes {
+  posicaoHorizontal: string
+  vagasTotais: number
+  motos: MotoNaPosicao[]
+}

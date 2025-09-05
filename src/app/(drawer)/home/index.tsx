@@ -1,67 +1,124 @@
-import type { Operador, PatioInfo } from "@/interfaces/interfaces"
-import { ActivityIndicator, Text, View } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { useEffect, useState } from "react"
+import { NotificationCard } from "@/components/notification-card"
+import { PatioPosicoesHorizontaisGrid } from "@/components/patio-posicoes-horizontais-grid"
+import { PatioSummary } from "@/components/patio-summary"
+import { QuickActionCard } from "@/components/quick-action-card"
 import { useAuth } from "@/context/auth-context"
 import { request } from "@/helper/request"
+import type { Operador, PatioInfo } from "@/interfaces/interfaces"
+import { Ionicons } from "@expo/vector-icons"
+import { useCallback, useEffect, useState } from "react"
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
+
+interface Notification {
+  id: string
+  title: string
+  message: string
+  type: "info" | "warning" | "success" | "error"
+}
 
 export default function HomeScreen() {
-  const [operador, setOperador] = useState<Operador | null>()
-  const [patioInfo, setPatioInfo] = useState<PatioInfo | null>()
+  const [operador, setOperador] = useState<Operador | null>(null)
+  const [patioInfo, setPatioInfo] = useState<PatioInfo | null>(null)
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [erroOperador, setErroOperador] = useState<string>("")
   const [erroPatio, setErroPatio] = useState<string>("")
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const { token, patioId } = useAuth()
 
-  useEffect(() => {
-    if (!token) {
-      return
-    }
+  const fetchData = useCallback(
+    async (isRefresh = false) => {
+      if (!token) return
 
-    const fetchData = async () => {
+      if (isRefresh) setRefreshing(true)
+
       try {
-        const response = await request<Operador>("/operador/me", "get", null, {
-          authToken: token,
-        })
+        setLoading(!isRefresh)
 
-        setOperador(response)
-      } catch (error) {
-        setErroOperador("Houve um erro ao buscar os dados do operador")
-      }
-    }
-    fetchData()
-  }, [token])
-
-  useEffect(() => {
-    if (!token) {
-      return
-    }
-    const fetchData = async () => {
-      try {
-        const response = await request<PatioInfo>(
-          `/patio/${patioId}`,
-          "get",
-          null,
-          {
+        const [operadorResponse, patioResponse] = await Promise.all([
+          request<Operador>("/operador/me", "get", null, {
             authToken: token,
+          }),
+          request<PatioInfo>(`/patio/${patioId}`, "get", null, {
+            authToken: token,
+          }),
+        ])
+
+        setOperador(operadorResponse)
+        setPatioInfo(patioResponse)
+        setErroOperador("")
+        setErroPatio("")
+
+        // Criar notificações baseadas no status do pátio
+        const newNotifications: Notification[] = []
+        if (patioResponse) {
+          const occupancyPercentage =
+            (patioResponse.posicoesOcupadas / patioResponse.capacidadeMax) * 100
+
+          if (occupancyPercentage >= 90) {
+            newNotifications.push({
+              id: "high-occupancy",
+              title: "Pátio quase lotado!",
+              message: `${Math.round(occupancyPercentage)}% de ocupação. Considere realocar motos.`,
+              type: "warning",
+            })
           }
-        )
 
-        setPatioInfo(response)
-        setLoading(false)
+          if (patioResponse.posicoesDisponiveis <= 5) {
+            newNotifications.push({
+              id: "low-space",
+              title: "Poucas posições disponíveis",
+              message: `Apenas ${patioResponse.posicoesDisponiveis} posições livres restantes.`,
+              type: "info",
+            })
+          }
+        }
+        setNotifications(newNotifications)
       } catch (error) {
-        console.log(error)
-
-        setErroPatio("Houve um erro ao buscar os dados do pátio")
+        console.log("Erro ao buscar dados:", error)
+        setErroOperador("Erro ao carregar dados do operador")
+        setErroPatio("Erro ao carregar dados do pátio")
+      } finally {
+        setLoading(false)
+        if (isRefresh) setRefreshing(false)
       }
+    },
+    [token, patioId]
+  )
+
+  useEffect(() => {
+    if (token && patioId) {
+      fetchData()
     }
-    fetchData()
-  }, [token, patioId])
+  }, [token, patioId, fetchData])
+
+  const onRefresh = () => {
+    fetchData(true)
+  }
+
+  const dismissNotification = (id: string) => {
+    setNotifications(prev => prev.filter(notif => notif.id !== id))
+  }
+
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return "Bom dia"
+    if (hour < 18) return "Boa tarde"
+    return "Boa noite"
+  }
 
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#05AF31" />
+        <Text className="mt-4 text-text">Carregando informações...</Text>
       </View>
     )
   }
@@ -69,47 +126,157 @@ export default function HomeScreen() {
   if (!operador) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
-        <Text className="text-red-600">Operador não encontrado.</Text>
+        <Ionicons name="person-circle-outline" size={64} color="#ef4444" />
+        <Text className="mt-4 font-semibold text-red-600">
+          Operador não encontrado
+        </Text>
+        <Text className="text-muted">
+          Verifique sua conexão e tente novamente
+        </Text>
       </View>
     )
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background px-4">
-      <View>
-        {erroOperador && (
-          <Text className="mb-2 font-semibold text-red-500">
-            {erroOperador}
+    <SafeAreaView className="flex-1 bg-background">
+      <ScrollView
+        className="flex-1 px-4"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#05AF31"]}
+            tintColor="#05AF31"
+          />
+        }
+      >
+        {/* Header de boas-vindas */}
+        <View className="mt-4 mb-6">
+          <Text className="mb-1 text-muted">
+            {getGreeting()}, {operador.nome.split(" ")[0]}!
           </Text>
-        )}
-        <Text className="mb-2 font-semibold text-2xl text-primary">
-          Olá, {operador.nome.split(" ")[0]}
-        </Text>
-        <Text className="text-lg text-text">{patioInfo?.apelido}</Text>
-        <Text className="mb-6 text-lg text-text">
-          {`${patioInfo?.endereco.logradouro}, `}
-          {patioInfo?.endereco.numero}
-        </Text>
-      </View>
-
-      <View className="gap-4">
-        {erroPatio && (
-          <Text className="mb-2 font-semibold text-red-500">{erroPatio}</Text>
-        )}
-        <View className="rounded-xl bg-primary p-5 shadow-md">
-          <Text className="mb-2 text-white">Motos no Pátio</Text>
-          <Text className="font-bold text-2xl text-white">
-            {patioInfo?.posicoesOcupadas} / {patioInfo?.capacidadeMax}
+          <Text className="font-bold text-2xl text-primary">
+            Central de Operações
           </Text>
+          <View className="mt-2 flex-row items-center">
+            <Ionicons name="location-outline" size={16} color="#666" />
+            <Text className="ml-1 text-muted">
+              {patioInfo?.apelido} • {patioInfo?.endereco.cidade}
+            </Text>
+          </View>
         </View>
 
-        <View className="rounded-xl bg-primary p-5 shadow-md">
-          <Text className="mb-2 text-white">Posições Disponíveis</Text>
-          <Text className="font-bold text-2xl text-white">
-            {patioInfo?.posicoesDisponiveis}
+        {/* Notificações */}
+        {notifications.length > 0 && (
+          <View className="mb-6 gap-3">
+            {notifications.map(notification => (
+              <NotificationCard
+                key={notification.id}
+                title={notification.title}
+                message={notification.message}
+                type={notification.type}
+                onDismiss={() => dismissNotification(notification.id)}
+              />
+            ))}
+          </View>
+        )}
+
+        {/* Erros */}
+        {(erroOperador || erroPatio) && (
+          <View className="mb-4 gap-2">
+            {erroOperador && (
+              <NotificationCard
+                title="Erro no Operador"
+                message={erroOperador}
+                type="error"
+              />
+            )}
+            {erroPatio && (
+              <NotificationCard
+                title="Erro no Pátio"
+                message={erroPatio}
+                type="error"
+              />
+            )}
+          </View>
+        )}
+
+        {/* Resumo do Pátio */}
+        {patioInfo && (
+          <View className="mb-6">
+            <PatioSummary
+              ocupadas={patioInfo.posicoesOcupadas}
+              capacidadeMax={patioInfo.capacidadeMax}
+              disponiveis={patioInfo.posicoesDisponiveis}
+              apelido={patioInfo.apelido}
+            />
+          </View>
+        )}
+
+        {/* Ações Rápidas */}
+        <View className="mb-6">
+          <Text className="mb-4 font-bold text-lg text-text">
+            Ações Rápidas
+          </Text>
+          <View className="gap-3">
+            {/* Primeira linha */}
+            <View className="flex-row gap-3">
+              <QuickActionCard
+                title="Cadastrar Moto"
+                subtitle="Adicionar nova moto"
+                iconName="add-circle-outline"
+                route="/(drawer)/moto/cadastro-moto"
+                color="#05AF31"
+              />
+              <QuickActionCard
+                title="Buscar Moto"
+                subtitle="Localizar moto"
+                iconName="search-outline"
+                route="/(drawer)/moto/busca-moto"
+                color="#3b82f6"
+              />
+            </View>
+
+            {/* Segunda linha */}
+            <View className="flex-row gap-3">
+              <QuickActionCard
+                title="Ver Pátio"
+                subtitle="Detalhes completos"
+                iconName="grid-outline"
+                route="/(drawer)/patio"
+                color="#8b5cf6"
+              />
+              <QuickActionCard
+                title="Algo novo"
+                subtitle="Em breve"
+                iconName="bar-chart-outline"
+                route=""
+                color="#6b7280"
+                disabled={true}
+              />
+            </View>
+          </View>
+        </View>
+
+        {/* Posições Rápidas */}
+        <View className="mb-6">
+          <Text className="mb-4 font-bold text-lg text-text">
+            Acesso Rápido às Áreas
+          </Text>
+          <PatioPosicoesHorizontaisGrid />
+        </View>
+
+        {/* Footer de atualização */}
+        <View className="items-center pb-8">
+          <Text className="text-muted text-xs">
+            Última atualização: {new Date().toLocaleTimeString()}
+          </Text>
+          <Text className="text-muted text-xs">
+            Puxe para baixo para atualizar
           </Text>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
