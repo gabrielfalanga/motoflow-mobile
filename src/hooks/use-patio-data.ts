@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/auth-context"
 import { request } from "@/helper/request"
 import type { PatioInfo, PosicaoHorizontalPatio } from "@/interfaces/interfaces"
+import { useFocusEffect } from "expo-router"
 import { useCallback, useEffect, useState } from "react"
 
 export function usePatioData() {
@@ -49,11 +50,13 @@ export function usePatioData() {
     [token, patioId]
   )
 
-  useEffect(() => {
-    if (token && patioId) {
-      fetchPatioData()
-    }
-  }, [token, patioId, fetchPatioData])
+  useFocusEffect(
+    useCallback(() => {
+      if (token && patioId) {
+        fetchPatioData()
+      }
+    }, [token, patioId, fetchPatioData])
+  )
 
   const refresh = useCallback(() => {
     fetchPatioData(true)

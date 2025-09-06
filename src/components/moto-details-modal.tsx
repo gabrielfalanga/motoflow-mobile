@@ -1,5 +1,6 @@
 import type { MotoNaPosicao } from "@/interfaces/interfaces"
 import { Ionicons } from "@expo/vector-icons"
+import { router } from "expo-router"
 import { Modal, ScrollView, Text, TouchableOpacity, View } from "react-native"
 
 interface MotoDetailsModalProps {
@@ -23,10 +24,6 @@ export function MotoDetailsModal({
     switch (moto.statusMoto) {
       case "DISPONIVEL":
         return "#05AF31"
-      case "ALUGADA":
-        return "#ef4444"
-      case "MANUTENCAO":
-        return "#f59e0b"
       default:
         return "#6b7280"
     }
@@ -182,7 +179,8 @@ export function MotoDetailsModal({
                   Nenhuma moto estacionada nesta posição
                 </Text>
 
-                <TouchableOpacity className="mt-6 rounded-xl bg-primary p-4">
+                <TouchableOpacity className="mt-6 rounded-xl bg-primary p-4" onPress={() => {
+                  router.navigate(`/(drawer)/moto/cadastro-moto?posicaoHorizontal=${posicaoHorizontal}&posicaoVertical=${posicaoVertical}`)}}>
                   <Text className="text-center font-semibold text-white">
                     Adicionar Moto
                   </Text>

@@ -80,7 +80,7 @@ export function Header() {
         onRequestClose={() => setSheetVisible(false)}
       >
         <Pressable style={{ flex: 1 }} onPress={() => setSheetVisible(false)}>
-          <View className="absolute right-0 bottom-0 left-0 items-center rounded-t-2xl bg-card p-2 pb-10">
+          <View className="absolute right-0 bottom-0 left-0 items-center rounded-t-2xl bg-card p-2 pb-12">
             <Pressable
               className="mb-4 w-full flex-row items-center justify-center border-gray-400 border-b py-6"
               onPress={handleConta}

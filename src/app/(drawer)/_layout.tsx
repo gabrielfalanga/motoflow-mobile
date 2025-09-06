@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons"
 import { Drawer } from "expo-router/drawer"
 import { useTheme } from "@/context/theme-context"
-import { Header } from "@/components/header"
+import { Header } from "@/components/Header"
 
 export default function DrawerLayout() {
   const { theme } = useTheme()
@@ -67,6 +67,7 @@ export default function DrawerLayout() {
         options={{
           drawerItemStyle: { display: "none" },
         }}
+        initialParams={{ posicaoHorizontal: null, posicaoVertical: null }}
       />
     </Drawer>
   )
