@@ -31,7 +31,7 @@ export function usePosicaoHorizontalData(posicaoHorizontal: string) {
         setData(response)
         setError("")
       } catch (err) {
-        console.log("Erro ao buscar dados da posição horizontal:", err)
+        console.error("Erro ao buscar dados da posição horizontal:", err)
         setError("Erro ao carregar dados da posição horizontal")
       } finally {
         setLoading(false)

@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Modal,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons"
@@ -20,13 +21,13 @@ interface MotoEncontrada {
   placa: string
   tipoMoto: "MOTTU_E" | "MOTTU_SPORT" | "MOTTU_POP"
   ano: number
-  posicaoVertical: number
-  posicaoHorizontal: string
+  posicaoVertical: number | null
+  posicaoHorizontal: string | null
 }
 
 export default function BuscaMotoScreen() {
   const { theme } = useTheme()
-  const { token } = useAuth()
+  const { token, patioId } = useAuth()
 
   // Estados
   const [placa, setPlaca] = useState<string>("")
@@ -35,6 +36,12 @@ export default function BuscaMotoScreen() {
   )
   const [isLoading, setIsLoading] = useState(false)
   const [erroMensagem, setErroMensagem] = useState<string>("")
+
+  // Estados do modal de alocação
+  const [modalAlocacaoVisible, setModalAlocacaoVisible] = useState(false)
+  const [posicaoHorizontalInput, setPosicaoHorizontalInput] = useState("")
+  const [posicaoVerticalInput, setPosicaoVerticalInput] = useState("")
+  const [isAlocando, setIsAlocando] = useState(false)
 
   const buscarMoto = async () => {
     if (!token) {
@@ -96,6 +103,77 @@ export default function BuscaMotoScreen() {
     setPlaca("")
     setMotoEncontrada(null)
     setErroMensagem("")
+    setModalAlocacaoVisible(false)
+    setPosicaoHorizontalInput("")
+    setPosicaoVerticalInput("")
+  }
+
+  const abrirModalAlocacao = () => {
+    setModalAlocacaoVisible(true)
+    setPosicaoHorizontalInput("")
+    setPosicaoVerticalInput("")
+  }
+
+  const fecharModalAlocacao = () => {
+    setModalAlocacaoVisible(false)
+    setPosicaoHorizontalInput("")
+    setPosicaoVerticalInput("")
+  }
+
+  const alocarMoto = async () => {
+    if (!motoEncontrada || !token || !patioId) return
+
+    // Validações
+    if (!posicaoHorizontalInput.trim()) {
+      Alert.alert("Erro", "Digite a posição horizontal (área).")
+      return
+    }
+
+    if (!posicaoVerticalInput.trim()) {
+      Alert.alert("Erro", "Digite a posição vertical.")
+      return
+    }
+
+    const posicaoVerticalNum = Number.parseInt(posicaoVerticalInput, 10)
+    if (Number.isNaN(posicaoVerticalNum) || posicaoVerticalNum <= 0) {
+      Alert.alert("Erro", "Digite um número válido para a posição vertical.")
+      return
+    }
+
+    setIsAlocando(true)
+
+    try {
+      const body = {
+        placa: motoEncontrada.placa,
+        posicaoHorizontal: posicaoHorizontalInput.toUpperCase(),
+        posicaoVertical: posicaoVerticalNum,
+      }
+
+      await request(`/motos/alocacao/${patioId}`, "put", body, {
+        authToken: token,
+      })
+
+      Alert.alert("Sucesso", "Moto alocada com sucesso!")
+      fecharModalAlocacao()
+
+      setMotoEncontrada({
+        ...motoEncontrada,
+        posicaoHorizontal: posicaoHorizontalInput.toUpperCase(),
+        posicaoVertical: posicaoVerticalNum,
+      })
+    } catch (error) {
+      let errorMessage =
+        "Ocorreu um erro inesperado ao alocar a moto na posição."
+      const errorTitle = "Erro na Alocação"
+
+      if (error instanceof RequestError) {
+        errorMessage = error.message
+      }
+
+      Alert.alert(errorTitle, errorMessage, [{ text: "OK" }])
+    } finally {
+      setIsAlocando(false)
+    }
   }
 
   const getTipoMotoIcon = (tipo: string) => {
@@ -283,35 +361,67 @@ export default function BuscaMotoScreen() {
                     />
                     <View className="ml-3 flex-1">
                       <Text className="font-medium text-text">Posição</Text>
-                      <Text className="font-bold text-lg text-primary">
-                        {motoEncontrada.posicaoHorizontal}-
-                        {motoEncontrada.posicaoVertical}
-                      </Text>
+                      {motoEncontrada.posicaoHorizontal &&
+                      motoEncontrada.posicaoVertical ? (
+                        <Text className="font-bold text-lg text-primary">
+                          {motoEncontrada.posicaoHorizontal}-
+                          {motoEncontrada.posicaoVertical}
+                        </Text>
+                      ) : (
+                        <View>
+                          <Text className="font-medium text-orange-600 text-sm">
+                            Moto não alocada
+                          </Text>
+                          <Text className="text-muted text-xs">
+                            Clique em "Alocar Posição" para definir uma posição
+                          </Text>
+                        </View>
+                      )}
                     </View>
                   </View>
                 </View>
 
-                {/* Botão para ir à posição */}
-                <TouchableOpacity
-                  className="mt-6 h-12 items-center justify-center rounded-xl bg-blue-500"
-                  onPress={() =>
-                    router.navigate(
-                      `/(drawer)/posicao-horizontal/${motoEncontrada.posicaoHorizontal}`
-                    )
-                  }
-                  activeOpacity={0.8}
-                >
-                  <View className="flex-row items-center">
-                    <Ionicons
-                      name="navigate-outline"
-                      size={20}
-                      color="#ffffff"
-                    />
-                    <Text className="ml-2 font-semibold text-white">
-                      Ir para a Posição
-                    </Text>
-                  </View>
-                </TouchableOpacity>
+                {/* Botão para ir à posição ou alocar */}
+                {motoEncontrada.posicaoHorizontal &&
+                motoEncontrada.posicaoVertical ? (
+                  <TouchableOpacity
+                    className="mt-6 h-12 items-center justify-center rounded-xl bg-blue-500"
+                    onPress={() =>
+                      router.navigate(
+                        `/(drawer)/posicao-horizontal/${motoEncontrada.posicaoHorizontal}`
+                      )
+                    }
+                    activeOpacity={0.8}
+                  >
+                    <View className="flex-row items-center">
+                      <Ionicons
+                        name="navigate-outline"
+                        size={20}
+                        color="#ffffff"
+                      />
+                      <Text className="ml-2 font-semibold text-white">
+                        Ir para a Posição
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    className="mt-6 h-12 items-center justify-center rounded-xl bg-orange-500"
+                    onPress={abrirModalAlocacao}
+                    activeOpacity={0.8}
+                  >
+                    <View className="flex-row items-center">
+                      <Ionicons
+                        name="add-circle-outline"
+                        size={20}
+                        color="#ffffff"
+                      />
+                      <Text className="ml-2 font-semibold text-white">
+                        Alocar Posição
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
               </View>
             )}
 
@@ -334,6 +444,91 @@ export default function BuscaMotoScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      {/* Modal de Alocação */}
+      <Modal
+        visible={modalAlocacaoVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={fecharModalAlocacao}
+      >
+        <View className="flex-1 justify-center bg-black/50 px-6">
+          <View className="rounded-xl bg-card p-6 shadow-lg">
+            <View className="mb-4 flex-row items-center justify-center">
+              <Ionicons name="location" size={32} color="#05AF31" />
+              <Text className="ml-3 font-bold text-text text-xl">
+                Alocar Posição
+              </Text>
+            </View>
+
+            <Text className="mb-4 text-center text-muted">
+              Define a posição da moto{" "}
+              <Text className="font-bold text-primary">
+                {motoEncontrada?.placa}
+              </Text>
+            </Text>
+
+            {/* Input Posição Horizontal */}
+            <View className="mb-4">
+              <Text className="mb-2 font-medium text-text">
+                Posição Horizontal (Área) *
+              </Text>
+              <TextInput
+                placeholder="Ex: A, B, C..."
+                className="h-12 w-full rounded-xl border border-secondary bg-background px-4 text-text"
+                placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
+                value={posicaoHorizontalInput}
+                onChangeText={setPosicaoHorizontalInput}
+                autoCapitalize="characters"
+                maxLength={3}
+              />
+            </View>
+
+            {/* Input Posição Vertical */}
+            <View className="mb-6">
+              <Text className="mb-2 font-medium text-text">
+                Posição Vertical *
+              </Text>
+              <TextInput
+                placeholder="Ex: 1, 2, 3..."
+                className="h-12 w-full rounded-xl border border-secondary bg-background px-4 text-text"
+                placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
+                value={posicaoVerticalInput}
+                onChangeText={setPosicaoVerticalInput}
+                keyboardType="numeric"
+                maxLength={4}
+              />
+            </View>
+
+            {/* Botões */}
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                className="h-12 flex-1 items-center justify-center rounded-xl bg-gray-500"
+                onPress={fecharModalAlocacao}
+                activeOpacity={0.8}
+                disabled={isAlocando}
+              >
+                <Text className="font-semibold text-white">Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className={`h-12 flex-1 items-center justify-center rounded-xl ${
+                  isAlocando ? "bg-gray-400" : "bg-primary"
+                }`}
+                onPress={alocarMoto}
+                activeOpacity={0.8}
+                disabled={isAlocando}
+              >
+                {isAlocando ? (
+                  <ActivityIndicator color="#ffffff" size="small" />
+                ) : (
+                  <Text className="font-semibold text-white">Alocar</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   )
 }

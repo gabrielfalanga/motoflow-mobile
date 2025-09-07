@@ -34,7 +34,7 @@ export function PatioPosicoesHorizontaisGrid({
       )
       setPosicoes(response || [])
     } catch (error) {
-      console.log("Erro ao buscar posições:", error)
+      console.error("Erro ao buscar posições:", error)
     } finally {
       setLoading(false)
     }

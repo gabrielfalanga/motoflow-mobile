@@ -240,6 +240,7 @@ export default function PosicaoHorizontalScreen() {
         posicaoVertical={selectedPosition}
         posicaoHorizontal={posicaoHorizontal}
         onClose={closeModal}
+        onMotoUpdated={refresh}
       />
     </SafeAreaView>
   )

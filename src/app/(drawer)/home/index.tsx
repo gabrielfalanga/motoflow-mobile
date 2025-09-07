@@ -83,7 +83,6 @@ export default function HomeScreen() {
         }
         setNotifications(newNotifications)
       } catch (error) {
-        console.log("Erro ao buscar dados:", error)
         setErroOperador("Erro ao carregar dados do operador")
         setErroPatio("Erro ao carregar dados do pátio")
       } finally {

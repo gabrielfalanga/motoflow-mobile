@@ -40,7 +40,7 @@ export function usePatioData() {
         setPosicoesHorizontais(posicoesResponse || [])
         setError("")
       } catch (err) {
-        console.log("Erro ao buscar dados do pátio:", err)
+        console.error("Erro ao buscar dados do pátio:", err)
         setError("Houve um erro ao buscar os dados do pátio")
       } finally {
         setLoading(false)

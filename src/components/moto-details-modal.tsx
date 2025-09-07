@@ -1,6 +1,9 @@
 import type { MotoNaPosicao } from "@/interfaces/interfaces"
+import { useAuth } from "@/context/auth-context"
+import { request, RequestError } from "@/helper/request"
 import { Ionicons } from "@expo/vector-icons"
 import { router } from "expo-router"
+import { useState } from "react"
 import {
   Alert,
   Modal,
@@ -8,6 +11,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native"
 
 interface MotoDetailsModalProps {
@@ -16,6 +20,7 @@ interface MotoDetailsModalProps {
   posicaoVertical?: number
   posicaoHorizontal?: string
   onClose: () => void
+  onMotoUpdated?: () => void
 }
 
 export function MotoDetailsModal({
@@ -24,7 +29,10 @@ export function MotoDetailsModal({
   posicaoVertical,
   posicaoHorizontal,
   onClose,
+  onMotoUpdated,
 }: MotoDetailsModalProps) {
+  const { token } = useAuth()
+  const [isLoadingManutencao, setIsLoadingManutencao] = useState(false)
   const getStatusColor = () => {
     if (!moto) return "#6b7280"
 
@@ -56,7 +64,11 @@ export function MotoDetailsModal({
   const statusColor = getStatusColor()
 
   const levarParaManutencao = async () => {
-    console.log("Levar para manutenção clicked")
+    if (!moto?.placa || !token) {
+      Alert.alert("Erro", "Dados da moto não encontrados.")
+      return
+    }
+
     Alert.alert(
       "Confirmação",
       "Tem certeza que deseja levar esta moto para manutenção?",
@@ -67,10 +79,41 @@ export function MotoDetailsModal({
         },
         {
           text: "Confirmar",
-          onPress: () => {
-            console.log("Moto levada para manutenção")
+          onPress: async () => {
+            setIsLoadingManutencao(true)
 
-            onClose()
+            try {
+              await request(
+                `/motos/${moto.placa}`,
+                "patch",
+                { status: "MANUTENCAO" },
+                { authToken: token }
+              )
+
+              Alert.alert(
+                "Sucesso",
+                "Moto enviada para manutenção com sucesso!"
+              )
+              onClose()
+
+              // Atualizar a página
+              if (onMotoUpdated) {
+                onMotoUpdated()
+              }
+            } catch (error) {
+              console.error("Erro ao enviar moto para manutenção:", error)
+
+              if (error instanceof RequestError) {
+                Alert.alert("Erro", error.message)
+              } else {
+                Alert.alert(
+                  "Erro",
+                  "Erro inesperado ao enviar moto para manutenção."
+                )
+              }
+            } finally {
+              setIsLoadingManutencao(false)
+            }
           },
         },
       ]
@@ -164,10 +207,20 @@ export function MotoDetailsModal({
                 <TouchableOpacity
                   className="mt-2 rounded-xl bg-amber-500 p-4"
                   onPress={levarParaManutencao}
+                  disabled={isLoadingManutencao}
                 >
-                  <Text className="text-center font-semibold text-white">
-                    Levar para Manutenção
-                  </Text>
+                  {isLoadingManutencao ? (
+                    <View className="flex-row items-center justify-center">
+                      <ActivityIndicator color="#ffffff" size="small" />
+                      <Text className="ml-2 text-center font-semibold text-white">
+                        Enviando...
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text className="text-center font-semibold text-white">
+                      Levar para Manutenção
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </View>
             ) : (

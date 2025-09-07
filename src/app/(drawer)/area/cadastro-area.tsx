@@ -64,8 +64,6 @@ export default function CadastroAreaScreen() {
         idPatio: patioId,
       }
 
-      console.log("BODY para cadastrar área:", dadosArea)
-
       await request("/posicoes", "post", dadosArea, {
         authToken: token,
       })

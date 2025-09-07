@@ -39,7 +39,6 @@ export default function AreasScreen() {
         )
         setPosicoes(response || [])
       } catch (error) {
-        console.log("Erro ao buscar áreas:", error)
         Alert.alert("Erro", "Não foi possível carregar as áreas")
       } finally {
         setLoading(false)
