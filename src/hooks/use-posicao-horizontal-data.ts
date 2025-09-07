@@ -1,7 +1,8 @@
 import { useAuth } from "@/context/auth-context"
 import { request } from "@/helper/request"
 import type { PosicaoHorizontalDetalhes } from "@/interfaces/interfaces"
-import { useCallback, useEffect, useState } from "react"
+import { useFocusEffect } from "expo-router"
+import { useCallback, useState } from "react"
 
 export function usePosicaoHorizontalData(posicaoHorizontal: string) {
   const [data, setData] = useState<PosicaoHorizontalDetalhes | null>(null)
@@ -40,11 +41,13 @@ export function usePosicaoHorizontalData(posicaoHorizontal: string) {
     [token, patioId, posicaoHorizontal]
   )
 
-  useEffect(() => {
-    if (token && patioId && posicaoHorizontal) {
-      fetchData()
-    }
-  }, [token, patioId, posicaoHorizontal, fetchData])
+  useFocusEffect(
+    useCallback(() => {
+      if (token && patioId && posicaoHorizontal) {
+        fetchData()
+      }
+    }, [token, patioId, posicaoHorizontal, fetchData])
+  )
 
   const refresh = useCallback(() => {
     fetchData(true)

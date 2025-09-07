@@ -1,6 +1,8 @@
 import { Image } from "expo-image"
 import { useEffect, useState } from "react"
 import { useTheme } from "@/context/theme-context"
+import { useAuth } from "@/context/auth-context"
+import { request } from "@/helper/request"
 import {
   Alert,
   StyleSheet,
@@ -11,29 +13,58 @@ import {
   Switch,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native"
 import DropDownPicker from "react-native-dropdown-picker"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { useFocusEffect, useGlobalSearchParams } from "expo-router"
+import { useFocusEffect, useGlobalSearchParams, router } from "expo-router"
 import { useCallback } from "react"
+
+interface CadastroMoto {
+  tipoMoto: string
+  ano: number
+  placa: string
+  statusMoto: "DISPONIVEL"
+  idPatio: number
+  posicaoHorizontal?: string
+  posicaoVertical?: number
+}
+
+interface MotoResponse {
+  idPatio: number
+  placaMoto: string
+  posicaoHorizontal?: string
+  posicaoVertical?: number
+}
 
 export default function CadastroMotoScreen() {
   const { theme } = useTheme()
+  const { patioId, token } = useAuth()
   const params = useGlobalSearchParams<{
     posicaoHorizontal?: string
     posicaoVertical?: string
   }>()
 
-  const [posicaoHorizontalAtiva, setPosicaoHorizontalAtiva] = useState<string | null>(null)
-  const [posicaoVerticalAtiva, setPosicaoVerticalAtiva] = useState<number | null>(null)
+  const [posicaoHorizontalAtiva, setPosicaoHorizontalAtiva] = useState<
+    string | null
+  >(null)
+  const [posicaoVerticalAtiva, setPosicaoVerticalAtiva] = useState<
+    number | null
+  >(null)
+
+  // Estado de loading
+  const [isLoading, setIsLoading] = useState(false)
 
   useFocusEffect(
     useCallback(() => {
-      const hasPositionParams = params.posicaoHorizontal || params.posicaoVertical
-      
+      const hasPositionParams =
+        params.posicaoHorizontal || params.posicaoVertical
+
       if (hasPositionParams) {
         setPosicaoHorizontalAtiva(params.posicaoHorizontal || null)
-        setPosicaoVerticalAtiva(params.posicaoVertical ? Number(params.posicaoVertical) : null)
+        setPosicaoVerticalAtiva(
+          params.posicaoVertical ? Number(params.posicaoVertical) : null
+        )
         setAlocarPosicao(true)
       } else {
         setPosicaoHorizontalAtiva(null)
@@ -41,7 +72,7 @@ export default function CadastroMotoScreen() {
       }
     }, [params.posicaoHorizontal, params.posicaoVertical])
   )
-  
+
   useEffect(() => {
     console.log("Parâmetros ativos:")
     console.log("posicaoHorizontalAtiva:", posicaoHorizontalAtiva)
@@ -56,15 +87,17 @@ export default function CadastroMotoScreen() {
     { label: "Mottu Sport", value: "MOTTU_SPORT" },
     { label: "Mottu Pop", value: "MOTTU_POP" },
   ])
-  
+
   // form fields
   const [ano, setAno] = useState<number>()
   const [placa, setPlaca] = useState<string>()
-  
+
   // switch para alocar posição (só ativo se tiver posição)
   const [alocarPosicao, setAlocarPosicao] = useState(false)
 
-  const cadastrar = () => {
+  const cadastrar = async () => {
+    if (!patioId || !token) return
+
     const anoAtual = new Date().getFullYear()
     const anoMaximo = anoAtual + 1
 
@@ -76,12 +109,12 @@ export default function CadastroMotoScreen() {
 
     if (
       !ano ||
-      isNaN(ano) ||
+      Number.isNaN(ano) ||
       ano.toString().length !== 4 ||
-      ano < 1950 ||
+      ano < 2012 ||
       ano > anoMaximo
     ) {
-      Alert.alert("Erro", "Digite um ano válido.")
+      Alert.alert("Erro", "Digite um ano válido (mínimo 2012).")
       return
     }
 
@@ -91,37 +124,61 @@ export default function CadastroMotoScreen() {
       return
     }
 
-    const bodyBase = {
-      tipoMoto: tipoMoto,
-      ano: ano,
-      placa: placa,
-      statusMoto: "DISPONIVEL",
-    }
+    setIsLoading(true)
 
-    if (alocarPosicao && posicaoHorizontalAtiva && posicaoVerticalAtiva) {
-      const bodyComPosicao = {
-        ...bodyBase,
-        posicaoHorizontal: posicaoHorizontalAtiva,
-        posicaoVertical: posicaoVerticalAtiva,
+    try {
+      // Preparar dados para envio
+      const estaComPosicao =
+        alocarPosicao && posicaoHorizontalAtiva && posicaoVerticalAtiva
+
+      const dadosMoto: CadastroMoto = {
+        tipoMoto: tipoMoto,
+        ano: ano,
+        placa: placa,
+        statusMoto: "DISPONIVEL",
+        idPatio: patioId,
+        ...(estaComPosicao && {
+          posicaoHorizontal: posicaoHorizontalAtiva,
+          posicaoVertical: posicaoVerticalAtiva,
+        }),
       }
-      
-      console.log("CASO: Cadastrar e alocar em posição específica")
-      console.log("BODY:", bodyComPosicao)
+
+      // Fazer requisição para API
+      const motoResponse = await request<MotoResponse>(
+        estaComPosicao ? `/motos/${patioId}` : "/motos/cadastro-e-alocacao",
+        "post",
+        dadosMoto,
+        {
+          authToken: token,
+        }
+      )
 
       Alert.alert(
         "Moto cadastrada e alocada!",
-        `Tipo: ${tipoMoto}\nAno: ${ano}\nPlaca: ${placa}\nPosição: ${posicaoHorizontalAtiva}-${posicaoVerticalAtiva}`,
-        [{ text: "OK", onPress: limparFormulario }]
+        `Tipo: ${tipoMoto}\nAno: ${ano}\nPlaca: ${placa}\nPosição: ${motoResponse?.posicaoHorizontal}-${motoResponse?.posicaoVertical}`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              limparFormulario()
+              router.setParams({})
+              router.replace(
+                `/(drawer)/posicao-horizontal/${motoResponse?.posicaoHorizontal}`
+              )
+            },
+          },
+        ]
       )
-    } else {
-      console.log("CASO: Apenas cadastrar moto")
-      console.log("BODY:", bodyBase)
-
+    } catch (error) {
+      console.error("Erro ao cadastrar moto:", error)
       Alert.alert(
-        "Moto cadastrada!",
-        `Tipo: ${tipoMoto}\nAno: ${ano}\nPlaca: ${placa}`,
-        [{ text: "OK", onPress: limparFormulario }]
+        "Erro",
+        error instanceof Error
+          ? error.message
+          : "Erro desconhecido ao cadastrar moto"
       )
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -134,32 +191,32 @@ export default function CadastroMotoScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <KeyboardAvoidingView 
-        className="flex-1 px-6" 
+      <KeyboardAvoidingView
+        className="flex-1 px-6"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
       >
         <View className="flex-1 py-5">
           {/* Header */}
-            <View className="flex-row items-center justify-center gap-4 mb-6">
-              <Image
-                source={require("@/assets/moto-esquerda.png")}
-                style={{ width: 32, height: 32 }}
-              />
-              <Text className="font-bold text-primary text-3xl">
-                Cadastre a moto
-              </Text>
-              <Image
-                source={require("@/assets/moto-direita.png")}
-                style={{ width: 32, height: 32 }}
-              />
-            </View>
+          <View className="mb-6 flex-row items-center justify-center gap-4">
+            <Image
+              source={require("@/assets/moto-esquerda.png")}
+              style={{ width: 32, height: 32 }}
+            />
+            <Text className="font-bold text-3xl text-primary">
+              Cadastre a moto
+            </Text>
+            <Image
+              source={require("@/assets/moto-direita.png")}
+              style={{ width: 32, height: 32 }}
+            />
+          </View>
 
           {/* Form */}
-          <View className="space-y-6 flex-1">
+          <View className="flex-1 gap-2">
             {/* Dropdown Tipo de Moto */}
             <View>
-              <Text className="text-text font-medium mb-2 ml-1">
+              <Text className="mb-1 ml-1 font-medium text-text">
                 Tipo da Moto *
               </Text>
               <DropDownPicker
@@ -189,25 +246,24 @@ export default function CadastroMotoScreen() {
 
             {/* Campo Ano */}
             <View>
-              <Text className="text-text font-medium mb-2 ml-1">
-                Ano *
-              </Text>
+              <Text className="mb-1 ml-1 font-medium text-text">Ano *</Text>
               <TextInput
                 placeholder="Ex: 2024"
                 className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
                 placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
                 value={ano?.toString()}
-                onChangeText={value => setAno(value ? Number(value) : undefined)}
+                onChangeText={value =>
+                  setAno(value ? Number(value) : undefined)
+                }
                 keyboardType="numeric"
                 maxLength={4}
               />
+              <Text className="ml-1 text-muted text-xs">Ano mínimo: 2012</Text>
             </View>
 
             {/* Campo Placa */}
             <View>
-              <Text className="text-text font-medium mb-2 ml-1">
-                Placa *
-              </Text>
+              <Text className="mb-1 ml-1 font-medium text-text">Placa *</Text>
               <TextInput
                 placeholder="Ex: ABC1234"
                 className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
@@ -217,21 +273,22 @@ export default function CadastroMotoScreen() {
                 maxLength={7}
                 autoCapitalize="characters"
               />
-              <Text className="text-xs text-muted mt-1 ml-1">
+              <Text className="ml-1 text-muted text-xs">
                 7 caracteres, sem traço ou espaços
               </Text>
             </View>
 
             {/* Switch para alocar posição (só aparece se tiver posição disponível) */}
             {posicaoHorizontalAtiva && posicaoVerticalAtiva && (
-              <View className="bg-card rounded-xl p-4 border border-secondary">
+              <View className="rounded-xl border border-secondary bg-card p-4">
                 <View className="flex-row items-center justify-between">
-                  <View className="flex-1 mr-4">
-                    <Text className="text-text font-medium">
+                  <View className="mr-4 flex-1">
+                    <Text className="font-medium text-text">
                       Alocar à posição vaga
                     </Text>
-                    <Text className="text-muted text-sm mt-1">
-                      Moto será alocada em {posicaoHorizontalAtiva}-{posicaoVerticalAtiva}
+                    <Text className="mt-1 text-muted text-sm">
+                      Moto será alocada em {posicaoHorizontalAtiva}-
+                      {posicaoVerticalAtiva}
                     </Text>
                   </View>
                   <Switch
@@ -248,20 +305,28 @@ export default function CadastroMotoScreen() {
           {/* Botão Submit */}
           <View className="pb-5">
             <TouchableOpacity
-              className="mt-8 h-14 w-full items-center justify-center rounded-xl bg-primary shadow-lg"
+              className={`mt-8 h-14 w-full items-center justify-center rounded-xl shadow-lg ${
+                isLoading ? "bg-secondary" : "bg-primary"
+              }`}
               onPress={cadastrar}
               activeOpacity={0.8}
+              disabled={isLoading}
             >
-              <Text className="font-semibold text-white text-lg">
-                {alocarPosicao && posicaoHorizontalAtiva && posicaoVerticalAtiva
-                  ? "Cadastrar e Alocar"
-                  : "Cadastrar Moto em Posicação Aleatória"
-                }
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator color="#ffffff" size="small" />
+              ) : (
+                <Text className="font-semibold text-lg text-white">
+                  {alocarPosicao &&
+                  posicaoHorizontalAtiva &&
+                  posicaoVerticalAtiva
+                    ? "Cadastrar e Alocar"
+                    : "Cadastrar Moto"}
+                </Text>
+              )}
             </TouchableOpacity>
 
             {/* Campos obrigatórios */}
-            <Text className="text-muted text-xs text-center mt-4">
+            <Text className="mt-4 text-center text-muted text-xs">
               * Campos obrigatórios
             </Text>
           </View>

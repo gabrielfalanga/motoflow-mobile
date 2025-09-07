@@ -179,8 +179,16 @@ export function MotoDetailsModal({
                   Nenhuma moto estacionada nesta posição
                 </Text>
 
-                <TouchableOpacity className="mt-6 rounded-xl bg-primary p-4" onPress={() => {
-                  router.navigate(`/(drawer)/moto/cadastro-moto?posicaoHorizontal=${posicaoHorizontal}&posicaoVertical=${posicaoVertical}`)}}>
+                <TouchableOpacity
+                  className="mt-6 rounded-xl bg-primary p-4"
+                  onPress={() => {
+                    onClose()
+                    router.push({
+                      pathname: "/(drawer)/moto/cadastro-moto",
+                      params: { posicaoHorizontal, posicaoVertical },
+                    })
+                  }}
+                >
                   <Text className="text-center font-semibold text-white">
                     Adicionar Moto
                   </Text>

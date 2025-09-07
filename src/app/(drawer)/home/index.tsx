@@ -6,7 +6,8 @@ import { useAuth } from "@/context/auth-context"
 import { request } from "@/helper/request"
 import type { Operador, PatioInfo } from "@/interfaces/interfaces"
 import { Ionicons } from "@expo/vector-icons"
-import { useCallback, useEffect, useState } from "react"
+import { useFocusEffect } from "expo-router"
+import { useCallback, useState } from "react"
 import {
   ActivityIndicator,
   RefreshControl,
@@ -93,11 +94,13 @@ export default function HomeScreen() {
     [token, patioId]
   )
 
-  useEffect(() => {
-    if (token && patioId) {
-      fetchData()
-    }
-  }, [token, patioId, fetchData])
+  useFocusEffect(
+    useCallback(() => {
+      if (token && patioId) {
+        fetchData()
+      }
+    }, [token, patioId, fetchData])
+  )
 
   const onRefresh = () => {
     fetchData(true)

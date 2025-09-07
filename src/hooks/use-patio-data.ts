@@ -2,7 +2,7 @@ import { useAuth } from "@/context/auth-context"
 import { request } from "@/helper/request"
 import type { PatioInfo, PosicaoHorizontalPatio } from "@/interfaces/interfaces"
 import { useFocusEffect } from "expo-router"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 
 export function usePatioData() {
   const [patioInfo, setPatioInfo] = useState<PatioInfo | null>(null)
