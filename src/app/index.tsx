@@ -11,9 +11,5 @@ export default function Index() {
 
   if (token === undefined) return null // loading
 
-  return token ? (
-    <Redirect href="/(drawer)/home" />
-  ) : (
-    <Redirect href="/auth/login" />
-  )
+  return token ? <Redirect href="/home" /> : <Redirect href="/auth/login" />
 }

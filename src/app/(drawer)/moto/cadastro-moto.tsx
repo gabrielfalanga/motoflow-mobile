@@ -8,17 +8,16 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
   Switch,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
 } from "react-native"
 import DropDownPicker from "react-native-dropdown-picker"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useFocusEffect, router, useLocalSearchParams } from "expo-router"
 import { useCallback } from "react"
+import { SubmitButton } from "@/components/submit-button"
 
 interface CadastroMoto {
   tipoMoto: string
@@ -157,7 +156,7 @@ export default function CadastroMotoScreen() {
               limparFormulario()
               router.setParams({})
               router.replace(
-                `/(drawer)/posicao-horizontal/${motoResponse?.posicaoHorizontal}`
+                `/posicao-horizontal/${motoResponse?.posicaoHorizontal}`
               )
             },
           },
@@ -311,26 +310,15 @@ export default function CadastroMotoScreen() {
 
           {/* Botão Submit */}
           <View className="pb-5">
-            <TouchableOpacity
-              className={`mt-8 h-14 w-full items-center justify-center rounded-xl shadow-lg ${
-                isLoading ? "bg-secondary" : "bg-primary"
-              }`}
-              onPress={cadastrar}
-              activeOpacity={0.8}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="#ffffff" size="small" />
-              ) : (
-                <Text className="font-semibold text-lg text-white">
-                  {alocarPosicao &&
-                  posicaoHorizontalAtiva &&
-                  posicaoVerticalAtiva
-                    ? "Cadastrar e Alocar"
-                    : "Cadastrar Moto em Posicão Aleatória"}
-                </Text>
-              )}
-            </TouchableOpacity>
+            <SubmitButton
+              isLoading={isLoading}
+              onSubmit={cadastrar}
+              text={
+                alocarPosicao && posicaoHorizontalAtiva && posicaoVerticalAtiva
+                  ? "Cadastrar e Alocar"
+                  : "Cadastrar Moto em Posicão Aleatória"
+              }
+            />
 
             {/* Campos obrigatórios */}
             <Text className="mt-4 text-center text-muted text-xs">

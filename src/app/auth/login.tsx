@@ -30,7 +30,7 @@ export default function LoginScreen() {
     setLoading(false)
 
     if (success) {
-      router.replace("/(drawer)/home")
+      router.replace("/home")
     } else {
       Alert.alert("Usuário ou senha inválidos.")
     }

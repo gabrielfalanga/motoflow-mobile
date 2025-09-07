@@ -229,14 +229,14 @@ export default function HomeScreen() {
                 title="Cadastrar Moto"
                 subtitle="Adicionar nova moto"
                 iconName="add-circle-outline"
-                route="/(drawer)/moto/cadastro-moto"
+                route="/moto/cadastro-moto"
                 color="#05AF31"
               />
               <QuickActionCard
                 title="Buscar Moto"
                 subtitle="Localizar moto"
                 iconName="search-outline"
-                route="/(drawer)/moto/busca-moto"
+                route="/moto/busca-moto"
                 color="#3b82f6"
               />
             </View>
@@ -247,14 +247,14 @@ export default function HomeScreen() {
                 title="Ver Pátio"
                 subtitle="Detalhes completos"
                 iconName="grid-outline"
-                route="/(drawer)/patio"
+                route="/patio"
                 color="#8b5cf6"
               />
               <QuickActionCard
                 title="Visualizar Áreas"
                 subtitle="Veja todas as áreas"
                 iconName="map-outline"
-                route="/(drawer)/area"
+                route="/area"
                 color="#f59e0b"
               />
             </View>

@@ -1,7 +1,14 @@
 import type { MotoNaPosicao } from "@/interfaces/interfaces"
 import { Ionicons } from "@expo/vector-icons"
 import { router } from "expo-router"
-import { Modal, ScrollView, Text, TouchableOpacity, View } from "react-native"
+import {
+  Alert,
+  Modal,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
 
 interface MotoDetailsModalProps {
   visible: boolean
@@ -47,6 +54,28 @@ export function MotoDetailsModal({
 
   const tipoMotoInfo = getTipoMotoInfo()
   const statusColor = getStatusColor()
+
+  const levarParaManutencao = async () => {
+    console.log("Levar para manutenção clicked")
+    Alert.alert(
+      "Confirmação",
+      "Tem certeza que deseja levar esta moto para manutenção?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Confirmar",
+          onPress: () => {
+            console.log("Moto levada para manutenção")
+
+            onClose()
+          },
+        },
+      ]
+    )
+  }
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -130,44 +159,16 @@ export function MotoDetailsModal({
                       {moto.posicaoVertical}
                     </Text>
                   </View>
-
-                  <View className="flex-row items-center justify-between rounded-lg bg-background p-3">
-                    <View className="flex-row items-center">
-                      <Ionicons
-                        name="pricetag-outline"
-                        size={16}
-                        color="#666"
-                      />
-                      <Text className="ml-2 text-muted">ID</Text>
-                    </View>
-                    <Text className="font-semibold text-text">#{moto.id}</Text>
-                  </View>
                 </View>
 
-                {/* Ações */}
-                <View className="mt-4 gap-3">
-                  {moto.statusMoto === "DISPONIVEL" && (
-                    <TouchableOpacity className="rounded-xl bg-primary p-4">
-                      <Text className="text-center font-semibold text-white">
-                        Marcar como Alugada
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {moto.statusMoto === "ALUGADA" && (
-                    <TouchableOpacity className="rounded-xl bg-blue-500 p-4">
-                      <Text className="text-center font-semibold text-white">
-                        Finalizar Aluguel
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                  <TouchableOpacity className="rounded-xl bg-amber-500 p-4">
-                    <Text className="text-center font-semibold text-white">
-                      Marcar Manutenção
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                  className="mt-2 rounded-xl bg-amber-500 p-4"
+                  onPress={levarParaManutencao}
+                >
+                  <Text className="text-center font-semibold text-white">
+                    Levar para Manutenção
+                  </Text>
+                </TouchableOpacity>
               </View>
             ) : (
               <View className="items-center py-8">
@@ -184,7 +185,7 @@ export function MotoDetailsModal({
                   onPress={() => {
                     onClose()
                     router.push({
-                      pathname: "/(drawer)/moto/cadastro-moto",
+                      pathname: "/moto/cadastro-moto",
                       params: { posicaoHorizontal, posicaoVertical },
                     })
                   }}

@@ -47,7 +47,7 @@ export function PatioPosicoesHorizontaisGrid({
   }, [fetchPositions, posicoesProp])
 
   const handlePositionPress = (posicao: string) => {
-    router.navigate(`/(drawer)/posicao-horizontal/${posicao}`)
+    router.navigate(`/posicao-horizontal/${posicao}`)
   }
 
   if (!posicoes || posicoes.length === 0) {

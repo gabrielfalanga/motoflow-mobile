@@ -41,6 +41,16 @@ export default function DrawerLayout() {
       />
 
       <Drawer.Screen
+        name="area"
+        options={{
+          title: "Áreas",
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="map" color={color} size={size} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
         name="moto"
         options={{
           title: "Motos",
@@ -48,6 +58,7 @@ export default function DrawerLayout() {
             <Ionicons name="bicycle" color={color} size={size} />
           ),
         }}
+        initialParams={{ posicaoHorizontal: null, posicaoVertical: null }}
       />
 
       <Drawer.Screen
@@ -67,7 +78,6 @@ export default function DrawerLayout() {
         options={{
           drawerItemStyle: { display: "none" },
         }}
-        initialParams={{ posicaoHorizontal: null, posicaoVertical: null }}
       />
     </Drawer>
   )

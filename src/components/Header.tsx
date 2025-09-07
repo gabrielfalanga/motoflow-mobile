@@ -43,7 +43,7 @@ export function Header() {
 
   const handleConta = () => {
     setSheetVisible(false)
-    router.push("/(drawer)/account")
+    router.push("/account")
   }
 
   return (
