@@ -155,14 +155,57 @@ export default function PosicaoHorizontalScreen() {
         {/* Legenda */}
         <View className="mb-6 rounded-xl bg-card p-4">
           <Text className="mb-3 font-bold text-text">Legenda</Text>
-          <View className="gap-2">
-            <View className="flex-row items-center">
-              <View className="mr-3 size-4 rounded bg-primary" />
-              <Text className="text-muted">Disponível</Text>
+
+          {/* Status das Vagas */}
+          <View className="mb-4">
+            <Text className="mb-2 font-medium text-sm text-text">
+              Status das Vagas
+            </Text>
+            <View className="gap-2">
+              <View className="flex-row items-center">
+                <View className="mr-3 size-4 rounded bg-primary" />
+                <Text className="text-muted">Disponível</Text>
+              </View>
+              <View className="flex-row items-center">
+                <View className="mr-3 size-4 rounded bg-gray-300" />
+                <Text className="text-muted">Vaga vazia</Text>
+              </View>
             </View>
-            <View className="flex-row items-center">
-              <View className="mr-3 size-4 rounded bg-gray-300" />
-              <Text className="text-muted">Vaga vazia</Text>
+          </View>
+
+          {/* Tipos de Moto */}
+          <View>
+            <Text className="mb-2 font-medium text-sm text-text">
+              Tipos de Moto
+            </Text>
+            <View className="gap-2">
+              <View className="flex-row items-center">
+                <Ionicons
+                  name="flash"
+                  size={16}
+                  color="#05AF31"
+                  className="mr-3"
+                />
+                <Text className="ml-3 text-muted">Mottu E (Elétrica)</Text>
+              </View>
+              <View className="flex-row items-center">
+                <Ionicons
+                  name="speedometer"
+                  size={16}
+                  color="#05AF31"
+                  className="mr-3"
+                />
+                <Text className="ml-3 text-muted">Mottu Sport (Esportiva)</Text>
+              </View>
+              <View className="flex-row items-center">
+                <Ionicons
+                  name="bicycle"
+                  size={16}
+                  color="#05AF31"
+                  className="mr-3"
+                />
+                <Text className="ml-3 text-muted">Mottu Pop (Popular)</Text>
+              </View>
             </View>
           </View>
         </View>
