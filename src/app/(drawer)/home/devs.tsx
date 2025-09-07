@@ -69,13 +69,6 @@ export default function DevsScreen() {
                   <Text className="ml-1 text-muted text-sm">RM: {dev.rm}</Text>
                 </View>
               </View>
-
-              {/* GitHub Icon */}
-              <View className="ml-2">
-                <View className="items-center justify-center rounded-full bg-primary/10 p-3">
-                  <Ionicons name="logo-github" size={24} color="#05AF31" />
-                </View>
-              </View>
             </View>
           </View>
         ))}

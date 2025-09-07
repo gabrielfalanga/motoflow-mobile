@@ -1,9 +1,9 @@
 import { themes } from "@/utils/color-theme"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { StatusBar } from "expo-status-bar"
-import { colorScheme } from "nativewind"
 import type React from "react"
-import { createContext, useContext, useState } from "react"
-import { View } from "react-native"
+import { createContext, useContext, useEffect, useState } from "react"
+import { Appearance, View } from "react-native"
 
 type ThemeContextType = {
   theme: "light" | "dark"
@@ -16,12 +16,26 @@ export const ThemeContext = createContext<ThemeContextType>({
 })
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light")
+  const colorScheme = Appearance.getColorScheme()
+  const colorInASyncStorage = AsyncStorage.getItem("theme")
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">(
+    colorScheme || "light"
+  )
+
+  useEffect(() => {
+    if (colorInASyncStorage) {
+      colorInASyncStorage.then(value => {
+        if (value === "light" || value === "dark") {
+          setCurrentTheme(value)
+        }
+      })
+    }
+  }, [colorInASyncStorage])
 
   const toggleTheme = () => {
     const newTheme = currentTheme === "light" ? "dark" : "light"
+    AsyncStorage.setItem("theme", newTheme)
     setCurrentTheme(newTheme)
-    colorScheme.set(newTheme)
   }
 
   return (

@@ -251,12 +251,11 @@ export default function HomeScreen() {
                 color="#8b5cf6"
               />
               <QuickActionCard
-                title="Algo novo"
-                subtitle="Em breve"
-                iconName="bar-chart-outline"
-                route=""
-                color="#6b7280"
-                disabled={true}
+                title="Visualizar Áreas"
+                subtitle="Veja todas as áreas"
+                iconName="map-outline"
+                route="/(drawer)/area"
+                color="#f59e0b"
               />
             </View>
           </View>

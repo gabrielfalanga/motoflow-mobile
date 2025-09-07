@@ -1,5 +1,5 @@
 import { Image } from "expo-image"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useTheme } from "@/context/theme-context"
 import { useAuth } from "@/context/auth-context"
 import { request } from "@/helper/request"
@@ -17,7 +17,7 @@ import {
 } from "react-native"
 import DropDownPicker from "react-native-dropdown-picker"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { useFocusEffect, useGlobalSearchParams, router } from "expo-router"
+import { useFocusEffect, router, useLocalSearchParams } from "expo-router"
 import { useCallback } from "react"
 
 interface CadastroMoto {
@@ -40,7 +40,7 @@ interface MotoResponse {
 export default function CadastroMotoScreen() {
   const { theme } = useTheme()
   const { patioId, token } = useAuth()
-  const params = useGlobalSearchParams<{
+  const params = useLocalSearchParams<{
     posicaoHorizontal?: string
     posicaoVertical?: string
   }>()
@@ -72,12 +72,6 @@ export default function CadastroMotoScreen() {
       }
     }, [params.posicaoHorizontal, params.posicaoVertical])
   )
-
-  useEffect(() => {
-    console.log("Parâmetros ativos:")
-    console.log("posicaoHorizontalAtiva:", posicaoHorizontalAtiva)
-    console.log("posicaoVerticalAtiva:", posicaoVerticalAtiva)
-  }, [posicaoHorizontalAtiva, posicaoVerticalAtiva])
 
   // dropdown tipo de moto
   const [open, setOpen] = useState(false)
@@ -251,10 +245,23 @@ export default function CadastroMotoScreen() {
                 placeholder="Ex: 2024"
                 className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
                 placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
-                value={ano?.toString()}
-                onChangeText={value =>
-                  setAno(value ? Number(value) : undefined)
-                }
+                value={ano?.toString() || ""}
+                onChangeText={value => {
+                  // Remove qualquer caractere que não seja número
+                  const numericValue = value.replace(/[^0-9]/g, "")
+
+                  if (numericValue === "") {
+                    setAno(undefined)
+                    return
+                  }
+
+                  const num = Number(numericValue)
+
+                  // Só aceita se for >= 2012 ou se ainda estiver digitando (menos de 4 dígitos)
+                  if (numericValue.length < 4 || num >= 2012) {
+                    setAno(num)
+                  }
+                }}
                 keyboardType="numeric"
                 maxLength={4}
               />
@@ -320,7 +327,7 @@ export default function CadastroMotoScreen() {
                   posicaoHorizontalAtiva &&
                   posicaoVerticalAtiva
                     ? "Cadastrar e Alocar"
-                    : "Cadastrar Moto"}
+                    : "Cadastrar Moto em Posicão Aleatória"}
                 </Text>
               )}
             </TouchableOpacity>
