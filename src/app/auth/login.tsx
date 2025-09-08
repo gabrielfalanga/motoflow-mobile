@@ -11,6 +11,7 @@ import {
 } from "react-native"
 import { useRouter } from "expo-router"
 import { useAuth } from "@/context/auth-context"
+import { useTheme } from "@/context/theme-context"
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("")
@@ -18,6 +19,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { login } = useAuth()
+  const { theme } = useTheme()
 
   async function handleLogin() {
     if (!username || !password) {
@@ -38,26 +40,26 @@ export default function LoginScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 items-center justify-center bg-[#f9f9f9] px-7 dark:bg-[#333]">
-        <View className="w-full max-w-96 rounded-2xl bg-white p-8 shadow-md dark:bg-[#222]">
-          <Text className="mb-8 text-center font-bold text-3xl text-[#05AF31]">
+      <View className="flex-1 items-center justify-center bg-background px-7">
+        <View className="w-full max-w-96 rounded-2xl bg-card p-8 shadow-md">
+          <Text className="mb-8 text-center font-bold text-3xl text-primary">
             Login do Operador
           </Text>
           <TextInput
-            className="mb-5 h-12 w-full rounded-2xl border border-[#ccc] bg-white pl-3 dark:bg-[#eee]"
+            className="mb-5 h-12 w-full rounded-2xl border border-secondary bg-background pl-3 text-text"
             placeholder="Usuário"
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
-            placeholderTextColor="#888"
+            placeholderTextColor={theme === "dark" ? "#cccccc" : "#888888"}
           />
           <TextInput
-            className="mb-7 h-12 w-full rounded-2xl border border-[#ccc] bg-white pl-3 dark:bg-[#eee]"
+            className="mb-7 h-12 w-full rounded-2xl border border-secondary bg-background pl-3 text-text"
             placeholder="Senha"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
-            placeholderTextColor="#888"
+            placeholderTextColor={theme === "dark" ? "#cccccc" : "#888888"}
             onSubmitEditing={handleLogin}
             returnKeyType="done"
           />

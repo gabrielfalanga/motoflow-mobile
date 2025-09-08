@@ -33,6 +33,7 @@ export function MotoDetailsModal({
 }: MotoDetailsModalProps) {
   const { token } = useAuth()
   const [isLoadingManutencao, setIsLoadingManutencao] = useState(false)
+  const [isLoadingAluguel, setIsLoadingAluguel] = useState(false)
   const getStatusColor = () => {
     if (!moto) return "#6b7280"
 
@@ -113,6 +114,60 @@ export function MotoDetailsModal({
               }
             } finally {
               setIsLoadingManutencao(false)
+            }
+          },
+        },
+      ]
+    )
+  }
+
+  const marcarComoAlugada = async () => {
+    if (!moto?.placa || !token) {
+      Alert.alert("Erro", "Dados da moto não encontrados.")
+      return
+    }
+
+    Alert.alert(
+      "Confirmação",
+      "Tem certeza que deseja marcar esta moto como alugada?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Confirmar",
+          onPress: async () => {
+            setIsLoadingAluguel(true)
+
+            try {
+              await request(
+                `/motos/${moto.placa}`,
+                "patch",
+                { status: "ALUGADA" },
+                { authToken: token }
+              )
+
+              Alert.alert("Sucesso", "Moto marcada como alugada com sucesso!")
+              onClose()
+
+              // Atualizar a página
+              if (onMotoUpdated) {
+                onMotoUpdated()
+              }
+            } catch (error) {
+              console.error("Erro ao marcar moto como alugada:", error)
+
+              if (error instanceof RequestError) {
+                Alert.alert("Erro", error.message)
+              } else {
+                Alert.alert(
+                  "Erro",
+                  "Erro inesperado ao marcar moto como alugada."
+                )
+              }
+            } finally {
+              setIsLoadingAluguel(false)
             }
           },
         },
@@ -207,7 +262,7 @@ export function MotoDetailsModal({
                 <TouchableOpacity
                   className="mt-2 rounded-xl bg-amber-500 p-4"
                   onPress={levarParaManutencao}
-                  disabled={isLoadingManutencao}
+                  disabled={isLoadingManutencao || isLoadingAluguel}
                 >
                   {isLoadingManutencao ? (
                     <View className="flex-row items-center justify-center">
@@ -219,6 +274,25 @@ export function MotoDetailsModal({
                   ) : (
                     <Text className="text-center font-semibold text-white">
                       Levar para Manutenção
+                    </Text>
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="mt-2 rounded-xl bg-blue-500 p-4"
+                  onPress={marcarComoAlugada}
+                  disabled={isLoadingAluguel || isLoadingManutencao}
+                >
+                  {isLoadingAluguel ? (
+                    <View className="flex-row items-center justify-center">
+                      <ActivityIndicator color="#ffffff" size="small" />
+                      <Text className="ml-2 text-center font-semibold text-white">
+                        Processando...
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text className="text-center font-semibold text-white">
+                      Moto Alugada
                     </Text>
                   )}
                 </TouchableOpacity>

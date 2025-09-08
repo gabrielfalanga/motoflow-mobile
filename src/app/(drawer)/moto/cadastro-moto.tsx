@@ -3,16 +3,7 @@ import { useState } from "react"
 import { useTheme } from "@/context/theme-context"
 import { useAuth } from "@/context/auth-context"
 import { request } from "@/helper/request"
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Switch,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native"
+import { Alert, StyleSheet, Text, TextInput, View, Switch } from "react-native"
 import DropDownPicker from "react-native-dropdown-picker"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useFocusEffect, router, useLocalSearchParams } from "expo-router"
@@ -184,29 +175,25 @@ export default function CadastroMotoScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <KeyboardAvoidingView
-        className="flex-1 px-6"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-      >
-        <View className="flex-1 py-5">
-          {/* Header */}
-          <View className="mb-6 flex-row items-center justify-center gap-4">
-            <Image
-              source={require("@/assets/moto-esquerda.png")}
-              style={{ width: 32, height: 32 }}
-            />
-            <Text className="font-bold text-3xl text-primary">
-              Cadastre a moto
-            </Text>
-            <Image
-              source={require("@/assets/moto-direita.png")}
-              style={{ width: 32, height: 32 }}
-            />
-          </View>
+      <View className="flex-1 px-6 py-5">
+        {/* Header */}
+        <View className="mb-6 flex-row items-center justify-center gap-4">
+          <Image
+            source={require("@/assets/moto-esquerda.png")}
+            style={{ width: 32, height: 32 }}
+          />
+          <Text className="font-bold text-3xl text-primary">
+            Cadastre a moto
+          </Text>
+          <Image
+            source={require("@/assets/moto-direita.png")}
+            style={{ width: 32, height: 32 }}
+          />
+        </View>
 
-          {/* Form */}
-          <View className="flex-1 gap-2">
+        {/* Form - ScrollView para conteúdo rolável */}
+        <View className="flex-1">
+          <View className="gap-2">
             {/* Dropdown Tipo de Moto */}
             <View>
               <Text className="mb-1 ml-1 font-medium text-text">
@@ -307,26 +294,26 @@ export default function CadastroMotoScreen() {
               </View>
             )}
           </View>
-
-          {/* Botão Submit */}
-          <View className="pb-5">
-            <SubmitButton
-              isLoading={isLoading}
-              onSubmit={cadastrar}
-              text={
-                alocarPosicao && posicaoHorizontalAtiva && posicaoVerticalAtiva
-                  ? "Cadastrar e Alocar"
-                  : "Cadastrar Moto em Posicão Aleatória"
-              }
-            />
-
-            {/* Campos obrigatórios */}
-            <Text className="mt-4 text-center text-muted text-xs">
-              * Campos obrigatórios
-            </Text>
-          </View>
         </View>
-      </KeyboardAvoidingView>
+
+        {/* Botão Submit - Fixo na parte inferior */}
+        <View className="pt-4 pb-5">
+          <SubmitButton
+            isLoading={isLoading}
+            onSubmit={cadastrar}
+            text={
+              alocarPosicao && posicaoHorizontalAtiva && posicaoVerticalAtiva
+                ? "Cadastrar e Alocar"
+                : "Cadastrar Moto em Posicão Aleatória"
+            }
+          />
+
+          {/* Campos obrigatórios */}
+          <Text className="mt-4 text-center text-muted text-xs">
+            * Campos obrigatórios
+          </Text>
+        </View>
+      </View>
     </SafeAreaView>
   )
 }
