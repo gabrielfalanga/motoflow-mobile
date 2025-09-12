@@ -1,4 +1,3 @@
-import { Image } from "expo-image"
 import { useState } from "react"
 import { useTheme } from "@/context/theme-context"
 import { useAuth } from "@/context/auth-context"
