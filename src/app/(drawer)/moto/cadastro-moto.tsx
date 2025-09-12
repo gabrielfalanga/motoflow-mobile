@@ -3,12 +3,13 @@ import { useState } from "react"
 import { useTheme } from "@/context/theme-context"
 import { useAuth } from "@/context/auth-context"
 import { request } from "@/helper/request"
-import { Alert, StyleSheet, Text, TextInput, View, Switch } from "react-native"
+import { Alert, StyleSheet, Text, TextInput, View, Switch, TouchableOpacity } from "react-native"
 import DropDownPicker from "react-native-dropdown-picker"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useFocusEffect, router, useLocalSearchParams } from "expo-router"
 import { useCallback } from "react"
 import { SubmitButton } from "@/components/submit-button"
+import { Ionicons } from "@expo/vector-icons"
 
 interface CadastroMoto {
   tipoMoto: string
@@ -29,6 +30,7 @@ interface MotoResponse {
 
 export default function CadastroMotoScreen() {
   const { theme } = useTheme()
+  const isDark = theme === "dark"
   const { patioId, token } = useAuth()
   const params = useLocalSearchParams<{
     posicaoHorizontal?: string
@@ -177,19 +179,9 @@ export default function CadastroMotoScreen() {
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1 px-6 py-5">
         {/* Header */}
-        <View className="mb-6 flex-row items-center justify-center gap-4">
-          <Image
-            source={require("@/assets/moto-esquerda.png")}
-            style={{ width: 32, height: 32 }}
-          />
-          <Text className="font-bold text-3xl text-primary">
+          <Text className="text-center mb-6 font-bold text-3xl text-primary">
             Cadastre a moto
           </Text>
-          <Image
-            source={require("@/assets/moto-direita.png")}
-            style={{ width: 32, height: 32 }}
-          />
-        </View>
 
         {/* Form - ScrollView para conteúdo rolável */}
         <View className="flex-1">
@@ -297,7 +289,13 @@ export default function CadastroMotoScreen() {
         </View>
 
         {/* Botão Submit - Fixo na parte inferior */}
-        <View className="pt-4 pb-5">
+        <View className="gap-5 pt-4 pb-5">
+
+          <TouchableOpacity className="flex-row h-14 w-full items-center justify-center rounded-2xl bg-secondary" >
+            <Ionicons name="camera" color={theme == "dark" ? "white" : "black"} size={24} />
+            <Text className="ml-3 font-semibold text-lg text-text">Preencher com Foto</Text>
+          </TouchableOpacity>
+
           <SubmitButton
             isLoading={isLoading}
             onSubmit={cadastrar}
@@ -309,7 +307,7 @@ export default function CadastroMotoScreen() {
           />
 
           {/* Campos obrigatórios */}
-          <Text className="mt-4 text-center text-muted text-xs">
+          <Text className="text-center text-muted text-xs">
             * Campos obrigatórios
           </Text>
         </View>

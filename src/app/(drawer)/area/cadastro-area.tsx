@@ -197,8 +197,8 @@ export default function CadastroAreaScreen() {
         {/* Header fixo */}
 
         <View className="items-center">
-          <Text className="font-bold text-2xl text-primary">Nova Área</Text>
-          <Text className="text-muted text-sm">
+          <Text className="font-bold text-3xl text-primary">Nova Área</Text>
+          <Text className="text-muted text-sm mb-5">
             Configure uma nova área do pátio
           </Text>
         </View>
