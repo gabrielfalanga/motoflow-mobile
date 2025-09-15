@@ -11,7 +11,6 @@ import {
   Switch,
   TouchableOpacity,
   Image,
-  Button,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,6 +19,7 @@ import { useCallback } from "react";
 import { SubmitButton } from "@/components/submit-button";
 import { Ionicons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import axios from "axios";
 
 interface CadastroMoto {
   tipoMoto: string;
@@ -52,6 +52,7 @@ export default function CadastroMotoScreen() {
 
   // Estado de loading
   const [isLoading, setIsLoading] = useState(false);
+  const [isIdentificandoFoto, setIsIdentificandoFoto] = useState(false);
 
   // Estados da câmera
   const [permissaoCam, requestPermissaoCam] = useCameraPermissions();
@@ -108,14 +109,84 @@ export default function CadastroMotoScreen() {
     setFoto(null);
   };
 
-  const enviarFoto = () => {
-    // Aqui você pode implementar a lógica para processar a foto
-    // Por enquanto, vamos apenas fechar a câmera
-    Alert.alert(
-      "Foto enviada!",
-      "Funcionalidade de processamento da foto será implementada em breve."
-    );
-    fecharCamera();
+  const enviarFoto = async () => {
+    if (!foto) return;
+
+    setIsIdentificandoFoto(true);
+
+    try {
+      // Criar FormData
+      const formData = new FormData();
+
+      // Adicionar a imagem ao FormData (sua API espera 'file')
+      formData.append("file", {
+        uri: foto.uri,
+        type: "image/jpeg",
+        name: "moto.jpg",
+      } as any);
+
+      // Fazer requisição para a API Flask
+      const response = await axios.post("http://192.168.0.104:5000/api/analisar-moto", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        timeout: 10000, // 10 segundos de timeout
+      });
+
+      // Processar a resposta da API
+      console.log("Resposta da API:", response.data);
+
+      const { tipo_moto, placa, probabilidades } = response.data;
+
+      // Preencher automaticamente os campos se os dados forem identificados
+      if (tipo_moto) {
+        setTipoMoto(tipo_moto);
+      }
+
+      if (placa) {
+        setPlaca(placa);
+      }
+
+      // Mostrar resultado para o usuário
+      const probabilidadeTexto = probabilidades
+        ? Object.entries(probabilidades)
+            .map(([tipo, prob]) => `${tipo}: ${(Number(prob) * 100).toFixed(1)}%`)
+            .join("\n")
+        : "";
+
+      Alert.alert(
+        "Foto processada!",
+        `Dados identificados:${tipo_moto ? `\nTipo: ${tipo_moto}` : ""}${
+          placa ? `\nPlaca: ${placa}` : ""
+        }${probabilidadeTexto ? `\n\nProbabilidades:\n${probabilidadeTexto}` : ""}`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              fecharCamera();
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.error("Erro ao identificar moto:", error);
+
+      let mensagemErro = "Erro ao processar a foto. Tente novamente.";
+
+      if (axios.isAxiosError(error)) {
+        if (error.code === "ECONNABORTED") {
+          mensagemErro = "Tempo limite excedido. Verifique sua conexão.";
+        } else if (error.response) {
+          mensagemErro = `Erro do servidor: ${error.response.status}`;
+        } else if (error.request) {
+          mensagemErro = "Erro de conexão. Verifique sua internet.";
+        }
+      }
+
+      Alert.alert("Erro", mensagemErro);
+    } finally {
+      setIsIdentificandoFoto(false);
+    }
   };
 
   // dropdown tipo de moto
@@ -252,11 +323,21 @@ export default function CadastroMotoScreen() {
             <View className="flex-1">
               <Image source={{ uri: foto.uri }} className="flex-1" style={{ flex: 1 }} />
               <View className="flex-row justify-around m-4">
-                <TouchableOpacity onPress={() => setFoto(null)} className="bg-gray-200 p-3 rounded">
+                <TouchableOpacity
+                  onPress={() => setFoto(null)}
+                  className="bg-gray-200 p-3 rounded"
+                  disabled={isIdentificandoFoto}
+                >
                   <Text className="text-black">Tirar outra foto</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={enviarFoto} className="bg-green-500 p-3 rounded">
-                  <Text className="text-white">Enviar foto</Text>
+                <TouchableOpacity
+                  onPress={enviarFoto}
+                  className={`p-3 rounded ${isIdentificandoFoto ? "bg-gray-400" : "bg-green-500"}`}
+                  disabled={isIdentificandoFoto}
+                >
+                  <Text className="text-white">
+                    {isIdentificandoFoto ? "Processando..." : "Enviar foto"}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
