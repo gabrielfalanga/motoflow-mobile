@@ -291,30 +291,52 @@ export default function CadastroMotoScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       {mostrarCamera ? (
-        <View className="flex-1">
+        <View className="flex-1 bg-background ">
           {!foto ? (
             // Tela da câmera
-            <View className="flex-1">
+            <View className="flex-1 bg-background">
               <CameraView
                 ref={cameraRef}
                 style={{ flex: 1 }}
                 facing={isFrontCamera ? "front" : "back"}
                 flash={flashLigado ? "on" : "off"}
               />
-              <View className="flex-row justify-around m-4">
-                <TouchableOpacity onPress={fecharCamera} className="bg-gray-200 p-3 rounded">
-                  <Text className="text-black">Cancelar</Text>
+              <View className="flex-row justify-around align-center mt-6">
+                <TouchableOpacity
+                  onPress={fecharCamera}
+                  className="justify-center align-center bg-secondary p-3 rounded"
+                >
+                  <Ionicons
+                    name="arrow-undo-outline"
+                    color={theme == "dark" ? "white" : "black"}
+                    size={34}
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={tirarFoto} className="bg-blue-500 p-3 rounded">
-                  <Text className="text-white">Tirar Foto</Text>
+                <TouchableOpacity
+                  onPress={tirarFoto}
+                  className="justify-center align-center bg-primary p-3 rounded"
+                >
+                  <Ionicons name="radio-button-on-outline" color="white" size={34} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={alternarCamera} className="bg-gray-200 p-3 rounded">
-                  <Text className="text-black">Alterar câmera</Text>
+                <TouchableOpacity
+                  onPress={alternarCamera}
+                  className="justify-center align-center bg-secondary p-3 rounded"
+                >
+                  <Ionicons
+                    name="sync-outline"
+                    color={theme == "dark" ? "white" : "black"}
+                    size={34}
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={alternarFlash} className="bg-gray-200 p-3 rounded">
-                  <Text className="text-black">
-                    {flashLigado ? "Desligar Flash" : "Ligar Flash"}
-                  </Text>
+                <TouchableOpacity
+                  onPress={alternarFlash}
+                  className="justify-center align-center bg-secondary p-3 rounded"
+                >
+                  <Ionicons
+                    name={flashLigado ? "flash-outline" : "flash-off-outline"}
+                    color={theme == "dark" ? "white" : "black"}
+                    size={30}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -322,20 +344,20 @@ export default function CadastroMotoScreen() {
             // Tela de preview da foto
             <View className="flex-1">
               <Image source={{ uri: foto.uri }} className="flex-1" style={{ flex: 1 }} />
-              <View className="flex-row justify-around m-4">
+              <View className="flex-row justify-around align-center mt-6">
                 <TouchableOpacity
                   onPress={() => setFoto(null)}
-                  className="bg-gray-200 p-3 rounded"
+                  className="bg-secondary p-3 rounded"
                   disabled={isIdentificandoFoto}
                 >
-                  <Text className="text-black">Tirar outra foto</Text>
+                  <Text className="text-text font-medium">Tirar outra foto</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={enviarFoto}
-                  className={`p-3 rounded ${isIdentificandoFoto ? "bg-gray-400" : "bg-green-500"}`}
+                  className={`p-3 rounded ${isIdentificandoFoto ? "bg-gray-400" : "bg-primary"}`}
                   disabled={isIdentificandoFoto}
                 >
-                  <Text className="text-white">
+                  <Text className="text-white font-medium">
                     {isIdentificandoFoto ? "Processando..." : "Enviar foto"}
                   </Text>
                 </TouchableOpacity>
