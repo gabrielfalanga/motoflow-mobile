@@ -58,7 +58,6 @@ export default function CadastroMotoScreen() {
   const [permissaoCam, requestPermissaoCam] = useCameraPermissions();
   const cameraRef = useRef<any>(null);
   const [foto, setFoto] = useState<any>(null);
-  const [isFrontCamera, setIsFrontCamera] = useState(false);
   const [flashLigado, setFlashLigado] = useState(false);
   const [mostrarCamera, setMostrarCamera] = useState(false);
 
@@ -96,10 +95,6 @@ export default function CadastroMotoScreen() {
     }
   };
 
-  const alternarCamera = () => {
-    setIsFrontCamera(!isFrontCamera);
-  };
-
   const alternarFlash = () => {
     setFlashLigado(!flashLigado);
   };
@@ -126,7 +121,7 @@ export default function CadastroMotoScreen() {
       } as any);
 
       // Fazer requisição para a API Flask
-      const response = await axios.post("http://192.168.0.104:5000/api/analisar-moto", formData, {
+      const response = await axios.post("http://192.168.0.69:5000/api/analisar-moto", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -298,7 +293,7 @@ export default function CadastroMotoScreen() {
               <CameraView
                 ref={cameraRef}
                 style={{ flex: 1 }}
-                facing={isFrontCamera ? "front" : "back"}
+                facing="back"
                 flash={flashLigado ? "on" : "off"}
               />
               <View className="flex-row justify-around align-center mt-6">
@@ -308,7 +303,7 @@ export default function CadastroMotoScreen() {
                 >
                   <Ionicons
                     name="arrow-undo-outline"
-                    color={theme == "dark" ? "white" : "black"}
+                    color={isDark ? "white" : "black"}
                     size={34}
                   />
                 </TouchableOpacity>
@@ -319,22 +314,12 @@ export default function CadastroMotoScreen() {
                   <Ionicons name="radio-button-on-outline" color="white" size={34} />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={alternarCamera}
-                  className="justify-center align-center bg-secondary p-3 rounded"
-                >
-                  <Ionicons
-                    name="sync-outline"
-                    color={theme == "dark" ? "white" : "black"}
-                    size={34}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
                   onPress={alternarFlash}
                   className="justify-center align-center bg-secondary p-3 rounded"
                 >
                   <Ionicons
                     name={flashLigado ? "flash-outline" : "flash-off-outline"}
-                    color={theme == "dark" ? "white" : "black"}
+                    color={isDark ? "white" : "black"}
                     size={30}
                   />
                 </TouchableOpacity>
