@@ -31,24 +31,15 @@ interface CadastroMoto {
   dataEntrada: string;
 }
 
-interface MotoResponse {
-  idPatio: number;
-  placaMoto: string;
-  posicaoHorizontal?: string;
-  posicaoVertical?: number;
-}
-
 export default function CadastroMotoScreen() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { patioId, token } = useAuth();
   const params = useLocalSearchParams<{
-    posicaoHorizontal?: string;
-    posicaoVertical?: string;
+    setor?: string;
   }>();
 
-  const [posicaoHorizontalAtiva, setPosicaoHorizontalAtiva] = useState<string | null>(null);
-  const [posicaoVerticalAtiva, setPosicaoVerticalAtiva] = useState<number | null>(null);
+  const [setorAtivo, setSetorAtivo] = useState<string | null>(null);
 
   // Estado de loading
   const [isLoading, setIsLoading] = useState(false);
@@ -63,17 +54,14 @@ export default function CadastroMotoScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      const hasPositionParams = params.posicaoHorizontal || params.posicaoVertical;
+      const hasPositionParams = !!params.setor;
 
       if (hasPositionParams) {
-        setPosicaoHorizontalAtiva(params.posicaoHorizontal || null);
-        setPosicaoVerticalAtiva(params.posicaoVertical ? Number(params.posicaoVertical) : null);
-        setAlocarPosicao(true);
+        setSetorAtivo(params.setor || null);
       } else {
-        setPosicaoHorizontalAtiva(null);
-        setPosicaoVerticalAtiva(null);
+        setSetorAtivo(null);
       }
-    }, [params.posicaoHorizontal, params.posicaoVertical])
+    }, [params.setor])
   );
 
   // Funções da câmera
@@ -267,8 +255,6 @@ export default function CadastroMotoScreen() {
 
     try {
       // Preparar dados para envio
-      const estaComPosicao = alocarPosicao && posicaoHorizontalAtiva && posicaoVerticalAtiva;
-
       const dadosMoto: CadastroMoto = {
         tipoMoto: tipoMoto,
         ano: ano,
@@ -280,8 +266,8 @@ export default function CadastroMotoScreen() {
       };
 
       // Fazer requisição para API
-      const motoResponse = await request<MotoResponse>(
-        estaComPosicao ? `/motos/${patioId}` : "/motos/cadastro-e-alocacao",
+      const motoResponse = await request<CadastroMoto>(
+        `/motos/${patioId}`,
         "post",
         dadosMoto,
         {
@@ -291,14 +277,14 @@ export default function CadastroMotoScreen() {
 
       Alert.alert(
         "Moto cadastrada e alocada!",
-        `Tipo: ${tipoMoto}\nAno: ${ano}\nPlaca: ${placa}\nPosição: ${motoResponse?.posicaoHorizontal}-${motoResponse?.posicaoVertical}`,
+        `Tipo: ${tipoMoto}\nPlaca: ${placa}\nAno: ${ano}\nSetor: ${motoResponse?.setor}`,
         [
           {
             text: "OK",
             onPress: () => {
               limparFormulario();
               router.setParams({});
-              router.replace(`/posicao-horizontal/${motoResponse?.posicaoHorizontal}`);
+              router.replace(`/setor/${motoResponse?.setor}`);
             },
           },
         ]
@@ -316,10 +302,10 @@ export default function CadastroMotoScreen() {
 
   const limparFormulario = () => {
     setTipoMoto(null);
-    setAno(undefined);
     setPlaca(undefined);
+    setAno(undefined);
+    setCodRastreador(undefined);
     setSetor(null);
-    setAlocarPosicao(false);
   };
 
   return (
@@ -518,26 +504,6 @@ export default function CadastroMotoScreen() {
                   disabled={opcoesSetor.length === 0}
                 />
               </View>
-
-              {/* Switch para alocar posição (só aparece se tiver posição disponível) */}
-              {posicaoHorizontalAtiva && posicaoVerticalAtiva && (
-                <View className="rounded-xl border border-secondary bg-card p-4">
-                  <View className="flex-row items-center justify-between">
-                    <View className="mr-4 flex-1">
-                      <Text className="font-medium text-text">Alocar à posição vaga</Text>
-                      <Text className="mt-1 text-muted text-sm">
-                        Moto será alocada em {posicaoHorizontalAtiva}-{posicaoVerticalAtiva}
-                      </Text>
-                    </View>
-                    <Switch
-                      value={alocarPosicao}
-                      onValueChange={setAlocarPosicao}
-                      trackColor={{ false: "#767577", true: "#05AF31" }}
-                      thumbColor={alocarPosicao ? "#ffffff" : "#f4f3f4"}
-                    />
-                  </View>
-                </View>
-              )}
             </View>
           </View>
 
@@ -554,11 +520,7 @@ export default function CadastroMotoScreen() {
             <SubmitButton
               isLoading={isLoading}
               onSubmit={cadastrar}
-              text={
-                alocarPosicao && posicaoHorizontalAtiva && posicaoVerticalAtiva
-                  ? "Cadastrar e Alocar"
-                  : "Cadastrar Moto em Posicão Aleatória"
-              }
+              text="Cadastrar e Alocar"
             />
 
             {/* Campos obrigatórios */}
