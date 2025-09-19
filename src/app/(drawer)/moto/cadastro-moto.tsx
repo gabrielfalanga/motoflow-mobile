@@ -128,9 +128,6 @@ export default function CadastroMotoScreen() {
         timeout: 10000, // 10 segundos de timeout
       });
 
-      // Processar a resposta da API
-      console.log("Resposta da API:", response.data);
-
       const { tipo_moto, placa, probabilidades } = response.data;
 
       // Preencher automaticamente os campos se os dados forem identificados
@@ -403,7 +400,7 @@ export default function CadastroMotoScreen() {
             <View className="gap-2">
               {/* Dropdown Tipo de Moto */}
               <View>
-                <Text className="mb-1 ml-1 font-medium text-text">Tipo da Moto *</Text>
+                <Text className="mb-2 ml-1 font-medium text-text">Tipo da Moto *</Text>
                 <DropDownPicker
                   open={openTipoMoto}
                   value={tipoMoto}
@@ -431,48 +428,66 @@ export default function CadastroMotoScreen() {
                 />
               </View>
 
-              {/* Campo Placa */}
-              <View>
-                <Text className="mb-1 ml-1 font-medium text-text">Placa *</Text>
-                <TextInput
-                  placeholder="Ex: ABC1234"
-                  className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
-                  placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
-                  value={placa}
-                  onChangeText={(value) => setPlaca(value.toUpperCase())}
-                  maxLength={7}
-                  autoCapitalize="characters"
-                />
-                <Text className="ml-1 text-muted text-xs">7 caracteres, sem traço ou espaços</Text>
+              {/* Placa e Ano lado a lado */}
+              <View className="flex-row justify-between gap-4 mb-2">
+                {/* Campo Placa */}
+                <View className="flex-1">
+                  <Text className="mb-1 ml-1 font-medium text-text">Placa *</Text>
+                  <TextInput
+                    placeholder="Ex: ABC1234"
+                    className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
+                    style={{ width: "100%" }}
+                    placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
+                    value={placa}
+                    onChangeText={(value) => setPlaca(value.toUpperCase())}
+                    maxLength={7}
+                    autoCapitalize="characters"
+                  />
+                  <Text className="ml-1 text-muted text-xs">7 caracteres, sem traço ou espaços</Text>
+                </View>
+                {/* Campo Ano */}
+                <View className="flex-1">
+                  <Text className="mb-1 ml-1 font-medium text-text">Ano *</Text>
+                  <TextInput
+                    placeholder="Ex: 2024"
+                    className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
+                    style={{ width: "100%" }}
+                    placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
+                    value={ano?.toString() || ""}
+                    onChangeText={(value) => {
+                      const numericValue = value.replace(/[^0-9]/g, "");
+                      if (numericValue === "") {
+                        setAno(undefined);
+                        return;
+                      }
+                      const num = Number(numericValue);
+                      if (numericValue.length < 4 || num >= 2012) {
+                        setAno(num);
+                      }
+                    }}
+                    keyboardType="numeric"
+                    maxLength={4}
+                  />
+                  <Text className="ml-1 text-muted text-xs">Ano mínimo: 2012</Text>
+                </View>
               </View>
-
-              {/* Campo Ano */}
-              <View>
-                <Text className="mb-1 ml-1 font-medium text-text">Ano *</Text>
+              {/* Campo Código do Rastreador */}
+              <View className="mb-2">
+                <Text className="mb-1 ml-1 font-medium text-text">Código do Rastreador *</Text>
                 <TextInput
-                  placeholder="Ex: 2024"
+                  placeholder="Ex: 123456"
                   className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
                   placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
-                  value={ano?.toString() || ""}
+                  value={codRastreador?.toString() || ""}
                   onChangeText={(value) => {
-                    // Remove qualquer caractere que não seja número
+                    // Aceita apenas números
                     const numericValue = value.replace(/[^0-9]/g, "");
-                    if (numericValue === "") {
-                      setAno(undefined);
-                      return;
-                    }
-                    const num = Number(numericValue);
-                    // Só aceita se for >= 2012 ou se ainda estiver digitando (menos de 4 dígitos)
-                    if (numericValue.length < 4 || num >= 2012) {
-                      setAno(num);
-                    }
+                    setCodRastreador(numericValue ? Number(numericValue) : undefined);
                   }}
                   keyboardType="numeric"
-                  maxLength={4}
+                  maxLength={10}
                 />
-                <Text className="ml-1 text-muted text-xs">Ano mínimo: 2012</Text>
               </View>
-
               {/* Dropdown Setor */}
               <View className="mb-10">
                 <Text className="mb-1 ml-1 font-medium text-text">Setor *</Text>
@@ -532,7 +547,7 @@ export default function CadastroMotoScreen() {
               className="flex-row h-14 w-full items-center justify-center rounded-2xl bg-secondary"
               onPress={abrirCamera}
             >
-              <Ionicons name="camera" color={theme == "dark" ? "white" : "black"} size={24} />
+              <Ionicons name="camera" color={isDark ? "white" : "black"} size={24} />
               <Text className="ml-3 font-semibold text-lg text-text">Preencher com Foto</Text>
             </TouchableOpacity>
 
