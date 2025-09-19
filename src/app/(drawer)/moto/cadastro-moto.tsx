@@ -26,9 +26,9 @@ interface CadastroMoto {
   ano: number;
   placa: string;
   statusMoto: "DISPONIVEL";
-  idPatio: number;
-  posicaoHorizontal?: string;
-  posicaoVertical?: number;
+  setor: string;
+  codRastreador: number;
+  dataEntrada: string;
 }
 
 interface MotoResponse {
@@ -185,17 +185,50 @@ export default function CadastroMotoScreen() {
   };
 
   // dropdown tipo de moto
-  const [open, setOpen] = useState(false);
+  const [openTipoMoto, setOpenTipoMoto] = useState(false);
   const [tipoMoto, setTipoMoto] = useState<string | null>(null);
-  const [opcoes, setOpcoes] = useState([
+  const [opcoesTipoMoto, setOpcoesTipoMoto] = useState([
     { label: "Mottu E", value: "MOTTU_E" },
     { label: "Mottu Sport", value: "MOTTU_SPORT" },
     { label: "Mottu Pop", value: "MOTTU_POP" },
   ]);
 
+  // dropdown setor
+  const [openSetor, setOpenSetor] = useState(false);
+  const [setor, setSetor] = useState<string | null>(null);
+  const [opcoesSetor, setOpcoesSetor] = useState<Array<{ label: string; value: string }>>([]);
+
+  // Buscar setores ao montar tela ou quando patioId muda
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchSetores() {
+        if (!patioId || !token) return;
+        try {
+          // Usar a função request do helper igual as outras chamadas
+          const setores = await request<string[]>(`/posicoes/${patioId}`, "get", undefined, {
+            authToken: token,
+          });
+          if (Array.isArray(setores)) {
+            // Se o retorno é [{ setor: "A" }, ...], extrai o campo setor
+            const nomesSetores = setores
+              .map((s) =>
+                typeof s === "object" && s !== null && "setor" in s ? (s as any).setor : null
+              )
+              .filter((s) => typeof s === "string" && s.length > 0);
+            setOpcoesSetor(nomesSetores.map((s) => ({ label: s, value: s, key: s })));
+          }
+        } catch (err) {
+          setOpcoesSetor([]);
+        }
+      }
+      fetchSetores();
+    }, [token])
+  );
+
   // form fields
   const [ano, setAno] = useState<number>();
   const [placa, setPlaca] = useState<string>();
+  const [codRastreador, setCodRastreador] = useState<number>();
 
   // switch para alocar posição (só ativo se tiver posição)
   const [alocarPosicao, setAlocarPosicao] = useState(false);
@@ -223,6 +256,16 @@ export default function CadastroMotoScreen() {
       return;
     }
 
+    if (!codRastreador || Number.isNaN(codRastreador) || codRastreador <= 0) {
+      Alert.alert("Erro", "Digite um código de rastreador válido.");
+      return;
+    }
+
+    if (!setor) {
+      Alert.alert("Erro", "Selecione o setor para alocar a moto.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -234,11 +277,9 @@ export default function CadastroMotoScreen() {
         ano: ano,
         placa: placa,
         statusMoto: "DISPONIVEL",
-        idPatio: patioId,
-        ...(estaComPosicao && {
-          posicaoHorizontal: posicaoHorizontalAtiva,
-          posicaoVertical: posicaoVerticalAtiva,
-        }),
+        setor: setor,
+        codRastreador: codRastreador,
+        dataEntrada: new Date().toISOString().slice(0, 19),
       };
 
       // Fazer requisição para API
@@ -280,6 +321,7 @@ export default function CadastroMotoScreen() {
     setTipoMoto(null);
     setAno(undefined);
     setPlaca(undefined);
+    setSetor(null);
     setAlocarPosicao(false);
   };
 
@@ -363,23 +405,28 @@ export default function CadastroMotoScreen() {
               <View>
                 <Text className="mb-1 ml-1 font-medium text-text">Tipo da Moto *</Text>
                 <DropDownPicker
-                  open={open}
+                  open={openTipoMoto}
                   value={tipoMoto}
-                  items={opcoes}
-                  setOpen={setOpen}
+                  items={opcoesTipoMoto}
+                  setOpen={setOpenTipoMoto}
                   setValue={setTipoMoto}
-                  setItems={setOpcoes}
+                  setItems={setOpcoesTipoMoto}
                   placeholder="Selecione o tipo da moto"
-                  style={[styles.dropdown, theme === "dark" && { backgroundColor: "#222222" }]}
+                  style={[
+                    styles.dropdown,
+                    isDark && { backgroundColor: "#222222" },
+                    { zIndex: 20 },
+                  ]}
                   dropDownContainerStyle={[
                     styles.opcoesDropdown,
-                    theme === "dark" && { backgroundColor: "#222222" },
+                    isDark && { backgroundColor: "#222222" },
+                    { zIndex: 20 },
                   ]}
                   textStyle={{
-                    color: theme === "dark" ? "#ffffff" : "#000000",
+                    color: isDark ? "#ffffff" : "#000000",
                   }}
                   placeholderStyle={{
-                    color: theme === "dark" ? "#cccccc" : "#666666",
+                    color: isDark ? "#cccccc" : "#666666",
                   }}
                 />
               </View>
@@ -410,14 +457,11 @@ export default function CadastroMotoScreen() {
                   onChangeText={(value) => {
                     // Remove qualquer caractere que não seja número
                     const numericValue = value.replace(/[^0-9]/g, "");
-
                     if (numericValue === "") {
                       setAno(undefined);
                       return;
                     }
-
                     const num = Number(numericValue);
-
                     // Só aceita se for >= 2012 ou se ainda estiver digitando (menos de 4 dígitos)
                     if (numericValue.length < 4 || num >= 2012) {
                       setAno(num);
@@ -427,6 +471,37 @@ export default function CadastroMotoScreen() {
                   maxLength={4}
                 />
                 <Text className="ml-1 text-muted text-xs">Ano mínimo: 2012</Text>
+              </View>
+
+              {/* Dropdown Setor */}
+              <View className="mb-10">
+                <Text className="mb-1 ml-1 font-medium text-text">Setor *</Text>
+                <DropDownPicker
+                  open={openSetor}
+                  value={setor}
+                  items={opcoesSetor}
+                  setOpen={setOpenSetor}
+                  setValue={setSetor}
+                  setItems={setOpcoesSetor}
+                  placeholder="Selecione um setor para alocar a moto"
+                  style={[
+                    styles.dropdown,
+                    isDark && { backgroundColor: "#222222" },
+                    { zIndex: 10 },
+                  ]}
+                  dropDownContainerStyle={[
+                    styles.opcoesDropdown,
+                    isDark && { backgroundColor: "#222222" },
+                    { zIndex: 10 },
+                  ]}
+                  textStyle={{
+                    color: isDark ? "#ffffff" : "#000000",
+                  }}
+                  placeholderStyle={{
+                    color: isDark ? "#cccccc" : "#666666",
+                  }}
+                  disabled={opcoesSetor.length === 0}
+                />
               </View>
 
               {/* Switch para alocar posição (só aparece se tiver posição disponível) */}
@@ -452,7 +527,7 @@ export default function CadastroMotoScreen() {
           </View>
 
           {/* Botão Submit - Fixo na parte inferior */}
-          <View className="gap-5 pt-4 pb-5">
+          <View className="gap-5 pb-5">
             <TouchableOpacity
               className="flex-row h-14 w-full items-center justify-center rounded-2xl bg-secondary"
               onPress={abrirCamera}
