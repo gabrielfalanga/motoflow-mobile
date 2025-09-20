@@ -21,8 +21,7 @@ interface MotoEncontrada {
   placa: string
   tipoMoto: "MOTTU_E" | "MOTTU_SPORT" | "MOTTU_POP"
   ano: number
-  posicaoVertical: number | null
-  posicaoHorizontal: string | null
+  setor: string
 }
 
 export default function BuscaMotoScreen() {
@@ -156,11 +155,11 @@ export default function BuscaMotoScreen() {
       Alert.alert("Sucesso", "Moto alocada com sucesso!")
       fecharModalAlocacao()
 
-      setMotoEncontrada({
-        ...motoEncontrada,
-        posicaoHorizontal: posicaoHorizontalInput.toUpperCase(),
-        posicaoVertical: posicaoVerticalNum,
-      })
+      // setMotoEncontrada({
+      //   ...motoEncontrada,
+      //   posicaoHorizontal: posicaoHorizontalInput.toUpperCase(),
+      //   posicaoVertical: posicaoVerticalNum,
+      // })
     } catch (error) {
       let errorMessage =
         "Ocorreu um erro inesperado ao alocar a moto na posição."
@@ -360,12 +359,10 @@ export default function BuscaMotoScreen() {
                       color="#05AF31"
                     />
                     <View className="ml-3 flex-1">
-                      <Text className="font-medium text-text">Posição</Text>
-                      {motoEncontrada.posicaoHorizontal &&
-                      motoEncontrada.posicaoVertical ? (
+                      <Text className="font-medium text-text">Setor</Text>
+                      {motoEncontrada.setor ? (
                         <Text className="font-bold text-lg text-primary">
-                          {motoEncontrada.posicaoHorizontal}-
-                          {motoEncontrada.posicaoVertical}
+                          {motoEncontrada.setor}
                         </Text>
                       ) : (
                         <View>
@@ -373,7 +370,7 @@ export default function BuscaMotoScreen() {
                             Moto não alocada
                           </Text>
                           <Text className="text-muted text-xs">
-                            Clique em "Alocar Posição" para definir uma posição
+                            Clique em "Alocar em Setor" para definir uma posição
                           </Text>
                         </View>
                       )}
@@ -382,13 +379,12 @@ export default function BuscaMotoScreen() {
                 </View>
 
                 {/* Botão para ir à posição ou alocar */}
-                {motoEncontrada.posicaoHorizontal &&
-                motoEncontrada.posicaoVertical ? (
+                {motoEncontrada.setor ? (
                   <TouchableOpacity
                     className="mt-6 h-12 items-center justify-center rounded-xl bg-blue-500"
                     onPress={() =>
                       router.navigate(
-                        `/(drawer)/posicao-horizontal/${motoEncontrada.posicaoHorizontal}`
+                        `/(drawer)/setor/${motoEncontrada.setor}`
                       )
                     }
                     activeOpacity={0.8}
@@ -400,7 +396,7 @@ export default function BuscaMotoScreen() {
                         color="#ffffff"
                       />
                       <Text className="ml-2 font-semibold text-white">
-                        Ir para a Posição
+                        Abrir setor
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -417,7 +413,7 @@ export default function BuscaMotoScreen() {
                         color="#ffffff"
                       />
                       <Text className="ml-2 font-semibold text-white">
-                        Alocar Posição
+                        Alocar em Setor
                       </Text>
                     </View>
                   </TouchableOpacity>
