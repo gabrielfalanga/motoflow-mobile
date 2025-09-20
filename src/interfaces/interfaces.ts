@@ -43,9 +43,9 @@ export interface PatioInfo {
   }
 }
 
-export interface PosicaoHorizontalPatio {
-  posicaoHorizontal: string
-}
+// export interface PosicaoHorizontalPatio {
+//   posicaoHorizontal: string
+// }
 
 export interface MotoNaPosicao {
   id: number
@@ -55,10 +55,4 @@ export interface MotoNaPosicao {
   statusMoto: "ALUGADA" | "DISPONIVEL" | "MANUTENCAO"
   posicaoHorizontal: string
   posicaoVertical: number
-}
-
-export interface PosicaoHorizontalDetalhes {
-  posicaoHorizontal: string
-  vagasTotais: number
-  motos: MotoNaPosicao[]
 }
