@@ -9,15 +9,8 @@ import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from "react
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PatioScreen() {
-  const {
-    patioInfo,
-    posicoesHorizontais,
-    loading,
-    refreshing,
-    error,
-    refresh,
-    calculateOccupancyPercentage,
-  } = usePatioData();
+  const { patioInfo, setores, loading, refreshing, error, refresh, calculateOccupancyPercentage } =
+    usePatioData();
 
   if (loading) {
     return (

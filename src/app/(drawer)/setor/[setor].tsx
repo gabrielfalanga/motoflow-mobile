@@ -1,7 +1,7 @@
 import { MotoDetailsModal } from "@/components/moto-details-modal";
 import { NotificationCard } from "@/components/notification-card";
 import { VagaPosicao } from "@/components/vaga-posicao";
-import { useSetorData } from "@/hooks/use-posicao-horizontal-data";
+import { useSetorData } from "@/hooks/use-setor-data";
 import type { Moto } from "@/interfaces/interfaces";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
