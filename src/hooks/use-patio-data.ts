@@ -57,7 +57,7 @@ export function usePatioData() {
 
   const calculateOccupancyPercentage = useCallback(() => {
     if (!patioInfo) return 0;
-    return Math.round((patioInfo.posicoesOcupadas / patioInfo.capacidadeMax) * 100);
+    return Math.round((patioInfo.quantidadeOcupadas / patioInfo.capacidadeMax) * 100);
   }, [patioInfo]);
 
   return {

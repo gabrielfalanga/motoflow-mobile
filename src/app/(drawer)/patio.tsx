@@ -50,9 +50,9 @@ export default function PatioScreen() {
             {/* Resumo Principal */}
             <View className="mb-6">
               <PatioSummary
-                ocupadas={patioInfo.posicoesOcupadas}
+                ocupadas={patioInfo.quantidadeOcupadas}
                 capacidadeMax={patioInfo.capacidadeMax}
-                disponiveis={patioInfo.posicoesDisponiveis}
+                disponiveis={patioInfo.quantidadeDisponiveis}
                 apelido={patioInfo.apelido}
               />
             </View>
@@ -60,8 +60,8 @@ export default function PatioScreen() {
             {/* Cards de Estatísticas */}
             <View className="mb-6">
               <PatioStatsCards
-                posicoesDisponiveis={patioInfo.posicoesDisponiveis}
-                posicoesOcupadas={patioInfo.posicoesOcupadas}
+                posicoesDisponiveis={patioInfo.quantidadeDisponiveis}
+                posicoesOcupadas={patioInfo.quantidadeOcupadas}
               />
             </View>
 

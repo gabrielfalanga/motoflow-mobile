@@ -19,7 +19,6 @@ export interface Moto {
   tipoMoto: "MOTTU_SPORT" | "MOTTU_E" | "MOTTU_POP";
   ano: number;
   placa: string;
-  //precoAluguel: number;
   statusMoto: "ALUGADA" | "DISPONIVEL" | "MANUTENCAO";
   dataAlocacao: Date | null;
 }
@@ -30,8 +29,8 @@ export interface PatioInfo {
   capacidade: number;
   area: number;
   capacidadeMax: number;
-  posicoesDisponiveis: number;
-  posicoesOcupadas: number;
+  quantidadeDisponiveis: number;
+  quantidadeOcupadas: number;
   endereco: {
     id: number;
     logradouro: string;

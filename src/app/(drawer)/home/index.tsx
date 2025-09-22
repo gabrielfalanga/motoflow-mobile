@@ -55,7 +55,7 @@ export default function HomeScreen() {
         const newNotifications: Notification[] = [];
         if (patioResponse) {
           const occupancyPercentage =
-            (patioResponse.posicoesOcupadas / patioResponse.capacidadeMax) * 100;
+            (patioResponse.quantidadeOcupadas / patioResponse.capacidadeMax) * 100;
 
           if (occupancyPercentage >= 90) {
             newNotifications.push({
@@ -66,11 +66,11 @@ export default function HomeScreen() {
             });
           }
 
-          if (patioResponse.posicoesDisponiveis <= 5) {
+          if (patioResponse.quantidadeDisponiveis <= 5) {
             newNotifications.push({
               id: "low-space",
               title: "Poucas posições disponíveis",
-              message: `Apenas ${patioResponse.posicoesDisponiveis} posições livres restantes.`,
+              message: `Apenas ${patioResponse.quantidadeDisponiveis} posições livres restantes.`,
               type: "info",
             });
           }
@@ -188,9 +188,9 @@ export default function HomeScreen() {
         {patioInfo && (
           <View className="mb-6">
             <PatioSummary
-              ocupadas={patioInfo.posicoesOcupadas}
+              ocupadas={patioInfo.quantidadeOcupadas}
               capacidadeMax={patioInfo.capacidadeMax}
-              disponiveis={patioInfo.posicoesDisponiveis}
+              disponiveis={patioInfo.quantidadeDisponiveis}
               apelido={patioInfo.apelido}
             />
           </View>
