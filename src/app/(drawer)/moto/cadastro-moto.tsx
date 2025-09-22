@@ -58,6 +58,7 @@ export default function CadastroMotoScreen() {
 
       if (hasPositionParams) {
         setSetorAtivo(params.setor || null);
+        setSetor(params.setor || null); // Setar automaticamente o setor no dropdown
       } else {
         setSetorAtivo(null);
       }
@@ -215,9 +216,6 @@ export default function CadastroMotoScreen() {
   const [placa, setPlaca] = useState<string>();
   const [codRastreador, setCodRastreador] = useState<number>();
 
-  // switch para alocar posição (só ativo se tiver posição)
-  const [alocarPosicao, setAlocarPosicao] = useState(false);
-
   const cadastrar = async () => {
     if (!patioId || !token) return;
 
@@ -266,18 +264,13 @@ export default function CadastroMotoScreen() {
       };
 
       // Fazer requisição para API
-      const motoResponse = await request<CadastroMoto>(
-        `/motos/${patioId}`,
-        "post",
-        dadosMoto,
-        {
-          authToken: token,
-        }
-      );
+      const motoResponse = await request<CadastroMoto>(`/motos/${patioId}`, "post", dadosMoto, {
+        authToken: token,
+      });
 
       Alert.alert(
         "Moto cadastrada e alocada!",
-        `Tipo: ${tipoMoto}\nPlaca: ${placa}\nAno: ${ano}\nSetor: ${motoResponse?.setor}`,
+        `Tipo: ${tipoMoto}\nPlaca: ${placa}\nAno: ${ano}\nRastreador: ${motoResponse?.codRastreador}\nSetor: ${motoResponse?.setor}`,
         [
           {
             text: "OK",
@@ -429,7 +422,9 @@ export default function CadastroMotoScreen() {
                     maxLength={7}
                     autoCapitalize="characters"
                   />
-                  <Text className="ml-1 text-muted text-xs">7 caracteres, sem traço ou espaços</Text>
+                  <Text className="ml-1 text-muted text-xs">
+                    7 caracteres, sem traço ou espaços
+                  </Text>
                 </View>
                 {/* Campo Ano */}
                 <View className="flex-1">
@@ -517,11 +512,7 @@ export default function CadastroMotoScreen() {
               <Text className="ml-3 font-semibold text-lg text-text">Preencher com Foto</Text>
             </TouchableOpacity>
 
-            <SubmitButton
-              isLoading={isLoading}
-              onSubmit={cadastrar}
-              text="Cadastrar e Alocar"
-            />
+            <SubmitButton isLoading={isLoading} onSubmit={cadastrar} text="Cadastrar e Alocar" />
 
             {/* Campos obrigatórios */}
             <Text className="text-center text-muted text-xs">* Campos obrigatórios</Text>
