@@ -1,10 +1,10 @@
-import { Ionicons } from "@expo/vector-icons"
-import { Drawer } from "expo-router/drawer"
-import { useTheme } from "@/context/theme-context"
-import { Header } from "@/components/Header"
+import { Ionicons } from "@expo/vector-icons";
+import { Drawer } from "expo-router/drawer";
+import { useTheme } from "@/context/theme-context";
+import { Header } from "@/components/Header";
 
 export default function DrawerLayout() {
-  const { theme } = useTheme()
+  const { theme } = useTheme();
 
   return (
     <Drawer
@@ -24,9 +24,7 @@ export default function DrawerLayout() {
         name="home"
         options={{
           title: "Home",
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="home" color={color} size={size} />
-          ),
+          drawerIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
         }}
       />
 
@@ -34,19 +32,15 @@ export default function DrawerLayout() {
         name="patio"
         options={{
           title: "Pátio",
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="business" color={color} size={size} />
-          ),
+          drawerIcon: ({ color, size }) => <Ionicons name="business" color={color} size={size} />,
         }}
       />
 
       <Drawer.Screen
-        name="area"
+        name="setores"
         options={{
-          title: "Áreas",
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="map" color={color} size={size} />
-          ),
+          title: "Setores",
+          drawerIcon: ({ color, size }) => <Ionicons name="map" color={color} size={size} />,
         }}
       />
 
@@ -54,9 +48,7 @@ export default function DrawerLayout() {
         name="moto"
         options={{
           title: "Motos",
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="bicycle" color={color} size={size} />
-          ),
+          drawerIcon: ({ color, size }) => <Ionicons name="bicycle" color={color} size={size} />,
         }}
         initialParams={{ posicaoHorizontal: null, posicaoVertical: null }}
       />
@@ -74,11 +66,11 @@ export default function DrawerLayout() {
         }}
       />
       <Drawer.Screen
-        name="posicao-horizontal/[posicaoHorizontal]"
+        name="setor/[setor]"
         options={{
           drawerItemStyle: { display: "none" },
         }}
       />
     </Drawer>
-  )
+  );
 }

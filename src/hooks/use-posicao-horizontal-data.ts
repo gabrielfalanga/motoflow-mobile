@@ -1,77 +1,80 @@
-import { useAuth } from "@/context/auth-context"
-import { request } from "@/helper/request"
-import type { PosicaoHorizontalDetalhes } from "@/interfaces/interfaces"
-import { useFocusEffect } from "expo-router"
-import { useCallback, useState } from "react"
+import { useAuth } from "@/context/auth-context";
+import { request } from "@/helper/request";
+import type { SetorInfo } from "@/interfaces/interfaces";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 
-export function usePosicaoHorizontalData(posicaoHorizontal: string) {
-  const [data, setData] = useState<PosicaoHorizontalDetalhes | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState<string>("")
-  const { token, patioId } = useAuth()
+export function useSetorData(setor: string) {
+  const [data, setData] = useState<SetorInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string>("");
+  const { token, patioId } = useAuth();
 
   const fetchData = useCallback(
     async (isRefresh = false) => {
-      if (!token || !patioId || !posicaoHorizontal) return
+      if (!token || !patioId || !setor) return;
 
-      if (isRefresh) setRefreshing(true)
-      else setLoading(true)
+      if (isRefresh) setRefreshing(true);
+      else setLoading(true);
 
       try {
-        const response = await request<PosicaoHorizontalDetalhes>(
-          `/posicoes/${patioId}/${posicaoHorizontal}`,
-          "get",
-          null,
-          {
-            authToken: token,
-          }
-        )
+        const response = await request<SetorInfo>(`/posicoes/${patioId}/${setor}`, "get", null, {
+          authToken: token,
+        });
 
-        setData(response)
-        setError("")
+        setData(response);
+        setError("");
       } catch (err) {
-        console.error("Erro ao buscar dados da posição horizontal:", err)
-        setError("Erro ao carregar dados da posição horizontal")
+        console.error("Erro ao buscar dados do setor:", err);
+        setError("Erro ao carregar dados do setor");
       } finally {
-        setLoading(false)
-        if (isRefresh) setRefreshing(false)
+        setLoading(false);
+        if (isRefresh) setRefreshing(false);
       }
     },
-    [token, patioId, posicaoHorizontal]
-  )
+    [token, patioId, setor]
+  );
 
   useFocusEffect(
     useCallback(() => {
-      if (token && patioId && posicaoHorizontal) {
-        fetchData()
+      if (token && patioId && setor) {
+        fetchData();
       }
-    }, [token, patioId, posicaoHorizontal, fetchData])
-  )
+    }, [token, patioId, setor, fetchData])
+  );
 
   const refresh = useCallback(() => {
-    fetchData(true)
-  }, [fetchData])
+    fetchData(true);
+  }, [fetchData]);
 
-  const getMotoPorPosicao = useCallback(
-    (posicaoVertical: number) => {
-      return data?.motos.find(moto => moto.posicaoVertical === posicaoVertical)
+  const getMotoPorId = useCallback(
+    (id: number) => {
+      return data?.motos.find((moto) => moto.id === id);
     },
     [data]
-  )
+  );
 
   const getEstatisticas = useCallback(() => {
-    if (!data) return { disponiveis: 0 }
-
-    const ocupadas = data.motos.length
+    if (!data)
+      return {
+        ocupadas: 0,
+        disponiveis: 0,
+        vagasTotais: 0,
+        taxaOcupacao: 0,
+      };
 
     return {
-      ocupadas,
-      disponiveis: data.vagasTotais - ocupadas,
-      vagas: data.vagasTotais,
-      taxaOcupacao: Math.round((ocupadas / data.vagasTotais) * 100),
-    }
-  }, [data])
+      ocupadas: data.ocupadas,
+      disponiveis: data.disponiveis,
+      vagasTotais: data.vagasTotais,
+      taxaOcupacao: Math.round((data.ocupadas / data.vagasTotais) * 100),
+    };
+  }, [data]);
+
+  const getMotos = useCallback(() => {
+    return data?.motos || [];
+  }, [data]);
 
   return {
     data,
@@ -79,7 +82,8 @@ export function usePosicaoHorizontalData(posicaoHorizontal: string) {
     refreshing,
     error,
     refresh,
-    getMotoPorPosicao,
+    getMotoPorId,
     getEstatisticas,
-  }
+    getMotos,
+  };
 }

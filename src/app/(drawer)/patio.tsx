@@ -1,18 +1,12 @@
-import { NotificationCard } from "@/components/notification-card"
-import { PatioDetailsCard } from "@/components/patio-details-card"
-import { PatioHeader } from "@/components/patio-header"
-import { PatioPosicoesHorizontaisGrid } from "@/components/patio-posicoes-horizontais-grid"
-import { PatioStatsCards } from "@/components/patio-stats-cards"
-import { PatioSummary } from "@/components/patio-summary"
-import { usePatioData } from "@/hooks/use-patio-data"
-import {
-  ActivityIndicator,
-  RefreshControl,
-  ScrollView,
-  Text,
-  View,
-} from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
+import { NotificationCard } from "@/components/notification-card";
+import { PatioDetailsCard } from "@/components/patio-details-card";
+import { PatioHeader } from "@/components/patio-header";
+import { PatioSetoresGrid } from "@/components/patio-setores-grid";
+import { PatioStatsCards } from "@/components/patio-stats-cards";
+import { PatioSummary } from "@/components/patio-summary";
+import { usePatioData } from "@/hooks/use-patio-data";
+import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PatioScreen() {
   const {
@@ -23,17 +17,15 @@ export default function PatioScreen() {
     error,
     refresh,
     calculateOccupancyPercentage,
-  } = usePatioData()
+  } = usePatioData();
 
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#05AF31" />
-        <Text className="mt-4 text-text">
-          Carregando informações do pátio...
-        </Text>
+        <Text className="mt-4 text-text">Carregando informações do pátio...</Text>
       </View>
-    )
+    );
   }
 
   return (
@@ -51,19 +43,12 @@ export default function PatioScreen() {
         }
       >
         {/* Header do Pátio */}
-        <PatioHeader
-          apelido={patioInfo?.apelido}
-          endereco={patioInfo?.endereco}
-        />
+        <PatioHeader apelido={patioInfo?.apelido} endereco={patioInfo?.endereco} />
 
         {/* Mensagem de erro */}
         {error && (
           <View className="mb-4">
-            <NotificationCard
-              title="Erro ao carregar dados"
-              message={error}
-              type="error"
-            />
+            <NotificationCard title="Erro ao carregar dados" message={error} type="error" />
           </View>
         )}
 
@@ -97,19 +82,17 @@ export default function PatioScreen() {
           </>
         )}
 
-        {/* Grid de Posições */}
-        <PatioPosicoesHorizontaisGrid posicoes={posicoesHorizontais} />
+        {/* Grid de Setores */}
+        <PatioSetoresGrid />
 
         {/* Footer */}
         <View className="items-center pb-8">
-          <Text className="text-muted text-sm">
-            Puxe para baixo para atualizar
-          </Text>
+          <Text className="text-muted text-sm">Puxe para baixo para atualizar</Text>
           <Text className="text-muted text-xs">
             Última atualização: {new Date().toLocaleTimeString()}
           </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 }

@@ -1,11 +1,11 @@
-import { MotoDetailsModal } from "@/components/moto-details-modal"
-import { NotificationCard } from "@/components/notification-card"
-import { VagaPosicao } from "@/components/vaga-posicao"
-import { usePosicaoHorizontalData } from "@/hooks/use-posicao-horizontal-data"
-import type { MotoNaPosicao } from "@/interfaces/interfaces"
-import { Ionicons } from "@expo/vector-icons"
-import { router, useLocalSearchParams } from "expo-router"
-import { useState } from "react"
+import { MotoDetailsModal } from "@/components/moto-details-modal";
+import { NotificationCard } from "@/components/notification-card";
+import { VagaPosicao } from "@/components/vaga-posicao";
+import { useSetorData } from "@/hooks/use-posicao-horizontal-data";
+import type { Moto } from "@/interfaces/interfaces";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
 import {
   ActivityIndicator,
   RefreshControl,
@@ -13,74 +13,85 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PosicaoHorizontalScreen() {
-  const { posicaoHorizontal } = useLocalSearchParams<{
-    posicaoHorizontal: string
-  }>()
+  const { setor } = useLocalSearchParams<{
+    setor: string;
+  }>();
 
-  if (!posicaoHorizontal) {
-    router.back()
+  if (!setor) {
+    router.back();
   }
 
-  const {
-    data,
-    loading,
-    refreshing,
-    error,
-    refresh,
-    getMotoPorPosicao,
-    getEstatisticas,
-  } = usePosicaoHorizontalData(posicaoHorizontal)
+  const { data, loading, refreshing, error, refresh, getEstatisticas, getMotos } =
+    useSetorData(setor);
 
-  const [selectedMoto, setSelectedMoto] = useState<MotoNaPosicao | undefined>()
-  const [selectedPosition, setSelectedPosition] = useState<number | undefined>()
-  const [modalVisible, setModalVisible] = useState(false)
+  const [selectedMoto, setSelectedMoto] = useState<(Moto & { id: number }) | undefined>();
+  const [selectedPosition, setSelectedPosition] = useState<number | undefined>();
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const handleVagaPress = (posicaoVertical: number, moto?: MotoNaPosicao) => {
-    setSelectedMoto(moto)
-    setSelectedPosition(posicaoVertical)
-    setModalVisible(true)
-  }
+  const handleVagaPress = (posicaoVertical: number, moto?: Moto & { id: number }) => {
+    setSelectedMoto(moto);
+    setSelectedPosition(posicaoVertical);
+    setModalVisible(true);
+  };
 
   const closeModal = () => {
-    setModalVisible(false)
-    setSelectedMoto(undefined)
-    setSelectedPosition(undefined)
-  }
+    setModalVisible(false);
+    setSelectedMoto(undefined);
+    setSelectedPosition(undefined);
+  };
 
   const renderVagas = () => {
-    if (!data) return null
+    if (!data) return null;
 
-    const vagas = []
+    const motos = getMotos();
+    const vagas = [];
+
+    // Renderizar baseado nas vagas totais do setor
     for (let i = 1; i <= data.vagasTotais; i++) {
-      const moto = getMotoPorPosicao(i)
+      // Para agora, vamos mostrar as motos sequencialmente nas vagas
+      // Isso pode ser ajustado conforme a lógica de negócio específica
+      const moto = motos[i - 1]; // Pegamos a moto na posição i-1 do array
+
       vagas.push(
         <VagaPosicao
           key={i}
           posicaoVertical={i}
-          moto={moto}
-          onPress={handleVagaPress}
+          moto={
+            moto
+              ? {
+                  ...moto,
+                  posicaoHorizontal: data.setor,
+                  posicaoVertical: i,
+                }
+              : undefined
+          }
+          onPress={(pos, motoData) => {
+            if (motoData && moto) {
+              handleVagaPress(pos, moto);
+            } else {
+              handleVagaPress(pos, undefined);
+            }
+          }}
         />
-      )
+      );
     }
 
-    return vagas
-  }
+    return vagas;
+  };
 
-  const stats = getEstatisticas()
+  const stats = getEstatisticas();
 
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#05AF31" />
-        <Text className="mt-4 text-text">
-          Carregando posições da fileira {posicaoHorizontal}...
-        </Text>
+        <Text className="mt-4 text-text">Carregando posições do setor {setor}...</Text>
       </View>
-    )
+    );
   }
 
   return (
@@ -107,11 +118,9 @@ export default function PosicaoHorizontalScreen() {
               <Ionicons name="arrow-back" size={24} color="#05AF31" />
             </TouchableOpacity>
             <View className="flex-1">
-              <Text className="font-bold text-2xl text-primary">
-                Fileira {posicaoHorizontal}
-              </Text>
+              <Text className="font-bold text-2xl text-primary">Setor {setor}</Text>
               <Text className="text-muted">
-                {stats.ocupadas} de {stats.vagas} vagas ocupadas
+                {stats.ocupadas} de {stats.vagasTotais} vagas ocupadas
               </Text>
             </View>
           </View>
@@ -132,19 +141,15 @@ export default function PosicaoHorizontalScreen() {
               <View className="flex-1 rounded-xl bg-primary p-4">
                 <View className="mb-2 flex-row items-center justify-between">
                   <Ionicons name="checkmark-circle" size={20} color="white" />
-                  <Text className="font-bold text-white text-xl">
-                    {stats.disponiveis}
-                  </Text>
+                  <Text className="font-bold text-white text-xl">{stats.ocupadas}</Text>
                 </View>
-                <Text className="font-medium text-white/90">Disponíveis</Text>
+                <Text className="font-medium text-white/90">Motos no setor</Text>
               </View>
 
               <View className="flex-1 rounded-xl bg-blue-500 p-4">
                 <View className="mb-2 flex-row items-center justify-between">
                   <Ionicons name="analytics" size={20} color="white" />
-                  <Text className="font-bold text-white text-xl">
-                    {stats.taxaOcupacao}%
-                  </Text>
+                  <Text className="font-bold text-white text-xl">{stats.taxaOcupacao}%</Text>
                 </View>
                 <Text className="font-medium text-white/90">Ocupação</Text>
               </View>
@@ -158,9 +163,7 @@ export default function PosicaoHorizontalScreen() {
 
           {/* Status das Vagas */}
           <View className="mb-4">
-            <Text className="mb-2 font-medium text-sm text-text">
-              Status das Vagas
-            </Text>
+            <Text className="mb-2 font-medium text-sm text-text">Status das Vagas</Text>
             <View className="gap-2">
               <View className="flex-row items-center">
                 <View className="mr-3 size-4 rounded bg-primary" />
@@ -175,35 +178,18 @@ export default function PosicaoHorizontalScreen() {
 
           {/* Tipos de Moto */}
           <View>
-            <Text className="mb-2 font-medium text-sm text-text">
-              Tipos de Moto
-            </Text>
+            <Text className="mb-2 font-medium text-sm text-text">Tipos de Moto</Text>
             <View className="gap-2">
               <View className="flex-row items-center">
-                <Ionicons
-                  name="flash"
-                  size={16}
-                  color="#05AF31"
-                  className="mr-3"
-                />
+                <Ionicons name="flash" size={16} color="#05AF31" className="mr-3" />
                 <Text className="ml-3 text-muted">Mottu E (Elétrica)</Text>
               </View>
               <View className="flex-row items-center">
-                <Ionicons
-                  name="speedometer"
-                  size={16}
-                  color="#05AF31"
-                  className="mr-3"
-                />
+                <Ionicons name="speedometer" size={16} color="#05AF31" className="mr-3" />
                 <Text className="ml-3 text-muted">Mottu Sport (Esportiva)</Text>
               </View>
               <View className="flex-row items-center">
-                <Ionicons
-                  name="bicycle"
-                  size={16}
-                  color="#05AF31"
-                  className="mr-3"
-                />
+                <Ionicons name="bicycle" size={16} color="#05AF31" className="mr-3" />
                 <Text className="ml-3 text-muted">Mottu Pop (Popular)</Text>
               </View>
             </View>
@@ -212,21 +198,15 @@ export default function PosicaoHorizontalScreen() {
 
         {/* Grid de Vagas */}
         <View className="mb-6">
-          <Text className="mb-4 font-bold text-lg text-text">
-            Mapa da Fileira {posicaoHorizontal}
-          </Text>
+          <Text className="mb-4 font-bold text-lg text-text">Mapa do Setor {setor}</Text>
           <View className="rounded-xl bg-card p-4">
-            <View className="flex-row flex-wrap justify-center">
-              {renderVagas()}
-            </View>
+            <View className="flex-row flex-wrap justify-center">{renderVagas()}</View>
           </View>
         </View>
 
         {/* Footer */}
         <View className="items-center pb-8">
-          <Text className="text-muted text-sm">
-            Toque em uma vaga para ver detalhes
-          </Text>
+          <Text className="text-muted text-sm">Toque em uma vaga para ver detalhes</Text>
           <Text className="text-muted text-xs">
             Última atualização: {new Date().toLocaleTimeString()}
           </Text>
@@ -237,11 +217,11 @@ export default function PosicaoHorizontalScreen() {
       <MotoDetailsModal
         visible={modalVisible}
         moto={selectedMoto}
-        posicaoVertical={selectedPosition}
-        posicaoHorizontal={posicaoHorizontal}
+        setor={data?.setor || setor}
+        vaga={selectedPosition}
         onClose={closeModal}
         onMotoUpdated={refresh}
       />
     </SafeAreaView>
-  )
+  );
 }
