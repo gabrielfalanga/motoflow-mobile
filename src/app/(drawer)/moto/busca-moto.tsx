@@ -27,6 +27,7 @@ interface MotoEncontrada {
   ano: number;
   statusMoto: "DISPONIVEL" | "MANUTENCAO" | "ALUGADA";
   setor: string;
+  codRastreador: string;
 }
 
 export default function BuscaMotoScreen() {
@@ -571,11 +572,22 @@ export default function BuscaMotoScreen() {
                   <View className="gap-4">
                     {/* Placa */}
                     <View className="flex-row items-center">
-                      <Ionicons name="document-text-outline" size={24} color="#05AF31" />
+                      <Ionicons name="albums-outline" size={24} color="#05AF31" />
                       <View className="ml-3 flex-1">
                         <Text className="font-medium text-text">Placa</Text>
                         <Text className="font-bold text-lg text-primary">
                           {motoEncontrada.placa}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* Código do Rastreador */}
+                    <View className="flex-row items-center">
+                      <Ionicons name="radio-outline" size={24} color="#05AF31" />
+                      <View className="ml-3 flex-1">
+                        <Text className="font-medium text-text">Código do Rastreador</Text>
+                        <Text className="font-bold text-lg text-primary">
+                          {motoEncontrada.codRastreador}
                         </Text>
                       </View>
                     </View>
@@ -611,52 +623,55 @@ export default function BuscaMotoScreen() {
                       </View>
                     </View>
 
-                    {/* Status */}
-                    <View className="flex-row items-center">
-                      <Ionicons name="information-circle-outline" size={24} color="#05AF31" />
-                      <View className="ml-3 flex-1">
-                        <Text className="font-medium text-text">Status</Text>
-                        <Text
-                          className="font-medium"
-                          style={{ color: getStatusMotoInfo(motoEncontrada.statusMoto).cor }}
-                        >
-                          {getStatusMotoInfo(motoEncontrada.statusMoto).nome}
-                        </Text>
-                      </View>
-                    </View>
-
-                    {/* Setor */}
-                    <View className="flex-row items-center">
-                      <Ionicons name="location-outline" size={24} color="#05AF31" />
-                      <View className="ml-3 flex-1">
-                        <Text className="font-medium text-text">Setor</Text>
-                        {motoEncontrada.setor ? (
-                          <Text className="font-bold text-lg text-primary">
-                            {motoEncontrada.setor}
+                    {/* Status e Setor lado a lado */}
+                    <View className="flex-row gap-4">
+                      {/* Status */}
+                      <View className="flex-1 flex-row items-center">
+                        <Ionicons name="information-circle-outline" size={24} color="#05AF31" />
+                        <View className="ml-3 flex-1">
+                          <Text className="font-medium text-text">Status</Text>
+                          <Text
+                            className="font-medium"
+                            style={{ color: getStatusMotoInfo(motoEncontrada.statusMoto).cor }}
+                          >
+                            {getStatusMotoInfo(motoEncontrada.statusMoto).nome}
                           </Text>
-                        ) : (
-                          <View>
-                            {motoEncontrada.statusMoto === "DISPONIVEL" ? (
-                              <>
-                                <Text className="font-medium text-orange-600 text-sm">
-                                  Moto não alocada
-                                </Text>
-                                <Text className="text-muted text-xs">
-                                  Clique em "Alocar em Setor" para definir uma posição
-                                </Text>
-                              </>
-                            ) : (
-                              <>
-                                <Text className="font-medium text-orange-600 text-sm">
-                                  Alocação indisponível
-                                </Text>
-                                <Text className="text-muted text-xs">
-                                  Mude o status para "Disponível" para desbloquear a alocação
-                                </Text>
-                              </>
-                            )}
-                          </View>
-                        )}
+                        </View>
+                      </View>
+
+                      {/* Setor */}
+                      <View className="flex-1 flex-row items-center">
+                        <Ionicons name="location-outline" size={24} color="#05AF31" />
+                        <View className="ml-3 flex-1">
+                          <Text className="font-medium text-text">Setor</Text>
+                          {motoEncontrada.setor ? (
+                            <Text className="font-bold text-lg text-primary">
+                              {motoEncontrada.setor}
+                            </Text>
+                          ) : (
+                            <View>
+                              {motoEncontrada.statusMoto === "DISPONIVEL" ? (
+                                <>
+                                  <Text className="font-medium text-orange-600 text-sm">
+                                    Não alocada
+                                  </Text>
+                                  <Text className="text-muted text-xs">
+                                    Clique em "Alocar em Setor"
+                                  </Text>
+                                </>
+                              ) : (
+                                <>
+                                  <Text className="font-medium text-orange-600 text-sm">
+                                    Indisponível
+                                  </Text>
+                                  <Text className="text-muted text-xs">
+                                    Mude status para "Disponível"
+                                  </Text>
+                                </>
+                              )}
+                            </View>
+                          )}
+                        </View>
                       </View>
                     </View>
                   </View>
