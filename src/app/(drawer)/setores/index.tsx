@@ -144,9 +144,9 @@ export default function SetoresScreen() {
         {posicoes.length === 0 && (
           <View className="flex-1 items-center justify-center py-16">
             <Ionicons name="add-circle-outline" size={64} color="#05AF31" />
-            <Text className="mt-4 font-semibold text-primary">Cadastrar Primeira Área</Text>
+            <Text className="mt-4 font-semibold text-primary">Cadastrar Primeiro Setor</Text>
             <Text className="mb-6 text-center text-muted text-sm">
-              Ainda não há áreas configuradas neste pátio
+              Ainda não há setores configurados neste pátio
             </Text>
 
             <TouchableOpacity
@@ -154,7 +154,7 @@ export default function SetoresScreen() {
               onPress={() => router.navigate("/area/cadastro-area")}
               activeOpacity={0.8}
             >
-              <Text className="font-semibold text-white">Cadastrar Área</Text>
+              <Text className="font-semibold text-white">Cadastrar Setor</Text>
             </TouchableOpacity>
           </View>
         )}

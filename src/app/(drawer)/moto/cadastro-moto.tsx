@@ -374,143 +374,166 @@ export default function CadastroMotoScreen() {
           {/* Header */}
           <Text className="text-center mb-6 font-bold text-3xl text-primary">Cadastre a moto</Text>
 
-          {/* Form - ScrollView para conteúdo rolável */}
-          <View className="flex-1">
-            <View className="gap-2">
-              {/* Dropdown Tipo de Moto */}
-              <View>
-                <Text className="mb-2 ml-1 font-medium text-text">Tipo da Moto *</Text>
-                <DropDownPicker
-                  open={openTipoMoto}
-                  value={tipoMoto}
-                  items={opcoesTipoMoto}
-                  setOpen={setOpenTipoMoto}
-                  setValue={setTipoMoto}
-                  setItems={setOpcoesTipoMoto}
-                  placeholder="Selecione o tipo da moto"
-                  style={[
-                    styles.dropdown,
-                    isDark && { backgroundColor: "#222222" },
-                    { zIndex: 20 },
-                  ]}
-                  dropDownContainerStyle={[
-                    styles.opcoesDropdown,
-                    isDark && { backgroundColor: "#222222" },
-                    { zIndex: 20 },
-                  ]}
-                  textStyle={{
-                    color: isDark ? "#ffffff" : "#000000",
-                  }}
-                  placeholderStyle={{
-                    color: isDark ? "#cccccc" : "#666666",
-                  }}
-                />
-              </View>
-
-              {/* Placa e Ano lado a lado */}
-              <View className="flex-row justify-between gap-4 mb-2">
-                {/* Campo Placa */}
-                <View className="flex-1">
-                  <Text className="mb-1 ml-1 font-medium text-text">Placa *</Text>
-                  <TextInput
-                    placeholder="Ex: ABC1234"
-                    className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
-                    style={{ width: "100%" }}
-                    placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
-                    value={placa}
-                    onChangeText={(value) => setPlaca(value.toUpperCase())}
-                    autoCapitalize="characters"
-                    maxLength={7}
-                  />
-                  <Text className="ml-1 text-muted text-xs">
-                    7 caracteres, sem traço ou espaços
-                  </Text>
-                </View>
-                {/* Campo Ano */}
-                <View className="flex-1">
-                  <Text className="mb-1 ml-1 font-medium text-text">Ano *</Text>
-                  <TextInput
-                    placeholder="Ex: 2024"
-                    className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
-                    style={{ width: "100%" }}
-                    placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
-                    value={ano?.toString() || ""}
-                    onChangeText={(value) => {
-                      const numericValue = value.replace(/[^0-9]/g, "");
-                      if (numericValue === "") {
-                        setAno(undefined);
-                        return;
-                      }
-                      const num = Number(numericValue);
-                      if (numericValue.length < 4 || num >= 2012) {
-                        setAno(num);
-                      }
-                    }}
-                    keyboardType="numeric"
-                    maxLength={4}
-                  />
-                  <Text className="ml-1 text-muted text-xs">Ano mínimo: 2012</Text>
-                </View>
-              </View>
-              {/* Campo Código do Rastreador */}
-              <View className="mb-2">
-                <Text className="mb-1 ml-1 font-medium text-text">Código do Rastreador *</Text>
-                <TextInput
-                  placeholder="Ex: ABC123XYZ"
-                  className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
-                  placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
-                  value={codRastreador || ""}
-                  onChangeText={setCodRastreador}
-                />
-              </View>
-              {/* Dropdown Setor */}
-              <View className="mb-10">
-                <Text className="mb-1 ml-1 font-medium text-text">Setor *</Text>
-                <DropDownPicker
-                  open={openSetor}
-                  value={setor}
-                  items={opcoesSetor}
-                  setOpen={setOpenSetor}
-                  setValue={setSetor}
-                  setItems={setOpcoesSetor}
-                  placeholder="Selecione um setor para alocar a moto"
-                  style={[
-                    styles.dropdown,
-                    isDark && { backgroundColor: "#222222" },
-                    { zIndex: 10 },
-                  ]}
-                  dropDownContainerStyle={[
-                    styles.opcoesDropdown,
-                    isDark && { backgroundColor: "#222222" },
-                    { zIndex: 10 },
-                  ]}
-                  textStyle={{
-                    color: isDark ? "#ffffff" : "#000000",
-                  }}
-                  placeholderStyle={{
-                    color: isDark ? "#cccccc" : "#666666",
-                  }}
-                  disabled={opcoesSetor.length === 0}
-                />
-              </View>
+          {/* Aviso se não houver setores */}
+          {opcoesSetor.length === 0 ? (
+            <View className="flex-1 items-center justify-center py-16">
+              <Ionicons name="add-circle-outline" size={64} color="#05AF31" />
+              <Text className="mt-4 mb-2 font-semibold text-primary">Cadastrar Primeiro Setor</Text>
+              <Text className="text-center text-muted text-sm">
+                Ainda não há setores configurados neste pátio
+              </Text>
+              <Text className="mb-6 text-center text-muted text-sm">
+                Configure pelo menos um setor para cadastrar motos
+              </Text>
+              <TouchableOpacity
+                className="h-12 items-center justify-center rounded-xl bg-primary px-6"
+                onPress={() => router.navigate("/setores/cadastro-setor")}
+                activeOpacity={0.8}
+              >
+                <Text className="font-semibold text-white">Cadastrar Setor</Text>
+              </TouchableOpacity>
             </View>
-          </View>
+          ) : (
+            <>
+              {/* Form - ScrollView para conteúdo rolável */}
+              <View className="flex-1">
+                <View className="gap-2">
+                  {/* Dropdown Tipo de Moto */}
+                  <View>
+                    <Text className="mb-2 ml-1 font-medium text-text">Tipo da Moto *</Text>
+                    <DropDownPicker
+                      open={openTipoMoto}
+                      value={tipoMoto}
+                      items={opcoesTipoMoto}
+                      setOpen={setOpenTipoMoto}
+                      setValue={setTipoMoto}
+                      setItems={setOpcoesTipoMoto}
+                      placeholder="Selecione o tipo da moto"
+                      style={[
+                        styles.dropdown,
+                        isDark && { backgroundColor: "#222222" },
+                        { zIndex: 20 },
+                      ]}
+                      dropDownContainerStyle={[
+                        styles.opcoesDropdown,
+                        isDark && { backgroundColor: "#222222" },
+                        { zIndex: 20 },
+                      ]}
+                      textStyle={{
+                        color: isDark ? "#ffffff" : "#000000",
+                      }}
+                      placeholderStyle={{
+                        color: isDark ? "#cccccc" : "#666666",
+                      }}
+                    />
+                  </View>
 
-          {/* Botão Submit - Fixo na parte inferior */}
-          <View className="gap-5 pb-5">
-            <TouchableOpacity
-              className="flex-row h-14 w-full items-center justify-center rounded-2xl bg-secondary"
-              onPress={abrirCamera}
-            >
-              <Ionicons name="camera" color={isDark ? "white" : "black"} size={24} />
-              <Text className="ml-3 font-semibold text-lg text-text">Preencher com Foto</Text>
-            </TouchableOpacity>
+                  {/* Placa e Ano lado a lado */}
+                  <View className="flex-row justify-between gap-4 mb-2">
+                    {/* Campo Placa */}
+                    <View className="flex-1">
+                      <Text className="mb-1 ml-1 font-medium text-text">Placa *</Text>
+                      <TextInput
+                        placeholder="Ex: ABC1234"
+                        className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
+                        style={{ width: "100%" }}
+                        placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
+                        value={placa}
+                        onChangeText={(value) => setPlaca(value.toUpperCase())}
+                        autoCapitalize="characters"
+                        maxLength={7}
+                      />
+                      <Text className="ml-1 text-muted text-xs">
+                        7 caracteres, sem traço ou espaços
+                      </Text>
+                    </View>
+                    {/* Campo Ano */}
+                    <View className="flex-1">
+                      <Text className="mb-1 ml-1 font-medium text-text">Ano *</Text>
+                      <TextInput
+                        placeholder="Ex: 2024"
+                        className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
+                        style={{ width: "100%" }}
+                        placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
+                        value={ano?.toString() || ""}
+                        onChangeText={(value) => {
+                          const numericValue = value.replace(/[^0-9]/g, "");
+                          if (numericValue === "") {
+                            setAno(undefined);
+                            return;
+                          }
+                          const num = Number(numericValue);
+                          if (numericValue.length < 4 || num >= 2012) {
+                            setAno(num);
+                          }
+                        }}
+                        keyboardType="numeric"
+                        maxLength={4}
+                      />
+                      <Text className="ml-1 text-muted text-xs">Ano mínimo: 2012</Text>
+                    </View>
+                  </View>
+                  {/* Campo Código do Rastreador */}
+                  <View className="mb-2">
+                    <Text className="mb-1 ml-1 font-medium text-text">Código do Rastreador *</Text>
+                    <TextInput
+                      placeholder="Ex: ABC123XYZ"
+                      className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
+                      placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
+                      value={codRastreador || ""}
+                      onChangeText={setCodRastreador}
+                    />
+                  </View>
+                  {/* Dropdown Setor */}
+                  <View className="mb-10">
+                    <Text className="mb-1 ml-1 font-medium text-text">Setor *</Text>
+                    <DropDownPicker
+                      open={openSetor}
+                      value={setor}
+                      items={opcoesSetor}
+                      setOpen={setOpenSetor}
+                      setValue={setSetor}
+                      setItems={setOpcoesSetor}
+                      placeholder="Selecione um setor para alocar a moto"
+                      style={[
+                        styles.dropdown,
+                        isDark && { backgroundColor: "#222222" },
+                        { zIndex: 10 },
+                      ]}
+                      dropDownContainerStyle={[
+                        styles.opcoesDropdown,
+                        isDark && { backgroundColor: "#222222" },
+                        { zIndex: 10 },
+                      ]}
+                      textStyle={{
+                        color: isDark ? "#ffffff" : "#000000",
+                      }}
+                      placeholderStyle={{
+                        color: isDark ? "#cccccc" : "#666666",
+                      }}
+                      disabled={opcoesSetor.length === 0}
+                    />
+                  </View>
+                </View>
+              </View>
 
-            <SubmitButton isLoading={isLoading} onSubmit={cadastrar} text="Cadastrar e Alocar" />
+              {/* Botão Submit - Fixo na parte inferior */}
+              <View className="gap-5 pb-5">
+                <TouchableOpacity
+                  className="flex-row h-14 w-full items-center justify-center rounded-2xl bg-secondary"
+                  onPress={abrirCamera}
+                >
+                  <Ionicons name="camera" color={isDark ? "white" : "black"} size={24} />
+                  <Text className="ml-3 font-semibold text-lg text-text">Preencher com Foto</Text>
+                </TouchableOpacity>
 
-            {/* Campos obrigatórios */}
-            <Text className="text-center text-muted text-xs">* Campos obrigatórios</Text>
-          </View>
+                <SubmitButton isLoading={isLoading} onSubmit={cadastrar} text="Cadastrar e Alocar" />
+
+                {/* Campos obrigatórios */}
+                <Text className="text-center text-muted text-xs">* Campos obrigatórios</Text>
+              </View>
+            </>
+          )}
         </View>
       )}
     </SafeAreaView>
