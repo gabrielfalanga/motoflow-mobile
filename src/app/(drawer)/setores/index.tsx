@@ -124,13 +124,11 @@ export default function SetoresScreen() {
                   <View className="flex-row items-center justify-between mb-4">
                     <Text className="font-bold text-xl text-text">Setor {setor.setor}</Text>
                     <Ionicons name="chevron-forward-outline" size={20} color="#999" />
-                  </View>
-
-                  {/* Estatísticas das Vagas */}
+                  </View>                  {/* Estatísticas das Vagas */}
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1">
                       <Text className="text-muted text-sm">
-                        {setor.vagasDisponiveis} livres • {setor.posicoesOcupadas} ocupadas • {setor.capacidadeSetor} total
+                        {setor.vagasDisponiveis} {setor.vagasDisponiveis === 1 ? 'livre' : 'livres'} • {setor.posicoesOcupadas} {setor.posicoesOcupadas === 1 ? 'ocupada' : 'ocupadas'} • {setor.capacidadeSetor} total
                       </Text>
                     </View>
                   </View>
