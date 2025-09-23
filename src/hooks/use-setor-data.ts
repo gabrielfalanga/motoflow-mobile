@@ -20,7 +20,6 @@ export function useSetorData(setor: string) {
         const response = await request<SetorDetalhado>(`/posicoes/${patioId}/${setor}`, "get", null, {
           authToken: token,
         });
-        console.log("Dados do setor:", response);
         setData(response);
         setError("");
       } catch (err) {
