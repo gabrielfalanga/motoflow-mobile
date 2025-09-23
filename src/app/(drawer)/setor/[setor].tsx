@@ -1,6 +1,8 @@
 import { MotoDetailsModal } from "@/components/moto-details-modal";
 import { NotificationCard } from "@/components/notification-card";
 import { VagaPosicao } from "@/components/vaga-posicao";
+import { useAuth } from "@/context/auth-context";
+import { request } from "@/helper/request";
 import { useSetorData } from "@/hooks/use-setor-data";
 import type { Moto } from "@/interfaces/interfaces";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,6 +10,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   RefreshControl,
   ScrollView,
   Text,
@@ -20,6 +23,9 @@ export default function PosicaoHorizontalScreen() {
   const { setor } = useLocalSearchParams<{
     setor: string;
   }>();
+
+  const { token, patioId } = useAuth();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   if (!setor) {
     router.back();
@@ -37,11 +43,58 @@ export default function PosicaoHorizontalScreen() {
     setSelectedPosition(posicaoVertical);
     setModalVisible(true);
   };
-
   const closeModal = () => {
     setModalVisible(false);
     setSelectedMoto(undefined);
     setSelectedPosition(undefined);
+  };
+
+  const excluirSetor = async () => {
+    if (!token || !patioId || !setor) return;
+
+    Alert.alert(
+      "Excluir Setor",
+      `Tem certeza que deseja excluir o setor ${setor}? Esta ação não pode ser desfeita.`,
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            setIsDeleting(true);
+            try {
+              await request(`/posicoes/${setor}/${patioId}`, "delete", null, {
+                authToken: token,
+              });
+              
+              Alert.alert(
+                "Sucesso",
+                `Setor ${setor} excluído com sucesso!`,
+                [
+                  {
+                    text: "OK",
+                    onPress: () => {
+                      router.push("/setores/");
+                    },
+                  },
+                ]
+              );
+            } catch (error) {
+              console.error("Erro ao excluir setor:", error);
+              Alert.alert(
+                "Erro",
+                error instanceof Error ? error.message : "Erro desconhecido ao excluir setor"
+              );
+            } finally {
+              setIsDeleting(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const renderVagas = () => {
@@ -202,14 +255,33 @@ export default function PosicaoHorizontalScreen() {
           <View className="rounded-xl bg-card p-4">
             <View className="flex-row flex-wrap justify-center">{renderVagas()}</View>
           </View>
-        </View>
-
-        {/* Footer */}
+        </View>        {/* Footer */}
         <View className="items-center pb-8">
           <Text className="text-muted text-sm">Toque em uma vaga para ver detalhes</Text>
           <Text className="text-muted text-xs">
             Última atualização: {new Date().toLocaleTimeString()}
           </Text>
+        </View>
+
+        {/* Botão de Excluir Setor */}
+        <View className="px-4 pb-8">
+          <TouchableOpacity
+            onPress={excluirSetor}
+            disabled={isDeleting}
+            className={`flex-row items-center justify-center rounded-xl border border-red-300 bg-red-50 p-4 ${
+              isDeleting ? "opacity-50" : ""
+            }`}
+            activeOpacity={0.7}
+          >
+            {isDeleting ? (
+              <ActivityIndicator size="small" color="#dc2626" className="mr-2" />
+            ) : (
+              <Ionicons name="trash-outline" size={20} color="#dc2626" className="mr-2" />
+            )}
+            <Text className="ml-2 font-semibold text-red-600">
+              {isDeleting ? "Excluindo..." : "Excluir Setor"}
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
 
