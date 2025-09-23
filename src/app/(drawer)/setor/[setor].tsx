@@ -96,44 +96,44 @@ export default function PosicaoHorizontalScreen() {
       ]
     );
   };
-
   const renderVagas = () => {
     if (!data) return null;
 
     const motos = getMotos();
-    const vagas = [];
+    const elementos = [];
 
-    // Renderizar baseado nas vagas totais do setor
-    for (let i = 1; i <= data.vagasTotais; i++) {
-      // Para agora, vamos mostrar as motos sequencialmente nas vagas
-      // Isso pode ser ajustado conforme a lógica de negócio específica
-      const moto = motos[i - 1]; // Pegamos a moto na posição i-1 do array
-
-      vagas.push(
+    // Renderizar as motos existentes
+    motos.forEach((moto, index) => {
+      elementos.push(
         <VagaPosicao
-          key={i}
-          posicaoVertical={i}
-          moto={
-            moto
-              ? {
-                  ...moto,
-                  posicaoHorizontal: data.setor,
-                  posicaoVertical: i,
-                }
-              : undefined
-          }
+          key={`moto-${moto.id}`}
+          posicaoVertical={index + 1}
+          moto={{
+            ...moto,
+            posicaoHorizontal: data.setor,
+            posicaoVertical: index + 1,
+          }}
           onPress={(pos, motoData) => {
-            if (motoData && moto) {
-              handleVagaPress(pos, moto);
-            } else {
-              handleVagaPress(pos, undefined);
-            }
+            handleVagaPress(pos, moto);
           }}
         />
       );
+    });    // Adicionar card para adicionar nova moto (se houver vagas disponíveis)
+    if (motos.length < data.vagasTotais) {
+      elementos.push(
+        <TouchableOpacity
+          key="add-moto"
+          className="relative m-1 min-h-24 min-w-20 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-3"
+          onPress={() => router.push(`/moto/cadastro-moto?setor=${setor}`)}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="add" size={20} color="#999" />
+          <Text className="mt-1 text-center text-xs text-gray-500">Adicionar</Text>
+        </TouchableOpacity>
+      );
     }
 
-    return vagas;
+    return elementos;
   };
 
   const stats = getEstatisticas();
