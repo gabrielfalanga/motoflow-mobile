@@ -1,11 +1,11 @@
 import { useAuth } from "@/context/auth-context";
 import { request } from "@/helper/request";
-import type { SetorInfo } from "@/interfaces/interfaces";
+import type { SetorDetalhado } from "@/interfaces/interfaces";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 
 export function useSetorData(setor: string) {
-  const [data, setData] = useState<SetorInfo | null>(null);
+  const [data, setData] = useState<SetorDetalhado | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string>("");
@@ -16,13 +16,11 @@ export function useSetorData(setor: string) {
       if (!token || !patioId || !setor) return;
 
       if (isRefresh) setRefreshing(true);
-      else setLoading(true);
-
-      try {
-        const response = await request<SetorInfo>(`/posicoes/${patioId}/${setor}`, "get", null, {
+      else setLoading(true);      try {
+        const response = await request<SetorDetalhado>(`/posicoes/${patioId}/${setor}`, "get", null, {
           authToken: token,
         });
-
+        console.log("Dados do setor:", response);
         setData(response);
         setError("");
       } catch (err) {
@@ -53,9 +51,7 @@ export function useSetorData(setor: string) {
       return data?.motos.find((moto) => moto.id === id);
     },
     [data]
-  );
-
-  const getEstatisticas = useCallback(() => {
+  );  const getEstatisticas = useCallback(() => {
     if (!data)
       return {
         ocupadas: 0,

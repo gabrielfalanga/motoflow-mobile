@@ -56,6 +56,13 @@ export interface MotoNaPosicao {
 
 export interface SetorInfo {
   setor: string;
+  capacidadeSetor: number;
+  posicoesOcupadas: number;
+  vagasDisponiveis: number;
+}
+
+export interface SetorDetalhado {
+  setor: string;
   vagasTotais: number;
   ocupadas: number;
   disponiveis: number;

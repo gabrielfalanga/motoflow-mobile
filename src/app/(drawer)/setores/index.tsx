@@ -1,6 +1,6 @@
 import { useAuth } from "@/context/auth-context";
 import { request } from "@/helper/request";
-import type { Setor } from "@/interfaces/interfaces";
+import type { SetorInfo } from "@/interfaces/interfaces";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
@@ -16,7 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SetoresScreen() {
-  const [posicoes, setPosicoes] = useState<Setor[]>([]);
+  const [posicoes, setPosicoes] = useState<SetorInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { token, patioId } = useAuth();
@@ -29,7 +29,7 @@ export default function SetoresScreen() {
       else setLoading(true);
 
       try {
-        const response = await request<Setor[]>(`/posicoes/${patioId}`, "get", null, {
+        const response = await request<SetorInfo[]>(`/posicoes/${patioId}`, "get", null, {
           authToken: token,
         });
         setPosicoes(response || []);
@@ -51,7 +51,7 @@ export default function SetoresScreen() {
     }, [token, patioId, fetchSetores])
   );
 
-  const handleAreaPress = (setor: Setor) => {
+  const handleAreaPress = (setor: SetorInfo) => {
     Alert.alert(`Setor ${setor.setor}`, "Deseja visualizar os detalhes deste setor?", [
       {
         text: "Cancelar",
@@ -116,23 +116,35 @@ export default function SetoresScreen() {
             return (
               <TouchableOpacity
                 key={setor.setor}
-                className="rounded-xl border border-secondary bg-card p-4"
+                className="rounded-xl border border-primary bg-card p-4"
                 onPress={() => handleAreaPress(setor)}
                 activeOpacity={0.7}
-              >
-                <View className="flex-row items-center justify-between">
-                  {/* Info do Setor */}
-                  <View className="flex-1">
-                    <Text className="font-bold text-lg text-text">{setor.setor}</Text>
-                    <Text className="text-muted text-sm">Toque para ver detalhes</Text>
+              >                <View>
+                  {/* Header do Setor */}
+                  <View className="flex-row items-center justify-between mb-4">
+                    <Text className="font-bold text-xl text-text">Setor {setor.setor}</Text>
+                    <Ionicons name="chevron-forward-outline" size={20} color="#999" />
                   </View>
 
-                  {/* Ícone de Navegação */}
-                  <View className="items-center">
-                    <Ionicons name="location-outline" size={32} color={"#05AF31"} />
-                    <Text className="mt-1 font-semibold text-xs" style={{ color: "#05AF31" }}>
-                      Ver setor
-                    </Text>
+                  {/* Estatísticas das Vagas */}
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-1">
+                      <Text className="text-muted text-sm">
+                        {setor.vagasDisponiveis} livres • {setor.posicoesOcupadas} ocupadas • {setor.capacidadeSetor} total
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Barra de Progresso Minimalista */}
+                  <View className="mt-3">
+                    <View className="bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                      <View 
+                        className="bg-gray-400 h-full rounded-full"
+                        style={{ 
+                          width: setor.capacidadeSetor > 0 ? `${(setor.posicoesOcupadas / setor.capacidadeSetor) * 100}%` : '0%' 
+                        }}
+                      />
+                    </View>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -151,7 +163,7 @@ export default function SetoresScreen() {
 
             <TouchableOpacity
               className="h-12 items-center justify-center rounded-xl bg-primary px-6"
-              onPress={() => router.navigate("/area/cadastro-area")}
+              onPress={() => router.navigate("/setores/cadastro-setor")}
               activeOpacity={0.8}
             >
               <Text className="font-semibold text-white">Cadastrar Setor</Text>
