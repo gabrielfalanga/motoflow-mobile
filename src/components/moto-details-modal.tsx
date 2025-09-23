@@ -88,13 +88,39 @@ export function MotoDetailsModal({
 
     switch (moto.tipoMoto) {
       case "MOTTU_E":
-        return { name: "Mottu E", icon: "flash", color: "#3b82f6" };
+        return { name: "Mottu E (Elétrica)", icon: "flash", color: "#3b82f6" };
       case "MOTTU_SPORT":
-        return { name: "Mottu Sport", icon: "speedometer", color: "#ef4444" };
+        return { name: "Mottu Sport (Esportiva)", icon: "speedometer", color: "#ef4444" };
       case "MOTTU_POP":
-        return { name: "Mottu Pop", icon: "bicycle", color: "#8b5cf6" };
+        return { name: "Mottu Pop (Popular)", icon: "bicycle", color: "#8b5cf6" };
       default:
         return { name: "Desconhecido", icon: "help-circle", color: "#6b7280" };
+    }
+  };
+
+  const getTipoMotoIcon = (tipo: string) => {
+    switch (tipo) {
+      case "MOTTU_E":
+        return "flash";
+      case "MOTTU_SPORT":
+        return "speedometer";
+      case "MOTTU_POP":
+        return "bicycle";
+      default:
+        return "bicycle";
+    }
+  };
+
+  const getStatusMotoInfo = (status: string) => {
+    switch (status) {
+      case "DISPONIVEL":
+        return { nome: "Disponível", cor: "#10b981" };
+      case "MANUTENCAO":
+        return { nome: "Em Manutenção", cor: "#f59e0b" };
+      case "ALUGADA":
+        return { nome: "Alugada", cor: "#ef4444" };
+      default:
+        return { nome: status, cor: "#6b7280" };
     }
   };
 
@@ -314,29 +340,46 @@ export function MotoDetailsModal({
                   </View>
 
                   {/* Detalhes da Moto */}
-                  <View className="gap-3">
-                    <View className="flex-row items-center justify-between rounded-lg bg-background p-3">
-                      <View className="flex-row items-center">
-                        <Ionicons name="card-outline" size={16} color="#666" />
-                        <Text className="ml-2 text-muted">Placa</Text>
+                  <View className="rounded-xl bg-background p-4">
+                    <View className="gap-3">
+                      {/* Placa e Rastreador */}
+                      <View className="flex-row items-center justify-between">
+                        <View className="flex-row items-center">
+                          <Ionicons name="albums-outline" size={16} color="#666" />
+                          <Text className="ml-2 text-muted">Placa</Text>
+                        </View>
+                        <Text className="font-semibold text-text">{moto.placa}</Text>
                       </View>
-                      <Text className="font-semibold text-text">{moto.placa}</Text>
-                    </View>
 
-                    <View className="flex-row items-center justify-between rounded-lg bg-background p-3">
-                      <View className="flex-row items-center">
-                        <Ionicons name="calendar-outline" size={16} color="#666" />
-                        <Text className="ml-2 text-muted">Ano</Text>
+                      <View className="flex-row items-center justify-between">
+                        <View className="flex-row items-center">
+                          <Ionicons name="radio-outline" size={16} color="#666" />
+                          <Text className="ml-2 text-muted">Rastreador</Text>
+                        </View>
+                        <Text className="font-semibold text-text">{moto.codRastreador}</Text>
                       </View>
-                      <Text className="font-semibold text-text">{moto.ano}</Text>
-                    </View>
 
-                    <View className="flex-row items-center justify-between rounded-lg bg-background p-3">
-                      <View className="flex-row items-center">
-                        <Ionicons name="location-outline" size={16} color="#666" />
-                        <Text className="ml-2 text-muted">Setor</Text>
+                      {/* Ano e Status */}
+                      <View className="flex-row items-center justify-between">
+                        <View className="flex-row items-center">
+                          <Ionicons name="calendar-outline" size={16} color="#666" />
+                          <Text className="ml-2 text-muted">Ano</Text>
+                        </View>
+                        <Text className="font-semibold text-text">{moto.ano}</Text>
                       </View>
-                      <Text className="font-semibold text-text">{setor}</Text>
+
+                      <View className="flex-row items-center justify-between">
+                        <View className="flex-row items-center">
+                          <Ionicons name="information-circle-outline" size={16} color="#666" />
+                          <Text className="ml-2 text-muted">Status</Text>
+                        </View>
+                        <Text
+                          className="font-semibold"
+                          style={{ color: getStatusMotoInfo(moto.statusMoto).cor }}
+                        >
+                          {getStatusMotoInfo(moto.statusMoto).nome}
+                        </Text>
+                      </View>
                     </View>
                   </View>
 

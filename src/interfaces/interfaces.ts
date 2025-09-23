@@ -19,6 +19,7 @@ export interface Moto {
   tipoMoto: "MOTTU_SPORT" | "MOTTU_E" | "MOTTU_POP";
   ano: number;
   placa: string;
+  codRastreador: string;
   statusMoto: "ALUGADA" | "DISPONIVEL" | "MANUTENCAO";
   dataAlocacao: Date | null;
 }
@@ -47,6 +48,7 @@ export interface MotoNaPosicao {
   placa: string;
   tipoMoto: "MOTTU_SPORT" | "MOTTU_E" | "MOTTU_POP";
   ano: number;
+  codRastreador: string;
   statusMoto: "ALUGADA" | "DISPONIVEL" | "MANUTENCAO";
   posicaoHorizontal: string;
   posicaoVertical: number;
