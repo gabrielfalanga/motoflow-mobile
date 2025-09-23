@@ -27,7 +27,7 @@ interface CadastroMoto {
   placa: string;
   statusMoto: "DISPONIVEL";
   setor: string;
-  codRastreador: number;
+  codRastreador: string;
   dataEntrada: string;
 }
 
@@ -214,7 +214,7 @@ export default function CadastroMotoScreen() {
   // form fields
   const [ano, setAno] = useState<number>();
   const [placa, setPlaca] = useState<string>();
-  const [codRastreador, setCodRastreador] = useState<number>();
+  const [codRastreador, setCodRastreador] = useState<string>();
 
   const cadastrar = async () => {
     if (!patioId || !token) return;
@@ -239,7 +239,7 @@ export default function CadastroMotoScreen() {
       return;
     }
 
-    if (!codRastreador || Number.isNaN(codRastreador) || codRastreador <= 0) {
+    if (!codRastreador || !codRastreador.trim()) {
       Alert.alert("Erro", "Digite um código de rastreador válido.");
       return;
     }
@@ -419,8 +419,8 @@ export default function CadastroMotoScreen() {
                     placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
                     value={placa}
                     onChangeText={(value) => setPlaca(value.toUpperCase())}
-                    maxLength={7}
                     autoCapitalize="characters"
+                    maxLength={7}
                   />
                   <Text className="ml-1 text-muted text-xs">
                     7 caracteres, sem traço ou espaços
@@ -456,17 +456,11 @@ export default function CadastroMotoScreen() {
               <View className="mb-2">
                 <Text className="mb-1 ml-1 font-medium text-text">Código do Rastreador *</Text>
                 <TextInput
-                  placeholder="Ex: 123456"
+                  placeholder="Ex: ABC123XYZ"
                   className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
                   placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
-                  value={codRastreador?.toString() || ""}
-                  onChangeText={(value) => {
-                    // Aceita apenas números
-                    const numericValue = value.replace(/[^0-9]/g, "");
-                    setCodRastreador(numericValue ? Number(numericValue) : undefined);
-                  }}
-                  keyboardType="numeric"
-                  maxLength={10}
+                  value={codRastreador || ""}
+                  onChangeText={setCodRastreador}
                 />
               </View>
               {/* Dropdown Setor */}
