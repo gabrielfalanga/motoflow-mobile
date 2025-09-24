@@ -579,16 +579,20 @@ export default function BuscaMotoScreen() {
                           {motoEncontrada.placa}
                         </Text>
                       </View>
-                    </View>
-
-                    {/* Código do Rastreador */}
+                    </View>                    {/* Código do Rastreador */}
                     <View className="flex-row items-center">
                       <Ionicons name="radio-outline" size={24} color="#05AF31" />
                       <View className="ml-3 flex-1">
                         <Text className="font-medium text-text">Código do Rastreador</Text>
-                        <Text className="font-bold text-lg text-primary">
-                          {motoEncontrada.codRastreador}
-                        </Text>
+                        {motoEncontrada.codRastreador ? (
+                          <Text className="font-bold text-lg text-primary">
+                            {motoEncontrada.codRastreador}
+                          </Text>
+                        ) : (
+                            <Text className="font-medium text-orange-600 text-sm">
+                              Sem rastreador
+                            </Text>
+                        )}
                       </View>
                     </View>
 

@@ -349,14 +349,18 @@ export function MotoDetailsModal({
                           <Text className="ml-2 text-muted">Placa</Text>
                         </View>
                         <Text className="font-semibold text-text">{moto.placa}</Text>
-                      </View>
-
-                      <View className="flex-row items-center justify-between">
+                      </View>                      <View className="flex-row items-center justify-between">
                         <View className="flex-row items-center">
                           <Ionicons name="radio-outline" size={16} color="#666" />
                           <Text className="ml-2 text-muted">Rastreador</Text>
                         </View>
-                        <Text className="font-semibold text-text">{moto.codRastreador}</Text>
+                        {moto.codRastreador ? (
+                          <Text className="font-semibold text-text">{moto.codRastreador}</Text>
+                        ) : (
+                            <Text className="font-medium text-orange-600">
+                              Sem rastreador
+                            </Text>
+                        )}
                       </View>
 
                       {/* Ano e Status */}
