@@ -383,53 +383,72 @@ export function MotoDetailsModal({
                         >
                           {getStatusMotoInfo(moto.statusMoto).nome}
                         </Text>
-                      </View>
-                    </View>
+                      </View>                    </View>
                   </View>
-
-                  <TouchableOpacity
-                    className="mt-2 rounded-xl bg-amber-500 p-4"
-                    onPress={levarParaManutencao}
-                    disabled={isLoadingManutencao || isLoadingAluguel}
-                  >
-                    {isLoadingManutencao ? (
-                      <View className="flex-row items-center justify-center">
+                  
+                  {/* Botões de ação em linha */}
+                  <View className="mt-2 flex-row gap-2">
+                    <TouchableOpacity
+                      className="h-16 flex-1 items-center justify-center rounded-xl bg-amber-500 px-2"
+                      onPress={levarParaManutencao}
+                      disabled={isLoadingManutencao || isLoadingAluguel}
+                    >
+                      {isLoadingManutencao ? (
                         <ActivityIndicator color="#ffffff" size="small" />
-                        <Text className="ml-2 text-center font-semibold text-white">
-                          Enviando...
-                        </Text>
-                      </View>
-                    ) : (
-                      <Text className="text-center font-semibold text-white">
-                        Levar para Manutenção
+                      ) : (
+                        <>
+                          <Ionicons name="build-outline" size={18} color="#ffffff" />
+                          <Text className="mt-1 font-semibold text-white text-xs text-center">
+                            Manutenção
+                          </Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      className="h-16 flex-1 items-center justify-center rounded-xl bg-blue-500 px-2"
+                      onPress={marcarComoAlugada}
+                      disabled={isLoadingAluguel || isLoadingManutencao}
+                    >
+                      {isLoadingAluguel ? (
+                        <ActivityIndicator color="#ffffff" size="small" />
+                      ) : (
+                        <>
+                          <Ionicons name="exit-outline" size={18} color="#ffffff" />
+                          <Text className="mt-1 font-semibold text-white text-xs text-center">
+                            Alugar
+                          </Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      className="h-16 flex-1 items-center justify-center rounded-xl bg-purple-500 px-2"
+                      onPress={abrirModalMudarSetor}
+                      disabled={isLoadingManutencao || isLoadingAluguel || isMudandoSetor}
+                    >
+                      <Ionicons name="swap-horizontal-outline" size={18} color="#ffffff" />
+                      <Text className="mt-1 font-semibold text-white text-xs text-center">
+                        Mudar Setor
                       </Text>
-                    )}
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    className="mt-2 rounded-xl bg-blue-500 p-4"
-                    onPress={marcarComoAlugada}
-                    disabled={isLoadingAluguel || isLoadingManutencao}
-                  >
-                    {isLoadingAluguel ? (
-                      <View className="flex-row items-center justify-center">
-                        <ActivityIndicator color="#ffffff" size="small" />
-                        <Text className="ml-2 text-center font-semibold text-white">
-                          Processando...
-                        </Text>
+                    </TouchableOpacity>                  </View>
+                  
+                  {/* Botão de Rastrear Moto - só aparece se tiver rastreador e setor */}
+                  {moto.codRastreador && setor && (
+                    <TouchableOpacity
+                      className="mt-3 h-16 w-full items-center justify-center rounded-xl bg-green-600"
+                      onPress={() => {
+                        // Função de rastreamento será implementada
+                        console.log("Rastreando moto...");
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <View className="flex-row items-center">
+                        <Ionicons name="location" size={24} color="#ffffff" />
+                        <Text className="ml-2 font-semibold text-lg text-white">Rastrear Moto</Text>
                       </View>
-                    ) : (
-                      <Text className="text-center font-semibold text-white">Moto Alugada</Text>
-                    )}
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    className="mt-2 rounded-xl bg-purple-500 p-4"
-                    onPress={abrirModalMudarSetor}
-                    disabled={isLoadingManutencao || isLoadingAluguel || isMudandoSetor}
-                  >
-                    <Text className="text-center font-semibold text-white">Mudar Setor</Text>
-                  </TouchableOpacity>
+                    </TouchableOpacity>
+                  )}
                 </View>
               ) : (
                 <View className="items-center py-8">
