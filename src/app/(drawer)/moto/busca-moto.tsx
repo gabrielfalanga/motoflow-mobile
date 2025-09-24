@@ -674,43 +674,35 @@ export default function BuscaMotoScreen() {
                         </View>
                       </View>
                     </View>
-                  </View>
-
-                  {/* Botões para ações da moto */}
+                  </View>                  {/* Botões para ações da moto */}
                   {motoEncontrada.setor && motoEncontrada.statusMoto === "DISPONIVEL" ? (
                     // Moto disponível e alocada - 3 botões
-                    <View className="mt-6 gap-3">
+                    <View className="mt-6 flex-row gap-2">
                       <TouchableOpacity
-                        className="h-12 items-center justify-center rounded-xl bg-purple-500"
+                        className="h-16 flex-1 items-center justify-center rounded-xl bg-purple-500 px-2"
                         onPress={abrirModalEditarStatus}
                         activeOpacity={0.8}
                       >
-                        <View className="flex-row items-center">
-                          <Ionicons name="create-outline" size={20} color="#ffffff" />
-                          <Text className="ml-2 font-semibold text-white">Editar Status</Text>
-                        </View>
+                        <Ionicons name="create-outline" size={20} color="#ffffff" />
+                        <Text className="mt-1 font-semibold text-white text-xs text-center">Editar Status</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
-                        className="h-12 items-center justify-center rounded-xl bg-orange-500"
+                        className="h-16 flex-1 items-center justify-center rounded-xl bg-orange-500 px-2"
                         onPress={abrirModalAlocacao}
                         activeOpacity={0.8}
                       >
-                        <View className="flex-row items-center">
-                          <Ionicons name="swap-horizontal-outline" size={20} color="#ffffff" />
-                          <Text className="ml-2 font-semibold text-white">Editar Setor</Text>
-                        </View>
+                        <Ionicons name="swap-horizontal-outline" size={20} color="#ffffff" />
+                        <Text className="mt-1 font-semibold text-white text-xs text-center">Editar Setor</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
-                        className="h-12 items-center justify-center rounded-xl bg-blue-500"
+                        className="h-16 flex-1 items-center justify-center rounded-xl bg-blue-500 px-2"
                         onPress={() => router.navigate(`/(drawer)/setor/${motoEncontrada.setor}`)}
                         activeOpacity={0.8}
                       >
-                        <View className="flex-row items-center">
-                          <Ionicons name="navigate-outline" size={20} color="#ffffff" />
-                          <Text className="ml-2 font-semibold text-white">Abrir Setor</Text>
-                        </View>
+                        <Ionicons name="navigate-outline" size={20} color="#ffffff" />
+                        <Text className="mt-1 font-semibold text-white text-xs text-center">Abrir Setor</Text>
                       </TouchableOpacity>
                     </View>
                   ) : motoEncontrada.setor ? (
@@ -727,27 +719,23 @@ export default function BuscaMotoScreen() {
                     </TouchableOpacity>
                   ) : motoEncontrada.statusMoto === "DISPONIVEL" ? (
                     // Moto disponível mas não alocada - editar status e alocar em setor
-                    <View className="mt-6 gap-3">
+                    <View className="mt-6 flex-row gap-2">
                       <TouchableOpacity
-                        className="h-12 items-center justify-center rounded-xl bg-purple-500"
+                        className="h-16 flex-1 items-center justify-center rounded-xl bg-purple-500 px-2"
                         onPress={abrirModalEditarStatus}
                         activeOpacity={0.8}
                       >
-                        <View className="flex-row items-center">
-                          <Ionicons name="create-outline" size={20} color="#ffffff" />
-                          <Text className="ml-2 font-semibold text-white">Editar Status</Text>
-                        </View>
+                        <Ionicons name="create-outline" size={20} color="#ffffff" />
+                        <Text className="mt-1 font-semibold text-white text-xs text-center">Editar Status</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
-                        className="h-12 items-center justify-center rounded-xl bg-orange-500"
+                        className="h-16 flex-1 items-center justify-center rounded-xl bg-orange-500 px-2"
                         onPress={abrirModalAlocacao}
                         activeOpacity={0.8}
                       >
-                        <View className="flex-row items-center">
-                          <Ionicons name="add-circle-outline" size={20} color="#ffffff" />
-                          <Text className="ml-2 font-semibold text-white">Alocar em Setor</Text>
-                        </View>
+                        <Ionicons name="add-circle-outline" size={20} color="#ffffff" />
+                        <Text className="mt-1 font-semibold text-white text-xs text-center">Alocar em Setor</Text>
                       </TouchableOpacity>
                     </View>
                   ) : (
