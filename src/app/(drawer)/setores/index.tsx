@@ -50,20 +50,8 @@ export default function SetoresScreen() {
       }
     }, [token, patioId, fetchSetores])
   );
-
   const handleAreaPress = (setor: SetorInfo) => {
-    Alert.alert(`Setor ${setor.setor}`, "Deseja visualizar os detalhes deste setor?", [
-      {
-        text: "Cancelar",
-        style: "cancel",
-      },
-      {
-        text: "Sim!",
-        onPress: () => {
-          router.push(`/setor/${setor.setor}`);
-        },
-      },
-    ]);
+    router.push(`/setor/${setor.setor}`);
   };
 
   if (loading) {
