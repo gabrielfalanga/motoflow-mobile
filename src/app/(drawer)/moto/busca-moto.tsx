@@ -580,18 +580,33 @@ export default function BuscaMotoScreen() {
                         </Text>
                       </View>
                     </View>                    {/* Código do Rastreador */}
-                    <View className="flex-row items-center">
-                      <Ionicons name="radio-outline" size={24} color="#05AF31" />
-                      <View className="ml-3 flex-1">
-                        <Text className="font-medium text-text">Código do Rastreador</Text>
+                    <View className="flex-row items-center mb-4">
+                      <Ionicons name="radio-outline" size={24} color="#05AF31" />                      <View className="ml-3 flex-1">
+                        <View className="flex-row items-center">
+                          <Text className="font-medium text-text">Código do Rastreador</Text>
+                          <TouchableOpacity
+                            className="ml-4 h-6 w-6 items-center justify-center rounded bg-blue-500"
+                            onPress={() => {
+                              // Função para editar/adicionar rastreador será implementada
+                              console.log(motoEncontrada.codRastreador ? "Editando rastreador..." : "Adicionando rastreador...");
+                            }}
+                            activeOpacity={0.7}
+                          >
+                            <Ionicons 
+                              name={motoEncontrada.codRastreador ? "create-outline" : "add-outline"} 
+                              size={14} 
+                              color="#ffffff" 
+                            />
+                          </TouchableOpacity>
+                        </View>
                         {motoEncontrada.codRastreador ? (
                           <Text className="font-bold text-lg text-primary">
                             {motoEncontrada.codRastreador}
                           </Text>
                         ) : (
-                            <Text className="font-medium text-orange-600 text-sm">
-                              Sem rastreador
-                            </Text>
+                          <Text className="font-medium text-orange-600 text-sm">
+                            Sem rastreador
+                          </Text>
                         )}
                       </View>
                     </View>

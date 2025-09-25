@@ -353,6 +353,20 @@ export function MotoDetailsModal({
                         <View className="flex-row items-center">
                           <Ionicons name="radio-outline" size={16} color="#666" />
                           <Text className="ml-2 text-muted">Rastreador</Text>
+                          <TouchableOpacity
+                            className="ml-2 h-6 w-6 items-center justify-center rounded bg-blue-500"
+                            onPress={() => {
+                              // Função para editar/adicionar rastreador será implementada
+                              console.log(moto.codRastreador ? "Editando rastreador..." : "Adicionando rastreador...");
+                            }}
+                            activeOpacity={0.7}
+                          >
+                            <Ionicons 
+                              name={moto.codRastreador ? "create-outline" : "add-outline"} 
+                              size={14} 
+                              color="#ffffff" 
+                            />
+                          </TouchableOpacity>
                         </View>
                         {moto.codRastreador ? (
                           <Text className="font-semibold text-text">{moto.codRastreador}</Text>
