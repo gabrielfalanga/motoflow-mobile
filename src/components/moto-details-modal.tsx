@@ -9,6 +9,7 @@ import {
   Modal,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
   ActivityIndicator,
@@ -40,11 +41,15 @@ export function MotoDetailsModal({
   // Estados do modal de mudança de setor
   const [modalMudarSetorVisible, setModalMudarSetorVisible] = useState(false);
   const [isMudandoSetor, setIsMudandoSetor] = useState(false);
-
   // Estados do dropdown de setor
   const [openSetorMudanca, setOpenSetorMudanca] = useState(false);
   const [novoSetor, setNovoSetor] = useState<string | null>(null);
   const [opcoesSetor, setOpcoesSetor] = useState<Array<{ label: string; value: string }>>([]);
+
+  // Estados do modal de rastreador
+  const [modalRastreadorVisible, setModalRastreadorVisible] = useState(false);
+  const [isEditandoRastreador, setIsEditandoRastreador] = useState(false);
+  const [novoCodRastreador, setNovoCodRastreador] = useState<string>("");
 
   // Buscar setores quando o modal abrir
   useFocusEffect(
@@ -295,9 +300,62 @@ export function MotoDetailsModal({
         errorMessage = error.message;
       }
 
+      Alert.alert(errorTitle, errorMessage, [{ text: "OK" }]);    } finally {
+      setIsMudandoSetor(false);
+    }
+  };
+
+  const abrirModalRastreador = () => {
+    if (moto) {
+      setNovoCodRastreador(moto.codRastreador || "");
+      setModalRastreadorVisible(true);
+    }
+  };
+
+  const fecharModalRastreador = () => {
+    setModalRastreadorVisible(false);
+    setNovoCodRastreador("");
+  };
+  const editarRastreador = async () => {
+    if (!moto?.placa || !token) return;
+
+    // Validações
+    if (!novoCodRastreador.trim()) {
+      Alert.alert("Erro", "Digite o código do rastreador.");
+      return;
+    }
+
+    setIsEditandoRastreador(true);
+
+    try {
+      const body = {
+        codRastreador: novoCodRastreador,
+      };      await request(`/motos/beacon/${moto.placa}`, "put", body, {
+        authToken: token,
+      });
+
+      // Atualizar o estado local da moto com o novo código do rastreador
+      if (moto) {
+        Object.assign(moto, { codRastreador: novoCodRastreador });
+      }
+
+      fecharModalRastreador();
+
+      // Atualizar a página
+      if (onMotoUpdated) {
+        onMotoUpdated();
+      }
+    } catch (error) {
+      let errorMessage = "Ocorreu um erro inesperado ao atualizar o código do rastreador.";
+      const errorTitle = "Erro na Atualização";
+
+      if (error instanceof RequestError) {
+        errorMessage = error.message;
+      }
+
       Alert.alert(errorTitle, errorMessage, [{ text: "OK" }]);
     } finally {
-      setIsMudandoSetor(false);
+      setIsEditandoRastreador(false);
     }
   };
 
@@ -354,11 +412,7 @@ export function MotoDetailsModal({
                           <Ionicons name="radio-outline" size={16} color="#666" />
                           <Text className="ml-2 text-muted">Rastreador</Text>
                           <TouchableOpacity
-                            className="ml-2 h-6 w-6 items-center justify-center rounded bg-blue-500"
-                            onPress={() => {
-                              // Função para editar/adicionar rastreador será implementada
-                              console.log(moto.codRastreador ? "Editando rastreador..." : "Adicionando rastreador...");
-                            }}
+                            className="ml-2 h-6 w-6 items-center justify-center rounded bg-blue-500"                            onPress={abrirModalRastreador}
                             activeOpacity={0.7}
                           >
                             <Ionicons 
@@ -548,6 +602,69 @@ export function MotoDetailsModal({
                   <ActivityIndicator color="#ffffff" size="small" />
                 ) : (
                   <Text className="font-semibold text-white">Confirmar</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>      </Modal>
+
+      {/* Modal de Edição de Rastreador */}
+      <Modal
+        visible={modalRastreadorVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={fecharModalRastreador}
+      >
+        <View className="flex-1 justify-center bg-black/50 px-6">
+          <View className="rounded-xl bg-card p-6 shadow-lg">
+            <View className="mb-4 flex-row items-center justify-center">
+              <Ionicons name="radio" size={32} color="#3b82f6" />
+              <Text className="ml-3 font-bold text-text text-xl">
+                {moto?.codRastreador ? "Editar Rastreador" : "Adicionar Rastreador"}
+              </Text>
+            </View>
+
+            <Text className="mb-4 text-center text-muted">
+              {moto?.codRastreador ? "Altere" : "Defina"} o código do rastreador da moto{" "}
+              <Text className="font-bold text-primary">{moto?.placa}</Text>
+            </Text>
+
+            {/* Campo Código do Rastreador */}
+            <View className="mb-6">
+              <Text className="mb-2 font-medium text-text">Código do Rastreador *</Text>
+              <TextInput
+                placeholder="Ex: ABC123XYZ"
+                className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
+                placeholderTextColor="#666666"
+                value={novoCodRastreador}
+                onChangeText={setNovoCodRastreador}
+                autoCapitalize="characters"
+              />
+            </View>
+
+            {/* Botões */}
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                className="h-12 flex-1 items-center justify-center rounded-xl bg-gray-500"
+                onPress={fecharModalRastreador}
+                activeOpacity={0.8}
+                disabled={isEditandoRastreador}
+              >
+                <Text className="font-semibold text-white">Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className={`h-12 flex-1 items-center justify-center rounded-xl ${
+                  isEditandoRastreador ? "bg-gray-400" : "bg-blue-500"
+                }`}
+                onPress={editarRastreador}
+                activeOpacity={0.8}
+                disabled={isEditandoRastreador}
+              >
+                {isEditandoRastreador ? (
+                  <ActivityIndicator color="#ffffff" size="small" />
+                ) : (
+                  <Text className="font-semibold text-white">Salvar</Text>
                 )}
               </TouchableOpacity>
             </View>
