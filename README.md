@@ -1,14 +1,17 @@
-# Motoflow: Mapeamento Inteligente de Pátio
+# motoflow
 
-## 👨‍💻 Grupo
+**motoflow** é um aplicativo de gerenciamento inteligente de pátios para a Mottu, focado em otimizar a localização e controle de motos nos pátios operacionais distribuídos em mais de 100 filiais.
 
-`555061` - Gabriel Martins Falanga
+## 👨‍💻 Integrantes do Projeto
 
-`554489` - Arthur Chacon Garcia Spedine
-
-`554769` - Matheus Esteves Marques da Silva
+| Nome                             | RM     | GitHub                                                     |
+| -------------------------------- | ------ | ---------------------------------------------------------- |
+| Gabriel Martins Falanga          | 555061 | [@gabrielfalanga](https://github.com/gabrielfalanga)       |
+| Arthur Chacon Garcia Spedine     | 554489 | [@arthurspedine](https://github.com/arthurspedine)         |
+| Matheus Esteves Marques da Silva | 554769 | [@matheus-esteves10](https://github.com/matheus-esteves10) |
 
 ### 🚧 O Problema
+
 A Mottu, referência no aluguel acessível de motos para trabalhadores de apps, enfrenta hoje um desafio crítico na gestão dos seus pátios operacionais, distribuídos em mais de 100 filiais com estruturas e tamanhos variados. A localização manual das motos nesses espaços gera:
 
 - Erros frequentes e retrabalho;
@@ -23,30 +26,68 @@ A Mottu, referência no aluguel acessível de motos para trabalhadores de apps, 
 
 - Barreiras para escalar a operação eficientemente.
 
-### 💡 Solução Implementada
-#### O aplicativo desenvolvido facilita o gerenciamento das motos nos pátios. A solução inclui:
+## � Proposta e Funcionalidades
 
-📊 Dashboard: Acesso simplificado às informações principais do pátio.
+O motoflow é uma solução completa para gerenciamento de pátios de motos, oferecendo:
 
-🛵 Cadastro de motos: Formulário com validação de dados.
+### 📊 **Dashboard Inteligente**
 
-🔎 Busca de motos: Ao selecionar o tipo procurado, é exibida uma lista com as motos e suas posições no pátio.
+- Visão geral do pátio em tempo real
+- Estatísticas de ocupação e distribuição de motos
+- Interface otimizada para operadores
 
-🧠 Interface intuitiva e escalável: Um app de fácil uso para os operadores, adaptável a qualquer layout de pátio.
+### 🛵 **Gestão de Motos**
 
-🕶 Temas light e dark: Preferência do usuário salva no `async storage`.
+- **Cadastro de motos**: Formulário completo com validação de dados
+- **Busca inteligente**: Localização rápida por tipo, modelo ou posição
+- **Rastreamento Bluetooth**: Sistema de localização em tempo real através de dispositivos BLE (Bluetooth Low Energy) instalados nas motos
+
+### 📍 **Controle de Setores**
+
+- Cadastro e gerenciamento de setores do pátio
+- Visualização de vagas disponíveis e ocupadas
+- Organização espacial otimizada
+
+### 🔐 **Sistema de Autenticação**
+
+- Login seguro para operadores
+- Controle de acesso baseado em perfis
+
+### 🎨 **Interface Moderna**
+
+- Temas light e dark com preferência salva localmente
+- Design responsivo e intuitivo
+- Navegação simplificada com drawer navigation
 
 ### 🎯 Objetivo
+
 Garantir eficiência, escalabilidade e precisão na operação dos pátios da Mottu, promovendo:
 
-Mais agilidade na entrega e devolução das motos;
+- Mais agilidade na entrega e devolução das motos
+- Redução de erros humanos
+- Operação com menos esforço manual e mais controle
+- Suporte ao crescimento da Mottu com tecnologia de ponta
 
-Redução de erros humanos;
+## 📁 Estrutura de Pastas
 
-Operação com menos esforço manual e mais controle;
-
-Suporte ao crescimento da Mottu com tecnologia de ponta.
-
+```
+src/
+├── app/               # Páginas e navegação (Expo Router)
+│   ├── auth/          # Telas de autenticação
+│   ├── (drawer)/      # Páginas principais com drawer navigation
+│   │   ├── home/      # Dashboard e página de desenvolvedores
+│   │   ├── moto/      # Cadastro e busca de motos
+│   │   ├── setor/     # Detalhes de setores
+│   │   └── setores/   # Listagem e cadastro de setores
+│   └── _layout.tsx    # Layout principal
+├── assets/            # Imagens e recursos estáticos
+├── components/        # Componentes reutilizáveis
+├── context/           # Contextos React (Auth, Theme)
+├── helper/            # Utilitários para requisições
+├── hooks/             # Custom hooks
+├── interfaces/        # Definições de tipos TypeScript
+└── utils/             # Funções utilitárias
+```
 
 ## 🚀 Como rodar o projeto localmente
 
