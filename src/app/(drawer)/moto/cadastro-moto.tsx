@@ -26,16 +26,9 @@ interface CadastroMoto {
   ano: number;
   placa: string;
   statusMoto: "DISPONIVEL";
-  idPatio: number;
-  posicaoHorizontal?: string;
-  posicaoVertical?: number;
-}
-
-interface MotoResponse {
-  idPatio: number;
-  placaMoto: string;
-  posicaoHorizontal?: string;
-  posicaoVertical?: number;
+  setor: string;
+  codRastreador: string;
+  dataEntrada: string;
 }
 
 export default function CadastroMotoScreen() {
@@ -43,12 +36,10 @@ export default function CadastroMotoScreen() {
   const isDark = theme === "dark";
   const { patioId, token } = useAuth();
   const params = useLocalSearchParams<{
-    posicaoHorizontal?: string;
-    posicaoVertical?: string;
+    setor?: string;
   }>();
 
-  const [posicaoHorizontalAtiva, setPosicaoHorizontalAtiva] = useState<string | null>(null);
-  const [posicaoVerticalAtiva, setPosicaoVerticalAtiva] = useState<number | null>(null);
+  const [setorAtivo, setSetorAtivo] = useState<string | null>(null);
 
   // Estado de loading
   const [isLoading, setIsLoading] = useState(false);
@@ -63,17 +54,15 @@ export default function CadastroMotoScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      const hasPositionParams = params.posicaoHorizontal || params.posicaoVertical;
+      const hasPositionParams = !!params.setor;
 
       if (hasPositionParams) {
-        setPosicaoHorizontalAtiva(params.posicaoHorizontal || null);
-        setPosicaoVerticalAtiva(params.posicaoVertical ? Number(params.posicaoVertical) : null);
-        setAlocarPosicao(true);
+        setSetorAtivo(params.setor || null);
+        setSetor(params.setor || null); // Setar automaticamente o setor no dropdown
       } else {
-        setPosicaoHorizontalAtiva(null);
-        setPosicaoVerticalAtiva(null);
+        setSetorAtivo(null);
       }
-    }, [params.posicaoHorizontal, params.posicaoVertical])
+    }, [params.setor])
   );
 
   // Funções da câmera
@@ -127,9 +116,6 @@ export default function CadastroMotoScreen() {
         },
         timeout: 10000, // 10 segundos de timeout
       });
-
-      // Processar a resposta da API
-      console.log("Resposta da API:", response.data);
 
       const { tipo_moto, placa, probabilidades } = response.data;
 
@@ -185,20 +171,50 @@ export default function CadastroMotoScreen() {
   };
 
   // dropdown tipo de moto
-  const [open, setOpen] = useState(false);
+  const [openTipoMoto, setOpenTipoMoto] = useState(false);
   const [tipoMoto, setTipoMoto] = useState<string | null>(null);
-  const [opcoes, setOpcoes] = useState([
+  const [opcoesTipoMoto, setOpcoesTipoMoto] = useState([
     { label: "Mottu E", value: "MOTTU_E" },
     { label: "Mottu Sport", value: "MOTTU_SPORT" },
     { label: "Mottu Pop", value: "MOTTU_POP" },
   ]);
 
+  // dropdown setor
+  const [openSetor, setOpenSetor] = useState(false);
+  const [setor, setSetor] = useState<string | null>(null);
+  const [opcoesSetor, setOpcoesSetor] = useState<Array<{ label: string; value: string }>>([]);
+
+  // Buscar setores ao montar tela ou quando patioId muda
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchSetores() {
+        if (!patioId || !token) return;
+        try {
+          // Usar a função request do helper igual as outras chamadas
+          const setores = await request<string[]>(`/posicoes/${patioId}`, "get", undefined, {
+            authToken: token,
+          });
+          if (Array.isArray(setores)) {
+            // Se o retorno é [{ setor: "A" }, ...], extrai o campo setor
+            const nomesSetores = setores
+              .map((s) =>
+                typeof s === "object" && s !== null && "setor" in s ? (s as any).setor : null
+              )
+              .filter((s) => typeof s === "string" && s.length > 0);
+            setOpcoesSetor(nomesSetores.map((s) => ({ label: s, value: s, key: s })));
+          }
+        } catch (err) {
+          setOpcoesSetor([]);
+        }
+      }
+      fetchSetores();
+    }, [token])
+  );
+
   // form fields
   const [ano, setAno] = useState<number>();
   const [placa, setPlaca] = useState<string>();
-
-  // switch para alocar posição (só ativo se tiver posição)
-  const [alocarPosicao, setAlocarPosicao] = useState(false);
+  const [codRastreador, setCodRastreador] = useState<string>();
 
   const cadastrar = async () => {
     if (!patioId || !token) return;
@@ -223,44 +239,45 @@ export default function CadastroMotoScreen() {
       return;
     }
 
+    if (!codRastreador || !codRastreador.trim()) {
+      Alert.alert("Erro", "Digite um código de rastreador válido.");
+      return;
+    }
+
+    if (!setor) {
+      Alert.alert("Erro", "Selecione o setor para alocar a moto.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       // Preparar dados para envio
-      const estaComPosicao = alocarPosicao && posicaoHorizontalAtiva && posicaoVerticalAtiva;
-
       const dadosMoto: CadastroMoto = {
         tipoMoto: tipoMoto,
         ano: ano,
         placa: placa,
         statusMoto: "DISPONIVEL",
-        idPatio: patioId,
-        ...(estaComPosicao && {
-          posicaoHorizontal: posicaoHorizontalAtiva,
-          posicaoVertical: posicaoVerticalAtiva,
-        }),
+        setor: setor,
+        codRastreador: codRastreador,
+        dataEntrada: new Date().toISOString().slice(0, 19),
       };
 
       // Fazer requisição para API
-      const motoResponse = await request<MotoResponse>(
-        estaComPosicao ? `/motos/${patioId}` : "/motos/cadastro-e-alocacao",
-        "post",
-        dadosMoto,
-        {
-          authToken: token,
-        }
-      );
+      const motoResponse = await request<CadastroMoto>(`/motos/${patioId}`, "post", dadosMoto, {
+        authToken: token,
+      });
 
       Alert.alert(
         "Moto cadastrada e alocada!",
-        `Tipo: ${tipoMoto}\nAno: ${ano}\nPlaca: ${placa}\nPosição: ${motoResponse?.posicaoHorizontal}-${motoResponse?.posicaoVertical}`,
+        `Tipo: ${tipoMoto}\nPlaca: ${placa}\nAno: ${ano}\nRastreador: ${motoResponse?.codRastreador}\nSetor: ${motoResponse?.setor}`,
         [
           {
             text: "OK",
             onPress: () => {
               limparFormulario();
               router.setParams({});
-              router.replace(`/posicao-horizontal/${motoResponse?.posicaoHorizontal}`);
+              router.replace(`/setor/${motoResponse?.setor}`);
             },
           },
         ]
@@ -278,9 +295,10 @@ export default function CadastroMotoScreen() {
 
   const limparFormulario = () => {
     setTipoMoto(null);
-    setAno(undefined);
     setPlaca(undefined);
-    setAlocarPosicao(false);
+    setAno(undefined);
+    setCodRastreador(undefined);
+    setSetor(null);
   };
 
   return (
@@ -356,124 +374,166 @@ export default function CadastroMotoScreen() {
           {/* Header */}
           <Text className="text-center mb-6 font-bold text-3xl text-primary">Cadastre a moto</Text>
 
-          {/* Form - ScrollView para conteúdo rolável */}
-          <View className="flex-1">
-            <View className="gap-2">
-              {/* Dropdown Tipo de Moto */}
-              <View>
-                <Text className="mb-1 ml-1 font-medium text-text">Tipo da Moto *</Text>
-                <DropDownPicker
-                  open={open}
-                  value={tipoMoto}
-                  items={opcoes}
-                  setOpen={setOpen}
-                  setValue={setTipoMoto}
-                  setItems={setOpcoes}
-                  placeholder="Selecione o tipo da moto"
-                  style={[styles.dropdown, theme === "dark" && { backgroundColor: "#222222" }]}
-                  dropDownContainerStyle={[
-                    styles.opcoesDropdown,
-                    theme === "dark" && { backgroundColor: "#222222" },
-                  ]}
-                  textStyle={{
-                    color: theme === "dark" ? "#ffffff" : "#000000",
-                  }}
-                  placeholderStyle={{
-                    color: theme === "dark" ? "#cccccc" : "#666666",
-                  }}
-                />
-              </View>
+          {/* Aviso se não houver setores */}
+          {opcoesSetor.length === 0 ? (
+            <View className="flex-1 items-center justify-center py-16">
+              <Ionicons name="add-circle-outline" size={64} color="#05AF31" />
+              <Text className="mt-4 mb-2 font-semibold text-primary">Cadastrar Primeiro Setor</Text>
+              <Text className="text-center text-muted text-sm">
+                Ainda não há setores configurados neste pátio
+              </Text>
+              <Text className="mb-6 text-center text-muted text-sm">
+                Configure pelo menos um setor para cadastrar motos
+              </Text>
+              <TouchableOpacity
+                className="h-12 items-center justify-center rounded-xl bg-primary px-6"
+                onPress={() => router.navigate("/setores/cadastro-setor")}
+                activeOpacity={0.8}
+              >
+                <Text className="font-semibold text-white">Cadastrar Setor</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <>
+              {/* Form - ScrollView para conteúdo rolável */}
+              <View className="flex-1">
+                <View className="gap-2">
+                  {/* Dropdown Tipo de Moto */}
+                  <View>
+                    <Text className="mb-2 ml-1 font-medium text-text">Tipo da Moto *</Text>
+                    <DropDownPicker
+                      open={openTipoMoto}
+                      value={tipoMoto}
+                      items={opcoesTipoMoto}
+                      setOpen={setOpenTipoMoto}
+                      setValue={setTipoMoto}
+                      setItems={setOpcoesTipoMoto}
+                      placeholder="Selecione o tipo da moto"
+                      style={[
+                        styles.dropdown,
+                        isDark && { backgroundColor: "#222222" },
+                        { zIndex: 20 },
+                      ]}
+                      dropDownContainerStyle={[
+                        styles.opcoesDropdown,
+                        isDark && { backgroundColor: "#222222" },
+                        { zIndex: 20 },
+                      ]}
+                      textStyle={{
+                        color: isDark ? "#ffffff" : "#000000",
+                      }}
+                      placeholderStyle={{
+                        color: isDark ? "#cccccc" : "#666666",
+                      }}
+                    />
+                  </View>
 
-              {/* Campo Placa */}
-              <View>
-                <Text className="mb-1 ml-1 font-medium text-text">Placa *</Text>
-                <TextInput
-                  placeholder="Ex: ABC1234"
-                  className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
-                  placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
-                  value={placa}
-                  onChangeText={(value) => setPlaca(value.toUpperCase())}
-                  maxLength={7}
-                  autoCapitalize="characters"
-                />
-                <Text className="ml-1 text-muted text-xs">7 caracteres, sem traço ou espaços</Text>
-              </View>
-
-              {/* Campo Ano */}
-              <View>
-                <Text className="mb-1 ml-1 font-medium text-text">Ano *</Text>
-                <TextInput
-                  placeholder="Ex: 2024"
-                  className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
-                  placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
-                  value={ano?.toString() || ""}
-                  onChangeText={(value) => {
-                    // Remove qualquer caractere que não seja número
-                    const numericValue = value.replace(/[^0-9]/g, "");
-
-                    if (numericValue === "") {
-                      setAno(undefined);
-                      return;
-                    }
-
-                    const num = Number(numericValue);
-
-                    // Só aceita se for >= 2012 ou se ainda estiver digitando (menos de 4 dígitos)
-                    if (numericValue.length < 4 || num >= 2012) {
-                      setAno(num);
-                    }
-                  }}
-                  keyboardType="numeric"
-                  maxLength={4}
-                />
-                <Text className="ml-1 text-muted text-xs">Ano mínimo: 2012</Text>
-              </View>
-
-              {/* Switch para alocar posição (só aparece se tiver posição disponível) */}
-              {posicaoHorizontalAtiva && posicaoVerticalAtiva && (
-                <View className="rounded-xl border border-secondary bg-card p-4">
-                  <View className="flex-row items-center justify-between">
-                    <View className="mr-4 flex-1">
-                      <Text className="font-medium text-text">Alocar à posição vaga</Text>
-                      <Text className="mt-1 text-muted text-sm">
-                        Moto será alocada em {posicaoHorizontalAtiva}-{posicaoVerticalAtiva}
+                  {/* Placa e Ano lado a lado */}
+                  <View className="flex-row justify-between gap-4 mb-2">
+                    {/* Campo Placa */}
+                    <View className="flex-1">
+                      <Text className="mb-1 ml-1 font-medium text-text">Placa *</Text>
+                      <TextInput
+                        placeholder="Ex: ABC1234"
+                        className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
+                        style={{ width: "100%" }}
+                        placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
+                        value={placa}
+                        onChangeText={(value) => setPlaca(value.toUpperCase())}
+                        autoCapitalize="characters"
+                        maxLength={7}
+                      />
+                      <Text className="ml-1 text-muted text-xs">
+                        7 caracteres, sem traço ou espaços
                       </Text>
                     </View>
-                    <Switch
-                      value={alocarPosicao}
-                      onValueChange={setAlocarPosicao}
-                      trackColor={{ false: "#767577", true: "#05AF31" }}
-                      thumbColor={alocarPosicao ? "#ffffff" : "#f4f3f4"}
+                    {/* Campo Ano */}
+                    <View className="flex-1">
+                      <Text className="mb-1 ml-1 font-medium text-text">Ano *</Text>
+                      <TextInput
+                        placeholder="Ex: 2024"
+                        className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
+                        style={{ width: "100%" }}
+                        placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
+                        value={ano?.toString() || ""}
+                        onChangeText={(value) => {
+                          const numericValue = value.replace(/[^0-9]/g, "");
+                          if (numericValue === "") {
+                            setAno(undefined);
+                            return;
+                          }
+                          const num = Number(numericValue);
+                          if (numericValue.length < 4 || num >= 2012) {
+                            setAno(num);
+                          }
+                        }}
+                        keyboardType="numeric"
+                        maxLength={4}
+                      />
+                      <Text className="ml-1 text-muted text-xs">Ano mínimo: 2012</Text>
+                    </View>
+                  </View>
+                  {/* Campo Código do Rastreador */}
+                  <View className="mb-2">
+                    <Text className="mb-1 ml-1 font-medium text-text">Código do Rastreador *</Text>
+                    <TextInput
+                      placeholder="Ex: ABC123XYZ"
+                      className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
+                      placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
+                      value={codRastreador || ""}
+                      onChangeText={setCodRastreador}
+                    />
+                  </View>
+                  {/* Dropdown Setor */}
+                  <View className="mb-10">
+                    <Text className="mb-1 ml-1 font-medium text-text">Setor *</Text>
+                    <DropDownPicker
+                      open={openSetor}
+                      value={setor}
+                      items={opcoesSetor}
+                      setOpen={setOpenSetor}
+                      setValue={setSetor}
+                      setItems={setOpcoesSetor}
+                      placeholder="Selecione um setor para alocar a moto"
+                      style={[
+                        styles.dropdown,
+                        isDark && { backgroundColor: "#222222" },
+                        { zIndex: 10 },
+                      ]}
+                      dropDownContainerStyle={[
+                        styles.opcoesDropdown,
+                        isDark && { backgroundColor: "#222222" },
+                        { zIndex: 10 },
+                      ]}
+                      textStyle={{
+                        color: isDark ? "#ffffff" : "#000000",
+                      }}
+                      placeholderStyle={{
+                        color: isDark ? "#cccccc" : "#666666",
+                      }}
+                      disabled={opcoesSetor.length === 0}
                     />
                   </View>
                 </View>
-              )}
-            </View>
-          </View>
+              </View>
 
-          {/* Botão Submit - Fixo na parte inferior */}
-          <View className="gap-5 pt-4 pb-5">
-            <TouchableOpacity
-              className="flex-row h-14 w-full items-center justify-center rounded-2xl bg-secondary"
-              onPress={abrirCamera}
-            >
-              <Ionicons name="camera" color={theme == "dark" ? "white" : "black"} size={24} />
-              <Text className="ml-3 font-semibold text-lg text-text">Preencher com Foto</Text>
-            </TouchableOpacity>
+              {/* Botão Submit - Fixo na parte inferior */}
+              <View className="gap-5 pb-5">
+                <TouchableOpacity
+                  className="flex-row h-14 w-full items-center justify-center rounded-2xl bg-secondary"
+                  onPress={abrirCamera}
+                >
+                  <Ionicons name="camera" color={isDark ? "white" : "black"} size={24} />
+                  <Text className="ml-3 font-semibold text-lg text-text">Preencher com Foto</Text>
+                </TouchableOpacity>
 
-            <SubmitButton
-              isLoading={isLoading}
-              onSubmit={cadastrar}
-              text={
-                alocarPosicao && posicaoHorizontalAtiva && posicaoVerticalAtiva
-                  ? "Cadastrar e Alocar"
-                  : "Cadastrar Moto em Posicão Aleatória"
-              }
-            />
+                <SubmitButton isLoading={isLoading} onSubmit={cadastrar} text="Cadastrar e Alocar" />
 
-            {/* Campos obrigatórios */}
-            <Text className="text-center text-muted text-xs">* Campos obrigatórios</Text>
-          </View>
+                {/* Campos obrigatórios */}
+                <Text className="text-center text-muted text-xs">* Campos obrigatórios</Text>
+              </View>
+            </>
+          )}
         </View>
       )}
     </SafeAreaView>
