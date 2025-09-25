@@ -191,7 +191,6 @@ export default function BuscaMotoScreen() {
       setIsLoading(false);
     }
   };
-
   const limparBusca = () => {
     setPlaca("");
     setCodRastreador("");
@@ -200,6 +199,19 @@ export default function BuscaMotoScreen() {
     setErroMensagem("");
     setModalAlocacaoVisible(false);
     setSetor(null);
+  };
+  const limparResultados = () => {
+    setMotoEncontrada(null);
+    setErroMensagem("");
+  };
+
+  const alterarTipoBusca = (novoTipo: "placa" | "rastreador" | "tipo") => {
+    setTipoBusca(novoTipo);
+    limparResultados();
+    // Limpar também os campos do formulário
+    setPlaca("");
+    setCodRastreador("");
+    setTipoMoto(null);
   };
 
   const abrirModalAlocacao = () => {
@@ -430,8 +442,7 @@ export default function BuscaMotoScreen() {
                       tipoBusca === "placa"
                         ? "bg-primary border-primary"
                         : "bg-card border-secondary"
-                    }`}
-                    onPress={() => setTipoBusca("placa")}
+                    }`}                    onPress={() => alterarTipoBusca("placa")}
                     activeOpacity={0.7}
                   >
                     <Ionicons
@@ -454,7 +465,7 @@ export default function BuscaMotoScreen() {
                         ? "bg-primary border-primary"
                         : "bg-card border-secondary"
                     }`}
-                    onPress={() => setTipoBusca("rastreador")}
+                    onPress={() => alterarTipoBusca("rastreador")}
                     activeOpacity={0.7}
                   >
                     <Ionicons
@@ -477,7 +488,7 @@ export default function BuscaMotoScreen() {
                         ? "bg-primary border-primary"
                         : "bg-card border-secondary"
                     }`}
-                    onPress={() => setTipoBusca("tipo")}
+                    onPress={() => alterarTipoBusca("tipo")}
                     activeOpacity={0.7}
                   >
                     <Ionicons
