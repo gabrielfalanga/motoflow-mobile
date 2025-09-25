@@ -429,10 +429,10 @@ export default function CadastroMotoScreen() {
                   </View>
 
                   {/* Placa e Ano lado a lado */}
-                  <View className="flex-row justify-between gap-4 mb-2">
+                  <View className="flex-row justify-between gap-4 mb-4">
                     {/* Campo Placa */}
                     <View className="flex-1">
-                      <Text className="mb-1 ml-1 font-medium text-text">Placa *</Text>
+                      <Text className="mb-2 ml-1 font-medium text-text">Placa *</Text>
                       <TextInput
                         placeholder="Ex: ABC1234"
                         className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
@@ -443,13 +443,10 @@ export default function CadastroMotoScreen() {
                         autoCapitalize="characters"
                         maxLength={7}
                       />
-                      <Text className="ml-1 text-muted text-xs">
-                        7 caracteres, sem traço ou espaços
-                      </Text>
                     </View>
                     {/* Campo Ano */}
                     <View className="flex-1">
-                      <Text className="mb-1 ml-1 font-medium text-text">Ano *</Text>
+                      <Text className="mb-2 ml-1 font-medium text-text">Ano *</Text>
                       <TextInput
                         placeholder="Ex: 2024"
                         className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
@@ -470,12 +467,11 @@ export default function CadastroMotoScreen() {
                         keyboardType="numeric"
                         maxLength={4}
                       />
-                      <Text className="ml-1 text-muted text-xs">Ano mínimo: 2012</Text>
                     </View>
                   </View>
                   {/* Campo Código do Rastreador */}
-                  <View className="mb-2">
-                    <Text className="mb-1 ml-1 font-medium text-text">Código do Rastreador *</Text>
+                  <View className="mb-4">
+                    <Text className="mb-2 ml-1 font-medium text-text">Código do Rastreador *</Text>
                     <TextInput
                       placeholder="Ex: ABC123XYZ"
                       className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
@@ -517,17 +513,25 @@ export default function CadastroMotoScreen() {
                 </View>
               </View>
 
-              {/* Botão Submit - Fixo na parte inferior */}
-              <View className="gap-5 pb-5">
-                <TouchableOpacity
-                  className="flex-row h-14 w-full items-center justify-center rounded-2xl bg-secondary"
-                  onPress={abrirCamera}
-                >
-                  <Ionicons name="camera" color={isDark ? "white" : "black"} size={24} />
-                  <Text className="ml-3 font-semibold text-lg text-text">Preencher com Foto</Text>
-                </TouchableOpacity>
+              {/* Botões - Em row */}
+              <View className="pb-5">
+                <View className="flex-row gap-3 mb-4">
+                  <TouchableOpacity
+                    className="flex-1 flex-row h-14 items-center justify-center rounded-2xl bg-secondary"
+                    onPress={abrirCamera}
+                  >
+                    <Ionicons name="camera" color={isDark ? "white" : "black"} size={20} />
+                    <Text className="ml-2 font-semibold text-text">Foto</Text>
+                  </TouchableOpacity>
 
-                <SubmitButton isLoading={isLoading} onSubmit={cadastrar} text="Cadastrar e Alocar" />
+                  <View style={{ flex: 2 }}>
+                    <SubmitButton
+                      isLoading={isLoading}
+                      onSubmit={cadastrar}
+                      text="Cadastrar e Alocar"
+                    />
+                  </View>
+                </View>
 
                 {/* Campos obrigatórios */}
                 <Text className="text-center text-muted text-xs">* Campos obrigatórios</Text>
