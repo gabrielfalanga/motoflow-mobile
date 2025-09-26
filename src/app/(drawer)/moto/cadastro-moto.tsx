@@ -139,7 +139,7 @@ export default function CadastroMotoScreen() {
         "Foto processada!",
         `Dados identificados:${tipo_moto ? `\nTipo: ${tipo_moto}` : ""}${
           placa ? `\nPlaca: ${placa}` : ""
-        }${probabilidadeTexto ? `\n\nProbabilidades:\n${probabilidadeTexto}` : ""}`,
+        }`,
         [
           {
             text: "OK",
