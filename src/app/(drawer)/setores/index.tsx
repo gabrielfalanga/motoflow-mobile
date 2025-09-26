@@ -14,6 +14,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { LogBox } from "react-native";
+
+// ignorar todos os logs na tela
+LogBox.ignoreAllLogs();
 
 export default function SetoresScreen() {
   const [posicoes, setPosicoes] = useState<SetorInfo[]>([]);
@@ -107,27 +111,34 @@ export default function SetoresScreen() {
                 className="rounded-xl border border-primary bg-card p-4"
                 onPress={() => handleAreaPress(setor)}
                 activeOpacity={0.7}
-              >                <View>
+              >
+                <View>
                   {/* Header do Setor */}
                   <View className="flex-row items-center justify-between mb-4">
                     <Text className="font-bold text-xl text-text">Setor {setor.setor}</Text>
                     <Ionicons name="chevron-forward-outline" size={20} color="#999" />
-                  </View>                  {/* Estatísticas das Vagas */}
+                  </View>{" "}
+                  {/* Estatísticas das Vagas */}
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1">
                       <Text className="text-muted text-sm">
-                        {setor.vagasDisponiveis} {setor.vagasDisponiveis === 1 ? 'livre' : 'livres'} • {setor.posicoesOcupadas} {setor.posicoesOcupadas === 1 ? 'ocupada' : 'ocupadas'} • {setor.capacidadeSetor} total
+                        {setor.vagasDisponiveis} {setor.vagasDisponiveis === 1 ? "livre" : "livres"}{" "}
+                        • {setor.posicoesOcupadas}{" "}
+                        {setor.posicoesOcupadas === 1 ? "ocupada" : "ocupadas"} •{" "}
+                        {setor.capacidadeSetor} total
                       </Text>
                     </View>
                   </View>
-
                   {/* Barra de Progresso Minimalista */}
                   <View className="mt-3">
                     <View className="bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                      <View 
+                      <View
                         className="bg-gray-400 h-full rounded-full"
-                        style={{ 
-                          width: setor.capacidadeSetor > 0 ? `${(setor.posicoesOcupadas / setor.capacidadeSetor) * 100}%` : '0%' 
+                        style={{
+                          width:
+                            setor.capacidadeSetor > 0
+                              ? `${(setor.posicoesOcupadas / setor.capacidadeSetor) * 100}%`
+                              : "0%",
                         }}
                       />
                     </View>
