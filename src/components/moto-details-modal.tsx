@@ -300,7 +300,8 @@ export function MotoDetailsModal({
         errorMessage = error.message;
       }
 
-      Alert.alert(errorTitle, errorMessage, [{ text: "OK" }]);    } finally {
+      Alert.alert(errorTitle, errorMessage, [{ text: "OK" }]);
+    } finally {
       setIsMudandoSetor(false);
     }
   };
@@ -330,7 +331,8 @@ export function MotoDetailsModal({
     try {
       const body = {
         codRastreador: novoCodRastreador,
-      };      await request(`/motos/beacon/${moto.placa}`, "put", body, {
+      };
+      await request(`/motos/beacon/${moto.placa}`, "put", body, {
         authToken: token,
       });
 
@@ -361,7 +363,79 @@ export function MotoDetailsModal({
 
   return (
     <>
-      <Modal visible={visible} transparent animationType="slide">
+      {/* Modal de Edição de Rastreador - Renderizado independentemente */}
+      {modalRastreadorVisible && (
+        <Modal
+          visible={modalRastreadorVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={fecharModalRastreador}
+          statusBarTranslucent={true}
+        >
+          <View className="flex-1 justify-center bg-black/50 px-6" style={{ zIndex: 1000 }}>
+            <View className="rounded-xl bg-card p-6 shadow-lg">
+              <View className="mb-4 flex-row items-center justify-center">
+                <Ionicons name="radio" size={32} color="#3b82f6" />
+                <Text className="ml-3 font-bold text-text text-xl">
+                  {moto?.codRastreador ? "Editar Rastreador" : "Adicionar Rastreador"}
+                </Text>
+              </View>
+
+              <Text className="mb-4 text-center text-muted">
+                {moto?.codRastreador ? "Altere" : "Defina"} o código do rastreador da moto{" "}
+                <Text className="font-bold text-primary">{moto?.placa}</Text>
+              </Text>
+
+              {/* Campo Código do Rastreador */}
+              <View className="mb-6">
+                <Text className="mb-2 font-medium text-text">Código do Rastreador *</Text>
+                <TextInput
+                  placeholder="Ex: ABC123XYZ"
+                  className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
+                  placeholderTextColor="#666666"
+                  value={novoCodRastreador}
+                  onChangeText={setNovoCodRastreador}
+                  autoCapitalize="characters"
+                />
+              </View>
+
+              {/* Botões */}
+              <View className="flex-row gap-3">
+                <TouchableOpacity
+                  className="h-12 flex-1 items-center justify-center rounded-xl bg-gray-500"
+                  onPress={fecharModalRastreador}
+                  activeOpacity={0.8}
+                  disabled={isEditandoRastreador}
+                >
+                  <Text className="font-semibold text-white">Cancelar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className={`h-12 flex-1 items-center justify-center rounded-xl ${
+                    isEditandoRastreador ? "bg-gray-400" : "bg-blue-500"
+                  }`}
+                  onPress={editarRastreador}
+                  activeOpacity={0.8}
+                  disabled={isEditandoRastreador}
+                >
+                  {isEditandoRastreador ? (
+                    <ActivityIndicator color="#ffffff" size="small" />
+                  ) : (
+                    <Text className="font-semibold text-white">Salvar</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      <Modal
+        visible={visible && !modalRastreadorVisible}
+        transparent
+        animationType="slide"
+        statusBarTranslucent={true}
+      >
         <View className="flex-1 items-center justify-center bg-black/50">
           <View className="mx-4 w-full max-w-md rounded-2xl bg-card p-6 shadow-lg">
             {/* Header */}
@@ -407,30 +481,30 @@ export function MotoDetailsModal({
                           <Text className="ml-2 text-muted">Placa</Text>
                         </View>
                         <Text className="font-semibold text-text">{moto.placa}</Text>
-                      </View>                      <View className="flex-row items-center justify-between">
+                      </View>{" "}
+                      <View className="flex-row items-center justify-between">
                         <View className="flex-row items-center">
                           <Ionicons name="radio-outline" size={16} color="#666" />
                           <Text className="ml-2 text-muted">Rastreador</Text>
                           <TouchableOpacity
-                            className="ml-2 h-6 w-6 items-center justify-center rounded bg-blue-500"                            onPress={abrirModalRastreador}
+                            className="ml-2 h-8 w-8 items-center justify-center rounded bg-blue-500"
+                            onPress={abrirModalRastreador}
                             activeOpacity={0.7}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                           >
-                            <Ionicons 
-                              name={moto.codRastreador ? "create-outline" : "add-outline"} 
-                              size={14} 
-                              color="#ffffff" 
+                            <Ionicons
+                              name={moto.codRastreador ? "create-outline" : "add-outline"}
+                              size={16}
+                              color="#ffffff"
                             />
                           </TouchableOpacity>
                         </View>
                         {moto.codRastreador ? (
                           <Text className="font-semibold text-text">{moto.codRastreador}</Text>
                         ) : (
-                            <Text className="font-medium text-orange-600">
-                              Sem rastreador
-                            </Text>
+                          <Text className="font-medium text-orange-600">Sem rastreador</Text>
                         )}
                       </View>
-
                       {/* Ano e Status */}
                       <View className="flex-row items-center justify-between">
                         <View className="flex-row items-center">
@@ -439,7 +513,6 @@ export function MotoDetailsModal({
                         </View>
                         <Text className="font-semibold text-text">{moto.ano}</Text>
                       </View>
-
                       <View className="flex-row items-center justify-between">
                         <View className="flex-row items-center">
                           <Ionicons name="information-circle-outline" size={16} color="#666" />
@@ -451,9 +524,10 @@ export function MotoDetailsModal({
                         >
                           {getStatusMotoInfo(moto.statusMoto).nome}
                         </Text>
-                      </View>                    </View>
+                      </View>{" "}
+                    </View>
                   </View>
-                  
+
                   {/* Botões de ação em linha */}
                   <View className="mt-2 flex-row gap-2">
                     <TouchableOpacity
@@ -472,7 +546,6 @@ export function MotoDetailsModal({
                         </>
                       )}
                     </TouchableOpacity>
-
                     <TouchableOpacity
                       className="h-16 flex-1 items-center justify-center rounded-xl bg-blue-500 px-2"
                       onPress={marcarComoAlugada}
@@ -489,7 +562,6 @@ export function MotoDetailsModal({
                         </>
                       )}
                     </TouchableOpacity>
-
                     <TouchableOpacity
                       className="h-16 flex-1 items-center justify-center rounded-xl bg-purple-500 px-2"
                       onPress={abrirModalMudarSetor}
@@ -499,8 +571,9 @@ export function MotoDetailsModal({
                       <Text className="mt-1 font-semibold text-white text-xs text-center">
                         Mudar Setor
                       </Text>
-                    </TouchableOpacity>                  </View>
-                  
+                    </TouchableOpacity>{" "}
+                  </View>
+
                   {/* Botão de Rastrear Moto - só aparece se tiver rastreador e setor */}
                   {moto.codRastreador && setor && (
                     <TouchableOpacity
@@ -549,6 +622,7 @@ export function MotoDetailsModal({
         transparent={true}
         animationType="slide"
         onRequestClose={fecharModalMudarSetor}
+        statusBarTranslucent={true}
       >
         <View className="flex-1 justify-center bg-black/50 px-6">
           <View className="rounded-xl bg-card p-6 shadow-lg">
@@ -606,70 +680,7 @@ export function MotoDetailsModal({
               </TouchableOpacity>
             </View>
           </View>
-        </View>      </Modal>
-
-      {/* Modal de Edição de Rastreador */}
-      <Modal
-        visible={modalRastreadorVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={fecharModalRastreador}
-      >
-        <View className="flex-1 justify-center bg-black/50 px-6">
-          <View className="rounded-xl bg-card p-6 shadow-lg">
-            <View className="mb-4 flex-row items-center justify-center">
-              <Ionicons name="radio" size={32} color="#3b82f6" />
-              <Text className="ml-3 font-bold text-text text-xl">
-                {moto?.codRastreador ? "Editar Rastreador" : "Adicionar Rastreador"}
-              </Text>
-            </View>
-
-            <Text className="mb-4 text-center text-muted">
-              {moto?.codRastreador ? "Altere" : "Defina"} o código do rastreador da moto{" "}
-              <Text className="font-bold text-primary">{moto?.placa}</Text>
-            </Text>
-
-            {/* Campo Código do Rastreador */}
-            <View className="mb-6">
-              <Text className="mb-2 font-medium text-text">Código do Rastreador *</Text>
-              <TextInput
-                placeholder="Ex: ABC123XYZ"
-                className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
-                placeholderTextColor="#666666"
-                value={novoCodRastreador}
-                onChangeText={setNovoCodRastreador}
-                autoCapitalize="characters"
-              />
-            </View>
-
-            {/* Botões */}
-            <View className="flex-row gap-3">
-              <TouchableOpacity
-                className="h-12 flex-1 items-center justify-center rounded-xl bg-gray-500"
-                onPress={fecharModalRastreador}
-                activeOpacity={0.8}
-                disabled={isEditandoRastreador}
-              >
-                <Text className="font-semibold text-white">Cancelar</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                className={`h-12 flex-1 items-center justify-center rounded-xl ${
-                  isEditandoRastreador ? "bg-gray-400" : "bg-blue-500"
-                }`}
-                onPress={editarRastreador}
-                activeOpacity={0.8}
-                disabled={isEditandoRastreador}
-              >
-                {isEditandoRastreador ? (
-                  <ActivityIndicator color="#ffffff" size="small" />
-                ) : (
-                  <Text className="font-semibold text-white">Salvar</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        </View>{" "}
       </Modal>
     </>
   );
