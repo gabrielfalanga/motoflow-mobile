@@ -63,6 +63,8 @@ export default function BuscaMotoScreen() {
   const [openSetor, setOpenSetor] = useState(false);
   const [setor, setSetor] = useState<string | null>(null);
   const [opcoesSetor, setOpcoesSetor] = useState<Array<{ label: string; value: string }>>([]);
+  // cópia usada apenas pelo modal de alocação (permite filtrar o setor atual da moto)
+  const [opcoesSetorModal, setOpcoesSetorModal] = useState<Array<{ label: string; value: string }>>([]);
   // Estados do dropdown de status
   const [openStatus, setOpenStatus] = useState(false);
   const [novoStatus, setNovoStatus] = useState<string | null>(null);
@@ -88,10 +90,14 @@ export default function BuscaMotoScreen() {
                 typeof s === "object" && s !== null && "setor" in s ? (s as any).setor : null
               )
               .filter((s) => typeof s === "string" && s.length > 0);
-            setOpcoesSetor(nomesSetores.map((s) => ({ label: s, value: s, key: s })));
+            const items = nomesSetores.map((s) => ({ label: s, value: s }));
+            setOpcoesSetor(items);
+            // inicializa também as opções do modal (todas). Antes de abrir o modal poderemos filtrar.
+            setOpcoesSetorModal(items);
           }
         } catch (err) {
           setOpcoesSetor([]);
+          setOpcoesSetorModal([]);
         }
       }
       fetchSetores();
@@ -215,12 +221,20 @@ export default function BuscaMotoScreen() {
   };
 
   const abrirModalAlocacao = () => {
+    // Ao abrir o modal, remover das opções o setor atual da moto (se houver)
+    if (motoEncontrada && motoEncontrada.setor) {
+      setOpcoesSetorModal(opcoesSetor.filter((s) => s.value !== motoEncontrada.setor));
+    } else {
+      setOpcoesSetorModal(opcoesSetor);
+    }
     setModalAlocacaoVisible(true);
   };
 
   const fecharModalAlocacao = () => {
     setModalAlocacaoVisible(false);
     setSetor(null);
+    // restaurar opções do modal para o conjunto completo
+    setOpcoesSetorModal(opcoesSetor);
   };
 
   const abrirModalEditarStatus = () => {
@@ -897,10 +911,10 @@ export default function BuscaMotoScreen() {
               <DropDownPicker
                 open={openSetor}
                 value={setor}
-                items={opcoesSetor}
+                items={opcoesSetorModal}
                 setOpen={setOpenSetor}
                 setValue={setSetor}
-                setItems={setOpcoesSetor}
+                setItems={setOpcoesSetorModal}
                 placeholder="Selecione um setor para alocar a moto"
                 style={[
                   styles.dropdown,
@@ -918,7 +932,7 @@ export default function BuscaMotoScreen() {
                 placeholderStyle={{
                   color: theme === "dark" ? "#cccccc" : "#666666",
                 }}
-                disabled={opcoesSetor.length === 0}
+                disabled={opcoesSetorModal.length === 0}
               />
             </View>
 
