@@ -20,6 +20,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { Ionicons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 interface CadastroMoto {
   tipoMoto: string;
@@ -35,6 +36,7 @@ export default function CadastroMotoScreen() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { patioId, token } = useAuth();
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{
     setor?: string;
   }>();
@@ -70,7 +72,7 @@ export default function CadastroMotoScreen() {
     if (!permissaoCam?.granted) {
       const { granted } = await requestPermissaoCam();
       if (!granted) {
-        Alert.alert("Erro", "Permissão da câmera é necessária para tirar fotos.");
+        Alert.alert(t("common.error"), t("moto.cameraPermissionNeeded"));
         return;
       }
     }
@@ -174,9 +176,9 @@ export default function CadastroMotoScreen() {
   const [openTipoMoto, setOpenTipoMoto] = useState(false);
   const [tipoMoto, setTipoMoto] = useState<string | null>(null);
   const [opcoesTipoMoto, setOpcoesTipoMoto] = useState([
-    { label: "Mottu E", value: "MOTTU_E" },
-    { label: "Mottu Sport", value: "MOTTU_SPORT" },
-    { label: "Mottu Pop", value: "MOTTU_POP" },
+    { label: t("motoTypes.mottuE"), value: "MOTTU_E" },
+    { label: t("motoTypes.mottuSport"), value: "MOTTU_SPORT" },
+    { label: t("motoTypes.mottuPop"), value: "MOTTU_POP" },
   ]);
 
   // dropdown setor

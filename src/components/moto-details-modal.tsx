@@ -16,6 +16,7 @@ import {
   StyleSheet,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
+import { useTranslation } from "react-i18next";
 
 interface MotoDetailsModalProps {
   visible: boolean;
@@ -35,6 +36,7 @@ export function MotoDetailsModal({
   onMotoUpdated,
 }: MotoDetailsModalProps) {
   const { token, patioId } = useAuth();
+  const { t } = useTranslation();
   const [isLoadingManutencao, setIsLoadingManutencao] = useState(false);
   const [isLoadingAluguel, setIsLoadingAluguel] = useState(false);
 
@@ -89,17 +91,17 @@ export function MotoDetailsModal({
   };
 
   const getTipoMotoInfo = () => {
-    if (!moto) return { name: "Vazia", icon: "add-circle-outline", color: "#6b7280" };
+    if (!moto) return { name: t("motoTypes.empty"), icon: "add-circle-outline", color: "#6b7280" };
 
     switch (moto.tipoMoto) {
       case "MOTTU_E":
-        return { name: "Mottu E (Elétrica)", icon: "flash", color: "#3b82f6" };
+        return { name: t("motoTypes.mottuEFull"), icon: "flash", color: "#3b82f6" };
       case "MOTTU_SPORT":
-        return { name: "Mottu Sport (Esportiva)", icon: "speedometer", color: "#ef4444" };
+        return { name: t("motoTypes.mottuSportFull"), icon: "speedometer", color: "#ef4444" };
       case "MOTTU_POP":
-        return { name: "Mottu Pop (Popular)", icon: "bicycle", color: "#8b5cf6" };
+        return { name: t("motoTypes.mottuPopFull"), icon: "bicycle", color: "#8b5cf6" };
       default:
-        return { name: "Desconhecido", icon: "help-circle", color: "#6b7280" };
+        return { name: t("status.unknown"), icon: "help-circle", color: "#6b7280" };
     }
   };
 
@@ -119,11 +121,11 @@ export function MotoDetailsModal({
   const getStatusMotoInfo = (status: string) => {
     switch (status) {
       case "DISPONIVEL":
-        return { nome: "Disponível", cor: "#10b981" };
+        return { nome: t("status.available"), cor: "#10b981" };
       case "MANUTENCAO":
-        return { nome: "Em Manutenção", cor: "#f59e0b" };
+        return { nome: t("status.maintenance"), cor: "#f59e0b" };
       case "ALUGADA":
-        return { nome: "Alugada", cor: "#ef4444" };
+        return { nome: t("status.rented"), cor: "#ef4444" };
       default:
         return { nome: status, cor: "#6b7280" };
     }
@@ -134,17 +136,17 @@ export function MotoDetailsModal({
 
   const levarParaManutencao = async () => {
     if (!moto?.placa || !token) {
-      Alert.alert("Erro", "Dados da moto não encontrados.");
+      Alert.alert(t("common.error"), t("moto.errorMotoNotFound"));
       return;
     }
 
-    Alert.alert("Confirmação", "Tem certeza que deseja levar esta moto para manutenção?", [
+    Alert.alert(t("common.confirm"), t("moto.confirmMaintenance"), [
       {
-        text: "Cancelar",
+        text: t("common.cancel"),
         style: "cancel",
       },
       {
-        text: "Confirmar",
+        text: t("common.confirm"),
         onPress: async () => {
           setIsLoadingManutencao(true);
 
@@ -156,7 +158,7 @@ export function MotoDetailsModal({
               { authToken: token }
             );
 
-            Alert.alert("Sucesso", "Moto enviada para manutenção com sucesso!");
+            Alert.alert(t("common.success"), t("moto.successMaintenance"));
             onClose();
 
             // Atualizar a página
@@ -167,9 +169,9 @@ export function MotoDetailsModal({
             console.error("Erro ao enviar moto para manutenção:", error);
 
             if (error instanceof RequestError) {
-              Alert.alert("Erro", error.message);
+              Alert.alert(t("common.error"), error.message);
             } else {
-              Alert.alert("Erro", "Erro inesperado ao enviar moto para manutenção.");
+              Alert.alert(t("common.error"), t("moto.errorSendingMaintenance"));
             }
           } finally {
             setIsLoadingManutencao(false);
@@ -181,17 +183,17 @@ export function MotoDetailsModal({
 
   const marcarComoAlugada = async () => {
     if (!moto?.placa || !token) {
-      Alert.alert("Erro", "Dados da moto não encontrados.");
+      Alert.alert(t("common.error"), t("moto.errorMotoNotFound"));
       return;
     }
 
-    Alert.alert("Confirmação", "Tem certeza que deseja marcar esta moto como alugada?", [
+    Alert.alert(t("common.confirm"), t("moto.confirmRented"), [
       {
-        text: "Cancelar",
+        text: t("common.cancel"),
         style: "cancel",
       },
       {
-        text: "Confirmar",
+        text: t("common.confirm"),
         onPress: async () => {
           setIsLoadingAluguel(true);
 

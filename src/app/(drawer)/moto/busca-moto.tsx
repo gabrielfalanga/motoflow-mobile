@@ -20,6 +20,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useFocusEffect } from "expo-router";
 import DropDownPicker from "react-native-dropdown-picker";
+import { useTranslation } from "react-i18next";
 
 interface MotoEncontrada {
   placa: string;
@@ -33,6 +34,7 @@ interface MotoEncontrada {
 export default function BuscaMotoScreen() {
   const { theme } = useTheme();
   const { token, patioId } = useAuth();
+  const { t } = useTranslation();
 
   // Estados de busca
   const [tipoBusca, setTipoBusca] = useState<"placa" | "rastreador" | "tipo">("placa");
@@ -46,9 +48,9 @@ export default function BuscaMotoScreen() {
   // Estados dos dropdowns de busca
   const [openTipoMoto, setOpenTipoMoto] = useState(false);
   const [opcoesTipoMoto, setOpcoesTipoMoto] = useState([
-    { label: "Mottu E", value: "MOTTU_E" },
-    { label: "Mottu Sport", value: "MOTTU_SPORT" },
-    { label: "Mottu Pop", value: "MOTTU_POP" },
+    { label: t("motoTypes.mottuE"), value: "MOTTU_E" },
+    { label: t("motoTypes.mottuSport"), value: "MOTTU_SPORT" },
+    { label: t("motoTypes.mottuPop"), value: "MOTTU_POP" },
   ]);
 
   // Estados do modal de alocação
@@ -112,22 +114,22 @@ export default function BuscaMotoScreen() {
     // Validações baseadas no tipo de busca
     if (tipoBusca === "placa") {
       if (!placa.trim()) {
-        Alert.alert("Erro", "Digite uma placa para buscar.");
+        Alert.alert(t("common.error"), t("moto.enterPlate"));
         return;
       }
       const placaRegex = /^[A-Z0-9]{7}$/;
       if (!placaRegex.test(placa)) {
-        Alert.alert("Erro", "Digite uma placa válida (7 caracteres, sem espaços ou símbolos).");
+        Alert.alert(t("common.error"), t("moto.enterValidPlate"));
         return;
       }
     } else if (tipoBusca === "rastreador") {
       if (!codRastreador.trim()) {
-        Alert.alert("Erro", "Digite um código de rastreador para buscar.");
+        Alert.alert(t("common.error"), t("moto.enterTracker"));
         return;
       }
     } else if (tipoBusca === "tipo") {
       if (!tipoMoto) {
-        Alert.alert("Erro", "Selecione um tipo de moto para buscar.");
+        Alert.alert(t("common.error"), t("moto.selectType"));
         return;
       }
     }

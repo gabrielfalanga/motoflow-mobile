@@ -10,6 +10,7 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 interface Notification {
   id: string;
@@ -27,6 +28,7 @@ export default function HomeScreen() {
   const [erroPatio, setErroPatio] = useState<string>("");
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { token, patioId } = useAuth();
+  const { t } = useTranslation();
 
   const fetchData = useCallback(
     async (isRefresh = false) => {
@@ -60,8 +62,8 @@ export default function HomeScreen() {
           if (occupancyPercentage >= 90) {
             newNotifications.push({
               id: "high-occupancy",
-              title: "Pátio quase lotado!",
-              message: `${Math.round(occupancyPercentage)}% de ocupação. Considere realocar motos.`,
+              title: t("home.patioAlmostFull"),
+              message: `${Math.round(occupancyPercentage)}% ${t("home.patioAlmostFullMessage")}`,
               type: "warning",
             });
           }
@@ -69,16 +71,16 @@ export default function HomeScreen() {
           if (patioResponse.quantidadeDisponiveis <= 5) {
             newNotifications.push({
               id: "low-space",
-              title: "Poucas posições disponíveis",
-              message: `Apenas ${patioResponse.quantidadeDisponiveis} posições livres restantes.`,
+              title: t("home.fewPositionsAvailable"),
+              message: t("home.fewPositionsMessage", { count: patioResponse.quantidadeDisponiveis }),
               type: "info",
             });
           }
         }
         setNotifications(newNotifications);
       } catch (error) {
-        setErroOperador("Erro ao carregar dados do operador");
-        setErroPatio("Erro ao carregar dados do pátio");
+        setErroOperador(t("home.errorLoadingOperator"));
+        setErroPatio(t("home.errorLoadingPatio"));
       } finally {
         setLoading(false);
         if (isRefresh) setRefreshing(false);
@@ -105,16 +107,16 @@ export default function HomeScreen() {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Bom dia";
-    if (hour < 18) return "Boa tarde";
-    return "Boa noite";
+    if (hour < 12) return t("home.goodMorning");
+    if (hour < 18) return t("home.goodAfternoon");
+    return t("home.goodEvening");
   };
 
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#05AF31" />
-        <Text className="mt-4 text-text">Carregando informações...</Text>
+        <Text className="mt-4 text-text">{t("home.loadingInfo")}</Text>
       </View>
     );
   }
@@ -123,8 +125,8 @@ export default function HomeScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <Ionicons name="person-circle-outline" size={64} color="#ef4444" />
-        <Text className="mt-4 font-semibold text-red-600">Operador não encontrado</Text>
-        <Text className="text-muted">Verifique sua conexão e tente novamente</Text>
+        <Text className="mt-4 font-semibold text-red-600">{t("home.operatorNotFound")}</Text>
+        <Text className="text-muted">{t("home.checkConnection")}</Text>
       </View>
     );
   }
@@ -148,7 +150,7 @@ export default function HomeScreen() {
           <Text className="mb-1 text-muted">
             {getGreeting()}, {operador.nome.split(" ")[0]}!
           </Text>
-          <Text className="font-bold text-2xl text-primary">Central de Operações</Text>
+          <Text className="font-bold text-2xl text-primary">{t("home.title")}</Text>
           <View className="mt-2 flex-row items-center">
             <Ionicons name="location-outline" size={16} color="#666" />
             <Text className="ml-1 text-muted">
@@ -198,20 +200,20 @@ export default function HomeScreen() {
 
         {/* Ações Rápidas */}
         <View className="mb-6">
-          <Text className="mb-4 font-bold text-lg text-text">Ações Rápidas</Text>
+          <Text className="mb-4 font-bold text-lg text-text">{t("home.quickActions")}</Text>
           <View className="gap-3">
             {/* Primeira linha */}
             <View className="flex-row gap-3">
               <QuickActionCard
-                title="Cadastrar Moto"
-                subtitle="Adicionar nova moto"
+                title={t("home.registerMoto")}
+                subtitle={t("home.addNewMoto")}
                 iconName="add-circle-outline"
                 route="/moto/cadastro-moto"
                 color="#05AF31"
               />
               <QuickActionCard
-                title="Buscar Moto"
-                subtitle="Localizar moto"
+                title={t("home.searchMoto")}
+                subtitle={t("home.locateMoto")}
                 iconName="search-outline"
                 route="/moto/busca-moto"
                 color="#3b82f6"
@@ -221,15 +223,15 @@ export default function HomeScreen() {
             {/* Segunda linha */}
             <View className="flex-row gap-3">
               <QuickActionCard
-                title="Ver Pátio"
-                subtitle="Detalhes completos"
+                title={t("home.viewPatio")}
+                subtitle={t("home.fullDetails")}
                 iconName="grid-outline"
                 route="/patio"
                 color="#8b5cf6"
               />
               <QuickActionCard
-                title="Visualizar Setores"
-                subtitle="Veja todos os setores"
+                title={t("home.viewSetores")}
+                subtitle={t("home.seeAllSetores")}
                 iconName="map-outline"
                 route="/setores"
                 color="#f59e0b"
@@ -240,16 +242,16 @@ export default function HomeScreen() {
 
         {/* Setores Rápidos */}
         <View className="mb-6">
-          <Text className="mb-4 font-bold text-lg text-text">Acesso Rápido aos Setores</Text>
+          <Text className="mb-4 font-bold text-lg text-text">{t("home.quickAccessSetores")}</Text>
           <PatioSetoresGrid />
         </View>
 
         {/* Footer de atualização */}
         <View className="items-center pb-8">
           <Text className="text-muted text-xs">
-            Última atualização: {new Date().toLocaleTimeString()}
+            {t("common.lastUpdate")}: {new Date().toLocaleTimeString()}
           </Text>
-          <Text className="text-muted text-xs">Puxe para baixo para atualizar</Text>
+          <Text className="text-muted text-xs">{t("common.pullToRefresh")}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

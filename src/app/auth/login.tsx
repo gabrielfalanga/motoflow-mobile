@@ -12,6 +12,7 @@ import {
 import { useRouter } from "expo-router"
 import { useAuth } from "@/context/auth-context"
 import { useTheme } from "@/context/theme-context"
+import { useTranslation } from "react-i18next"
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("")
@@ -20,10 +21,11 @@ export default function LoginScreen() {
   const router = useRouter()
   const { login } = useAuth()
   const { theme } = useTheme()
+  const { t } = useTranslation()
 
   async function handleLogin() {
     if (!username || !password) {
-      Alert.alert("Erro", "Por favor, preencha todos os campos")
+      Alert.alert(t("common.error"), t("auth.errorEmptyFields"))
       return
     }
 
@@ -34,7 +36,7 @@ export default function LoginScreen() {
     if (success) {
       router.replace("/home")
     } else {
-      Alert.alert("Usuário ou senha inválidos.")
+      Alert.alert(t("auth.errorInvalidCredentials"))
     }
   }
 
@@ -43,11 +45,11 @@ export default function LoginScreen() {
       <View className="flex-1 items-center justify-center bg-background px-7">
         <View className="w-full max-w-96 rounded-2xl bg-card p-8 shadow-md">
           <Text className="mb-8 text-center font-bold text-3xl text-primary">
-            Login do Operador
+            {t("auth.login")}
           </Text>
           <TextInput
             className="mb-5 h-12 w-full rounded-2xl border border-secondary bg-background pl-3 text-text"
-            placeholder="Usuário"
+            placeholder={t("auth.username")}
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
@@ -55,7 +57,7 @@ export default function LoginScreen() {
           />
           <TextInput
             className="mb-7 h-12 w-full rounded-2xl border border-secondary bg-background pl-3 text-text"
-            placeholder="Senha"
+            placeholder={t("auth.password")}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -71,7 +73,7 @@ export default function LoginScreen() {
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="font-semibold text-lg text-white">Entrar</Text>
+              <Text className="font-semibold text-lg text-white">{t("auth.enter")}</Text>
             )}
           </TouchableOpacity>
         </View>

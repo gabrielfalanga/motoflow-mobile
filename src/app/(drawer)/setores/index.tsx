@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LogBox } from "react-native";
+import { useTranslation } from "react-i18next";
 
 // ignorar todos os logs na tela
 LogBox.ignoreAllLogs();
@@ -24,6 +25,7 @@ export default function SetoresScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { token, patioId } = useAuth();
+  const { t } = useTranslation();
 
   const fetchSetores = useCallback(
     async (isRefresh = false) => {
@@ -38,13 +40,13 @@ export default function SetoresScreen() {
         });
         setPosicoes(response || []);
       } catch (error) {
-        Alert.alert("Erro", "Não foi possível carregar os setores");
+        Alert.alert(t("common.error"), t("setor.errorLoadingSetores"));
       } finally {
         setLoading(false);
         if (isRefresh) setRefreshing(false);
       }
     },
-    [token, patioId]
+    [token, patioId, t]
   );
 
   useFocusEffect(
@@ -62,7 +64,7 @@ export default function SetoresScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#05AF31" />
-        <Text className="mt-4 text-text">Carregando setores...</Text>
+        <Text className="mt-4 text-text">{t("setor.loadingSetores")}</Text>
       </View>
     );
   }
@@ -73,8 +75,8 @@ export default function SetoresScreen() {
       <View className="px-4 pt-6 pb-4">
         <View className="flex-row items-center justify-between">
           <View className="flex-1">
-            <Text className="font-bold text-2xl text-primary">Setores do Pátio</Text>
-            <Text className="text-muted">Toque em um setor para mais informações</Text>
+            <Text className="font-bold text-2xl text-primary">{t("setor.title")}</Text>
+            <Text className="text-muted">{t("setor.subtitle")}</Text>
           </View>
 
           {/* Botão de Cadastrar */}
@@ -122,10 +124,10 @@ export default function SetoresScreen() {
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1">
                       <Text className="text-muted text-sm">
-                        {setor.vagasDisponiveis} {setor.vagasDisponiveis === 1 ? "livre" : "livres"}{" "}
+                        {setor.vagasDisponiveis} {setor.vagasDisponiveis === 1 ? t("setor.free") : t("setor.freeP")}{" "}
                         • {setor.posicoesOcupadas}{" "}
-                        {setor.posicoesOcupadas === 1 ? "ocupada" : "ocupadas"} •{" "}
-                        {setor.capacidadeSetor} total
+                        {setor.posicoesOcupadas === 1 ? t("setor.occupied") : t("setor.occupiedP")} •{" "}
+                        {setor.capacidadeSetor} {t("setor.total")}
                       </Text>
                     </View>
                   </View>

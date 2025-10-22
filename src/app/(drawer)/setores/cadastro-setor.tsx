@@ -15,6 +15,7 @@ import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { SubmitButton } from "@/components/submit-button";
 import { request, RequestError } from "@/helper/request";
+import { useTranslation } from "react-i18next";
 
 interface CadastroSetor {
   setor: string;
@@ -24,6 +25,7 @@ interface CadastroSetor {
 export default function CadastroSetorScreen() {
   const { theme } = useTheme();
   const { patioId, token } = useAuth();
+  const { t } = useTranslation();
 
   // Form fields
   const [setor, setSetor] = useState<string>("");
@@ -39,17 +41,17 @@ export default function CadastroSetorScreen() {
 
     // Validações
     if (!setor.trim()) {
-      Alert.alert("Atenção", "Por favor, digite um identificador para o setor.");
+      Alert.alert(t("common.warning"), t("setor.enterIdentifier"));
       return;
     }
 
     if (setor.length > 5) {
-      Alert.alert("Atenção", "O identificador deve ter no máximo 5 caracteres.");
+      Alert.alert(t("common.warning"), t("setor.maxCharacters"));
       return;
     }
 
     if (!capacidadeSetor || capacidadeSetor < 1) {
-      Alert.alert("Atenção", "A capacidade do setor deve ser maior que 0.");
+      Alert.alert(t("common.warning"), t("setor.capacityGreaterZero"));
       return;
     }
 
@@ -67,23 +69,21 @@ export default function CadastroSetorScreen() {
       });
 
       Alert.alert(
-        "Setor Cadastrado com Sucesso!",
-        `O setor ${setor.toUpperCase()} foi criado com capacidade para ${capacidadeSetor} moto${
-          capacidadeSetor > 1 ? "s" : ""
-        }.`,
+        t("setor.successRegister"),
+        t("setor.successRegisterMessage", { setor: setor.toUpperCase(), capacity: capacidadeSetor, plural: capacidadeSetor > 1 ? "s" : "" }),
         [
           {
-            text: "Cadastrar Outro Setor",
+            text: t("setor.registerAnother"),
             style: "default",
             onPress: () => {},
           },
           {
-            text: "Voltar para Setores",
+            text: t("setor.backToSetores"),
             style: "cancel",
             onPress: () => router.push("/setores"),
           },
           {
-            text: "Ir para o Setor",
+            text: t("setor.goToSetor"),
             style: "default",
             onPress: () => {
               router.setParams({});
@@ -97,21 +97,21 @@ export default function CadastroSetorScreen() {
     } catch (error) {
       console.error("Erro ao cadastrar setor:", error);
 
-      let errorMessage = "Ocorreu um erro inesperado ao cadastrar o setor.";
-      let errorTitle = "Erro no Cadastro";
+      let errorMessage = t("setor.errorUnexpected");
+      let errorTitle = t("setor.errorRegister");
 
       if (error instanceof RequestError) {
         errorMessage = error.message;
 
         // Personalizar títulos baseado no tipo de erro
         if (error.errorType === "ExceededSpaceException") {
-          errorTitle = "Capacidade Excedida";
+          errorTitle = t("setor.exceededCapacity");
         } else {
-          errorTitle = "Dados Inválidos";
+          errorTitle = t("setor.invalidData");
         }
       }
 
-      Alert.alert(errorTitle, errorMessage, [{ text: "OK" }]);
+      Alert.alert(errorTitle, errorMessage, [{ text: t("common.ok") }]);
     } finally {
       setIsLoading(false);
     }

@@ -7,16 +7,18 @@ import { PatioSummary } from "@/components/patio-summary";
 import { usePatioData } from "@/hooks/use-patio-data";
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 export default function PatioScreen() {
   const { patioInfo, setores, loading, refreshing, error, refresh, calculateOccupancyPercentage } =
     usePatioData();
+  const { t } = useTranslation();
 
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#05AF31" />
-        <Text className="mt-4 text-text">Carregando informações do pátio...</Text>
+        <Text className="mt-4 text-text">{t("patio.loadingInfo")}</Text>
       </View>
     );
   }
@@ -80,9 +82,9 @@ export default function PatioScreen() {
 
         {/* Footer */}
         <View className="items-center pb-8">
-          <Text className="text-muted text-sm">Puxe para baixo para atualizar</Text>
+          <Text className="text-muted text-sm">{t("common.pullToRefresh")}</Text>
           <Text className="text-muted text-xs">
-            Última atualização: {new Date().toLocaleTimeString()}
+            {t("common.lastUpdate")}: {new Date().toLocaleTimeString()}
           </Text>
         </View>
       </ScrollView>

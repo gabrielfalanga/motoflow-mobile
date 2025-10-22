@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons"
 import { Image, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { useTranslation } from "react-i18next"
 
 export default function DevsScreen() {
+  const { t } = useTranslation();
   const developers = [
     {
       name: "Matheus Esteves",
@@ -27,11 +29,11 @@ export default function DevsScreen() {
         <View className="mb-4 flex-row items-center">
           <Ionicons name="people-outline" size={28} color="#05AF31" />
           <Text className="ml-2 font-bold text-3xl text-primary">
-            Desenvolvedores
+            {t("devs.title")}
           </Text>
         </View>
         <Text className="text-center text-muted">
-          Conheça a equipe por trás do MotoFlow
+          {t("devs.subtitle")}
         </Text>
       </View>
 

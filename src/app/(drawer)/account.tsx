@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { useTranslation } from "react-i18next"
 
 export default function PerfilScreen() {
   const { token } = useAuth()
@@ -26,6 +27,7 @@ export default function PerfilScreen() {
   const [loading, setLoading] = useState(false)
   const { theme } = useTheme()
   const router = useRouter()
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!token) {
@@ -39,11 +41,11 @@ export default function PerfilScreen() {
 
         setOperador(response as Operador)
       } catch (error) {
-        setErro("Houve um erro ao buscar os dados do operador")
+        setErro(t("account.errorLoadingData"))
       }
     }
     fetchData()
-  }, [token])
+  }, [token, t])
 
   const handleChangePassword = () => {
     setModalVisible(true)
@@ -52,17 +54,17 @@ export default function PerfilScreen() {
   const submitPasswordChange = async () => {
     if (!operador || !token) return
     if (!newPassword.trim()) {
-      Alert.alert("Erro", "Digite a nova senha")
+      Alert.alert(t("common.error"), t("account.errorEmptyPassword"))
       return
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert("Erro", "As senhas não coincidem")
+      Alert.alert(t("common.error"), t("account.errorPasswordMismatch"))
       return
     }
 
     if (newPassword.length < 6) {
-      Alert.alert("Erro", "A senha deve ter pelo menos 6 caracteres")
+      Alert.alert(t("common.error"), t("account.errorPasswordLength"))
       return
     }
 
@@ -75,12 +77,12 @@ export default function PerfilScreen() {
       await request("/operador/me", "put", updatedOperador, {
         authToken: token,
       })
-      Alert.alert("Sucesso", "Senha alterada com sucesso!")
+      Alert.alert(t("common.success"), t("account.successPasswordChanged"))
       setModalVisible(false)
       setNewPassword("")
       setConfirmPassword("")
     } catch (error) {
-      Alert.alert("Houve um erro ao alterar a senha")
+      Alert.alert(t("account.errorChangingPassword"))
     } finally {
       setLoading(false)
     }
@@ -97,10 +99,10 @@ export default function PerfilScreen() {
       <View className="mb-6 flex-row items-start justify-between">
         <View>
           <Text className="mb-2 font-semibold text-2xl text-primary">
-            Meu Perfil
+            {t("account.title")}
           </Text>
           <Text className="text-base text-foreground">
-            Informações da conta
+            {t("account.subtitle")}
           </Text>
         </View>
         <Ionicons
@@ -117,7 +119,7 @@ export default function PerfilScreen() {
           {/* Card de informações do operador */}
           <View className="rounded-xl bg-card p-5 shadow-md">
             <Text className="mb-4 font-semibold text-lg text-primary">
-              Dados Pessoais
+              {t("account.personalData")}
             </Text>
 
             <View className="gap-3">
@@ -147,7 +149,7 @@ export default function PerfilScreen() {
           {/* Ações do perfil */}
           <View className="rounded-xl bg-card p-5 shadow-md">
             <Text className="mb-4 font-semibold text-lg text-primary">
-              Configurações
+              {t("account.settings")}
             </Text>
 
             <TouchableOpacity
@@ -157,7 +159,7 @@ export default function PerfilScreen() {
               <View className="flex-row items-center">
                 <Ionicons name="key" size={20} color="#05AF31" />
                 <Text className="ml-3 text-base text-foreground">
-                  Alterar Senha
+                  {t("account.changePassword")}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#666" />
@@ -166,7 +168,7 @@ export default function PerfilScreen() {
         </View>
       ) : (
         <View className="flex-1 items-center justify-center">
-          <Text className="text-base text-muted">Carregando perfil...</Text>
+          <Text className="text-base text-muted">{t("account.loadingProfile")}</Text>
         </View>
       )}
       {erro && (
@@ -186,7 +188,7 @@ export default function PerfilScreen() {
           <View className="w-[90%] max-w-96 rounded-2xl bg-card p-6">
             <View className="mb-6 flex-row items-center justify-between">
               <Text className="font-semibold text-2xl text-primary">
-                Alterar Senha
+                {t("account.changePassword")}
               </Text>
               <TouchableOpacity onPress={closeModal}>
                 <Ionicons name="close" size={24} color="#666" />
@@ -195,10 +197,10 @@ export default function PerfilScreen() {
 
             <View className="gap-4">
               <View>
-                <Text className="mb-2 text-foreground text-sm">Nova Senha</Text>
+                <Text className="mb-2 text-foreground text-sm">{t("account.newPassword")}</Text>
                 <TextInput
                   className="h-12 w-full rounded-xl border border-gray-300 bg-secondary px-3 text-base text-foreground"
-                  placeholder="Digite a nova senha"
+                  placeholder={t("account.enterNewPassword")}
                   value={newPassword}
                   onChangeText={setNewPassword}
                   secureTextEntry
@@ -208,11 +210,11 @@ export default function PerfilScreen() {
 
               <View>
                 <Text className="mb-2 text-foreground text-sm">
-                  Confirmar Nova Senha
+                  {t("account.confirmPassword")}
                 </Text>
                 <TextInput
                   className="h-12 w-full rounded-xl border border-gray-300 bg-secondary px-3 text-base text-foreground"
-                  placeholder="Confirme a nova senha"
+                  placeholder={t("account.confirmNewPassword")}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   secureTextEntry
@@ -225,7 +227,7 @@ export default function PerfilScreen() {
                   className="h-12 flex-1 items-center justify-center rounded-xl border border-gray-300"
                   onPress={closeModal}
                 >
-                  <Text className="text-base text-muted">Cancelar</Text>
+                  <Text className="text-base text-muted">{t("common.cancel")}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -237,7 +239,7 @@ export default function PerfilScreen() {
                     <ActivityIndicator color="#fff" />
                   ) : (
                     <Text className="font-semibold text-base text-white">
-                      Alterar
+                      {t("account.alter")}
                     </Text>
                   )}
                 </TouchableOpacity>

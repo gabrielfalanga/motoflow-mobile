@@ -18,6 +18,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 export default function PosicaoHorizontalScreen() {
   const { setor } = useLocalSearchParams<{
@@ -25,6 +26,7 @@ export default function PosicaoHorizontalScreen() {
   }>();
 
   const { token, patioId } = useAuth();
+  const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
 
   if (!setor) {
@@ -53,15 +55,15 @@ export default function PosicaoHorizontalScreen() {
     if (!token || !patioId || !setor) return;
 
     Alert.alert(
-      "Excluir Setor",
-      `Tem certeza que deseja excluir o setor ${setor}? Esta ação não pode ser desfeita.`,
+      t("setor.deleteSetor"),
+      t("setor.confirmDelete", { setor }),
       [
         {
-          text: "Cancelar",
+          text: t("common.cancel"),
           style: "cancel",
         },
         {
-          text: "Excluir",
+          text: t("common.delete"),
           style: "destructive",
           onPress: async () => {
             setIsDeleting(true);
@@ -71,11 +73,11 @@ export default function PosicaoHorizontalScreen() {
               });
               
               Alert.alert(
-                "Sucesso",
-                `Setor ${setor} excluído com sucesso!`,
+                t("common.success"),
+                t("setor.successDelete", { setor }),
                 [
                   {
-                    text: "OK",
+                    text: t("common.ok"),
                     onPress: () => {
                       router.push("/setores/");
                     },
@@ -85,8 +87,8 @@ export default function PosicaoHorizontalScreen() {
             } catch (error) {
               console.error("Erro ao excluir setor:", error);
               Alert.alert(
-                "Erro",
-                error instanceof Error ? error.message : "Erro desconhecido ao excluir setor"
+                t("common.error"),
+                error instanceof Error ? error.message : t("setor.errorDelete")
               );
             } finally {
               setIsDeleting(false);
@@ -128,7 +130,7 @@ export default function PosicaoHorizontalScreen() {
           activeOpacity={0.7}
         >
           <Ionicons name="add" size={20} color="#999" />
-          <Text className="mt-1 text-center text-xs text-gray-500">Adicionar</Text>
+          <Text className="mt-1 text-center text-xs text-gray-500">{t("setor.addMoto")}</Text>
         </TouchableOpacity>
       );
     }
@@ -142,7 +144,7 @@ export default function PosicaoHorizontalScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#05AF31" />
-        <Text className="mt-4 text-text">Carregando posições do setor {setor}...</Text>
+        <Text className="mt-4 text-text">{t("setor.loadingPositions", { setor })}</Text>
       </View>
     );
   }

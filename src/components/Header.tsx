@@ -13,7 +13,9 @@ import {
   View,
 } from "react-native"
 import ThemeToggle from "./theme-toggle"
+import { LanguageToggle } from "./language-toggle"
 import { useTheme } from "@/context/theme-context"
+import { useTranslation } from "react-i18next"
 
 type RootDrawerParamList = {
   Home: undefined
@@ -25,12 +27,13 @@ export function Header() {
   const navigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>()
   const [sheetVisible, setSheetVisible] = useState(false)
   const { theme } = useTheme()
+  const { t } = useTranslation()
 
   const handleLogout = async () => {
-    Alert.alert("Sair", "Tem certeza que deseja sair?", [
-      { text: "Cancelar", style: "cancel" },
+    Alert.alert(t("auth.logout"), t("auth.logoutConfirm"), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Sair",
+        text: t("header.exit"),
         style: "destructive",
         onPress: async () => {
           setSheetVisible(false)
@@ -62,6 +65,7 @@ export function Header() {
 
         {/* Botão de perfil/bolinha com bottom sheet */}
         <View className="flex flex-row items-center gap-4">
+          <LanguageToggle />
           <ThemeToggle />
           <TouchableOpacity
             className="h-10 w-10 items-center justify-center rounded-full bg-green-100"
@@ -91,7 +95,7 @@ export function Header() {
                 color="#05AF31"
                 style={{ marginRight: 8 }}
               />
-              <Text className="font-semibold text-lg text-primary">Conta</Text>
+              <Text className="font-semibold text-lg text-primary">{t("header.account")}</Text>
             </Pressable>
             <Pressable
               className="w-full flex-row items-center justify-center py-4"
@@ -103,7 +107,7 @@ export function Header() {
                 color="#dc2626"
                 style={{ marginRight: 8 }}
               />
-              <Text className="font-semibold text-lg text-red-600">Sair</Text>
+              <Text className="font-semibold text-lg text-red-600">{t("header.exit")}</Text>
             </Pressable>
           </View>
         </Pressable>
