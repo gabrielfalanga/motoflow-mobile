@@ -1,9 +1,11 @@
 import { useTheme } from "@/context/theme-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function HomeTabsLayout() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const isDark = theme === "dark";
   return (
     <Tabs
@@ -19,7 +21,7 @@ export default function HomeTabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Visualizar Setores",
+          title: t("navigation.viewSetores"),
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "map" : "map-outline"} color={color} size={size} />
           ),
@@ -28,7 +30,7 @@ export default function HomeTabsLayout() {
       <Tabs.Screen
         name="cadastro-setor"
         options={{
-          title: "Cadastrar Setor",
+          title: t("navigation.registerSetor"),
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "add-circle" : "add-circle-outline"}

@@ -66,7 +66,9 @@ export default function BuscaMotoScreen() {
   const [setor, setSetor] = useState<string | null>(null);
   const [opcoesSetor, setOpcoesSetor] = useState<Array<{ label: string; value: string }>>([]);
   // cópia usada apenas pelo modal de alocação (permite filtrar o setor atual da moto)
-  const [opcoesSetorModal, setOpcoesSetorModal] = useState<Array<{ label: string; value: string }>>([]);
+  const [opcoesSetorModal, setOpcoesSetorModal] = useState<Array<{ label: string; value: string }>>(
+    []
+  );
   // Estados do dropdown de status
   const [openStatus, setOpenStatus] = useState(false);
   const [novoStatus, setNovoStatus] = useState<string | null>(null);
@@ -274,17 +276,18 @@ export default function BuscaMotoScreen() {
       // Atualizar a moto encontrada com o novo status
       setMotoEncontrada(response as MotoEncontrada);
 
-      Alert.alert("Sucesso", "Status da moto atualizado com sucesso!");
+      Alert.alert(t("common.success"), t("moto.statusUpdateSuccess"));
       fecharModalEditarStatus();
     } catch (error) {
-      let errorMessage = "Ocorreu um erro inesperado ao atualizar o status da moto.";
-      const errorTitle = "Erro na Atualização";
+      let errorMessage = t("moto.statusUpdateError");
+      const errorTitle = t("moto.statusUpdateErrorTitle");
 
       if (error instanceof RequestError) {
         errorMessage = error.message;
       }
 
-      Alert.alert(errorTitle, errorMessage, [{ text: "OK" }]);    } finally {
+      Alert.alert(errorTitle, errorMessage, [{ text: t("common.ok") }]);
+    } finally {
       setIsEditandoStatus(false);
     }
   };
@@ -306,7 +309,7 @@ export default function BuscaMotoScreen() {
 
     // Validações
     if (!novoCodRastreador.trim()) {
-      Alert.alert("Erro", "Digite o código do rastreador.");
+      Alert.alert(t("common.error"), t("moto.enterTrackerCode"));
       return;
     }
 
@@ -315,9 +318,10 @@ export default function BuscaMotoScreen() {
     try {
       const body = {
         codRastreador: novoCodRastreador,
-      };      await request(`/motos/beacon/${motoEncontrada.placa}`, "put", body, {
+      };
+      await request(`/motos/beacon/${motoEncontrada.placa}`, "put", body, {
         authToken: token,
-      });      // Atualizar a moto encontrada com o novo código
+      }); // Atualizar a moto encontrada com o novo código
       setMotoEncontrada({
         ...motoEncontrada,
         codRastreador: novoCodRastreador,
@@ -325,14 +329,14 @@ export default function BuscaMotoScreen() {
 
       fecharModalRastreador();
     } catch (error) {
-      let errorMessage = "Ocorreu um erro inesperado ao atualizar o código do rastreador.";
-      const errorTitle = "Erro na Atualização";
+      let errorMessage = t("moto.trackerUpdateError");
+      const errorTitle = t("moto.statusUpdateErrorTitle");
 
       if (error instanceof RequestError) {
         errorMessage = error.message;
       }
 
-      Alert.alert(errorTitle, errorMessage, [{ text: "OK" }]);
+      Alert.alert(errorTitle, errorMessage, [{ text: t("common.ok") }]);
     } finally {
       setIsEditandoRastreador(false);
     }
@@ -343,7 +347,7 @@ export default function BuscaMotoScreen() {
 
     // Validações
     if (!setor) {
-      Alert.alert("Erro", "Selecione o setor para alocar a moto.");
+      Alert.alert(t("common.error"), t("moto.errorSelectSetor"));
       return;
     }
 
@@ -361,17 +365,17 @@ export default function BuscaMotoScreen() {
 
       setMotoEncontrada(response as MotoEncontrada);
 
-      Alert.alert("Sucesso", "Moto alocada com sucesso!");
+      Alert.alert(t("common.success"), t("moto.allocateSuccess"));
       fecharModalAlocacao();
     } catch (error) {
-      let errorMessage = "Ocorreu um erro inesperado ao alocar a moto no setor.";
-      const errorTitle = "Erro na Alocação";
+      let errorMessage = t("moto.allocateError");
+      const errorTitle = t("moto.allocateErrorTitle");
 
       if (error instanceof RequestError) {
         errorMessage = error.message;
       }
 
-      Alert.alert(errorTitle, errorMessage, [{ text: "OK" }]);
+      Alert.alert(errorTitle, errorMessage, [{ text: t("common.ok") }]);
     } finally {
       setIsAlocando(false);
     }
@@ -393,11 +397,11 @@ export default function BuscaMotoScreen() {
   const getTipoMotoNome = (tipo: string) => {
     switch (tipo) {
       case "MOTTU_E":
-        return "Mottu E (Elétrica)";
+        return t("motoTypes.mottuEFull");
       case "MOTTU_SPORT":
-        return "Mottu Sport (Esportiva)";
+        return t("motoTypes.mottuSportFull");
       case "MOTTU_POP":
-        return "Mottu Pop (Popular)";
+        return t("motoTypes.mottuPopFull");
       default:
         return tipo;
     }
@@ -406,11 +410,11 @@ export default function BuscaMotoScreen() {
   const getStatusMotoInfo = (status: string) => {
     switch (status) {
       case "DISPONIVEL":
-        return { nome: "Disponível", cor: "#10b981" };
+        return { nome: t("status.available"), cor: "#10b981" };
       case "MANUTENCAO":
-        return { nome: "Em Manutenção", cor: "#f59e0b" };
+        return { nome: t("status.maintenance"), cor: "#f59e0b" };
       case "ALUGADA":
-        return { nome: "Alugada", cor: "#ef4444" };
+        return { nome: t("status.rented"), cor: "#ef4444" };
       default:
         return { nome: status, cor: "#6b7280" };
     }
@@ -418,9 +422,9 @@ export default function BuscaMotoScreen() {
 
   const getOpcoesStatus = (statusAtual: string) => {
     const todosStatus = [
-      { label: "Disponível", value: "DISPONIVEL" },
-      { label: "Em Manutenção", value: "MANUTENCAO" },
-      { label: "Alugada", value: "ALUGADA" },
+      { label: t("status.available"), value: "DISPONIVEL" },
+      { label: t("status.maintenance"), value: "MANUTENCAO" },
+      { label: t("status.rented"), value: "ALUGADA" },
     ];
 
     return todosStatus.filter((status) => status.value !== statusAtual);
@@ -437,7 +441,7 @@ export default function BuscaMotoScreen() {
           {/* Header */}
           <View className="mb-6 flex-row items-center justify-center gap-4">
             <Ionicons name="search-outline" size={32} color="#05AF31" />
-            <Text className="font-bold text-3xl text-primary">Buscar Moto</Text>
+            <Text className="font-bold text-3xl text-primary">{t("moto.searchTitle")}</Text>
             <Ionicons name="location-outline" size={32} color="#05AF31" />
           </View>
 
@@ -451,14 +455,15 @@ export default function BuscaMotoScreen() {
             <View className="mb-6">
               {/* Seletor de Tipo de Busca */}
               <View className="mb-6">
-                <Text className="mb-3 ml-1 font-medium text-text">Como deseja buscar?</Text>
+                <Text className="mb-3 ml-1 font-medium text-text">{t("moto.searchHow")}</Text>
                 <View className="flex-row gap-2">
                   <TouchableOpacity
                     className={`flex-1 h-16 items-center justify-center rounded-xl border-2 ${
                       tipoBusca === "placa"
                         ? "bg-primary border-primary"
                         : "bg-card border-secondary"
-                    }`}                    onPress={() => alterarTipoBusca("placa")}
+                    }`}
+                    onPress={() => alterarTipoBusca("placa")}
                     activeOpacity={0.7}
                   >
                     <Ionicons
@@ -471,7 +476,7 @@ export default function BuscaMotoScreen() {
                         tipoBusca === "placa" ? "text-white" : "text-text"
                       }`}
                     >
-                      Placa
+                      {t("moto.plate")}
                     </Text>
                   </TouchableOpacity>
 
@@ -494,7 +499,7 @@ export default function BuscaMotoScreen() {
                         tipoBusca === "rastreador" ? "text-white" : "text-text"
                       }`}
                     >
-                      Rastreador
+                      {t("moto.tracker")}
                     </Text>
                   </TouchableOpacity>
 
@@ -517,7 +522,7 @@ export default function BuscaMotoScreen() {
                         tipoBusca === "tipo" ? "text-white" : "text-text"
                       }`}
                     >
-                      Tipo
+                      {t("moto.type")}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -526,9 +531,9 @@ export default function BuscaMotoScreen() {
               {/* Campo de Busca Condicional */}
               {tipoBusca === "placa" && (
                 <View>
-                  <Text className="mb-2 ml-1 font-medium text-text">Placa da Moto</Text>
+                  <Text className="mb-2 ml-1 font-medium text-text">{t("moto.plateField")}</Text>
                   <TextInput
-                    placeholder="Ex: ABC1234"
+                    placeholder={t("moto.enterPlateRegister")}
                     className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
                     placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
                     value={placa}
@@ -542,31 +547,27 @@ export default function BuscaMotoScreen() {
                     }
                     autoCapitalize="characters"
                   />
-                  <Text className="mt-1 ml-1 text-muted text-xs">
-                    7 caracteres, sem traço ou espaços
-                  </Text>
+                  <Text className="mt-1 ml-1 text-muted text-xs">{t("moto.plateHint")}</Text>
                 </View>
               )}
 
               {tipoBusca === "rastreador" && (
                 <View>
-                  <Text className="mb-2 ml-1 font-medium text-text">Código do Rastreador</Text>
+                  <Text className="mb-2 ml-1 font-medium text-text">{t("moto.trackerField")}</Text>
                   <TextInput
-                    placeholder="Ex: ABC123XYZ"
+                    placeholder={t("moto.enterTrackerCodeRegister")}
                     className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
                     placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
                     value={codRastreador}
                     onChangeText={setCodRastreador}
                   />
-                  <Text className="mt-1 ml-1 text-muted text-xs">
-                    Código alfanumérico do rastreador
-                  </Text>
+                  <Text className="mt-1 ml-1 text-muted text-xs">{t("moto.trackerHint")}</Text>
                 </View>
               )}
 
               {tipoBusca === "tipo" && (
                 <View>
-                  <Text className="mb-2 ml-1 font-medium text-text">Tipo da Moto</Text>
+                  <Text className="mb-2 ml-1 font-medium text-text">{t("moto.motoTypeField")}</Text>
                   <DropDownPicker
                     open={openTipoMoto}
                     value={tipoMoto}
@@ -574,7 +575,7 @@ export default function BuscaMotoScreen() {
                     setOpen={setOpenTipoMoto}
                     setValue={setTipoMoto}
                     setItems={setOpcoesTipoMoto}
-                    placeholder="Selecione o tipo da moto"
+                    placeholder={t("moto.selectTypeLabel")}
                     style={[
                       styles.dropdown,
                       theme === "dark" && { backgroundColor: "#222222" },
@@ -592,9 +593,7 @@ export default function BuscaMotoScreen() {
                       color: theme === "dark" ? "#cccccc" : "#666666",
                     }}
                   />
-                  <Text className="mt-1 ml-1 text-muted text-xs">
-                    Busca a primeira moto disponível do tipo selecionado
-                  </Text>
+                  <Text className="mt-1 ml-1 text-muted text-xs">{t("moto.typeHint")}</Text>
                 </View>
               )}
             </View>
@@ -613,7 +612,9 @@ export default function BuscaMotoScreen() {
                 ) : (
                   <View className="flex-row items-center">
                     <Ionicons name="search-outline" size={20} color="#ffffff" />
-                    <Text className="ml-2 font-semibold text-lg text-white">Buscar</Text>
+                    <Text className="ml-2 font-semibold text-lg text-white">
+                      {t("moto.searchButton")}
+                    </Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -633,7 +634,9 @@ export default function BuscaMotoScreen() {
                 <View className="mb-4 rounded-xl border border-red-300 bg-red-50 p-4">
                   <View className="flex-row items-center">
                     <Ionicons name="alert-circle-outline" size={24} color="#ef4444" />
-                    <Text className="ml-3 font-medium text-red-600">Moto não encontrada</Text>
+                    <Text className="ml-3 font-medium text-red-600">
+                      {t("moto.motoNotFoundTitle")}
+                    </Text>
                   </View>
                   <Text className="mt-2 text-red-500 text-sm">{erroMensagem}</Text>
                 </View>
@@ -644,9 +647,10 @@ export default function BuscaMotoScreen() {
                 <View className="rounded-xl border border-secondary bg-card p-6">
                   <View className="mb-4 flex-row items-center justify-center">
                     <Ionicons name="checkmark-circle" size={32} color="#10b981" />
-                    <Text className="ml-3 font-bold text-green-600 text-xl">Moto Encontrada!</Text>
+                    <Text className="ml-3 font-bold text-green-600 text-xl">
+                      {t("moto.motoFound")}
+                    </Text>
                   </View>
-
                   {/* Detalhes da Moto */}
                   <View className="gap-4">
                     {/* Placa */}
@@ -658,19 +662,22 @@ export default function BuscaMotoScreen() {
                           {motoEncontrada.placa}
                         </Text>
                       </View>
-                    </View>                    {/* Código do Rastreador */}
+                    </View>{" "}
+                    {/* Código do Rastreador */}
                     <View className="flex-row items-center mb-4">
-                      <Ionicons name="radio-outline" size={24} color="#05AF31" />                      <View className="ml-3 flex-1">
+                      <Ionicons name="radio-outline" size={24} color="#05AF31" />{" "}
+                      <View className="ml-3 flex-1">
                         <View className="flex-row items-center">
                           <Text className="font-medium text-text">Código do Rastreador</Text>
                           <TouchableOpacity
-                            className="ml-4 h-6 w-6 items-center justify-center rounded bg-blue-500"                            onPress={abrirModalRastreador}
+                            className="ml-4 h-6 w-6 items-center justify-center rounded bg-blue-500"
+                            onPress={abrirModalRastreador}
                             activeOpacity={0.7}
                           >
-                            <Ionicons 
-                              name={motoEncontrada.codRastreador ? "create-outline" : "add-outline"} 
-                              size={14} 
-                              color="#ffffff" 
+                            <Ionicons
+                              name={motoEncontrada.codRastreador ? "create-outline" : "add-outline"}
+                              size={14}
+                              color="#ffffff"
                             />
                           </TouchableOpacity>
                         </View>
@@ -685,7 +692,6 @@ export default function BuscaMotoScreen() {
                         )}
                       </View>
                     </View>
-
                     {/* Tipo e Ano lado a lado */}
                     <View className="flex-row gap-4">
                       {/* Tipo */}
@@ -716,7 +722,6 @@ export default function BuscaMotoScreen() {
                         </View>
                       </View>
                     </View>
-
                     {/* Status e Setor lado a lado */}
                     <View className="flex-row gap-4">
                       {/* Status */}
@@ -768,7 +773,8 @@ export default function BuscaMotoScreen() {
                         </View>
                       </View>
                     </View>
-                  </View>                  {/* Botões para ações da moto */}
+                  </View>{" "}
+                  {/* Botões para ações da moto */}
                   <View>
                     {motoEncontrada.setor && motoEncontrada.statusMoto === "DISPONIVEL" ? (
                       // Moto disponível e alocada - 3 botões
@@ -779,7 +785,9 @@ export default function BuscaMotoScreen() {
                           activeOpacity={0.8}
                         >
                           <Ionicons name="create-outline" size={20} color="#ffffff" />
-                          <Text className="mt-1 font-semibold text-white text-xs text-center">Editar Status</Text>
+                          <Text className="mt-1 font-semibold text-white text-xs text-center">
+                            Editar Status
+                          </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -788,7 +796,9 @@ export default function BuscaMotoScreen() {
                           activeOpacity={0.8}
                         >
                           <Ionicons name="swap-horizontal-outline" size={20} color="#ffffff" />
-                          <Text className="mt-1 font-semibold text-white text-xs text-center">Editar Setor</Text>
+                          <Text className="mt-1 font-semibold text-white text-xs text-center">
+                            Editar Setor
+                          </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -797,7 +807,9 @@ export default function BuscaMotoScreen() {
                           activeOpacity={0.8}
                         >
                           <Ionicons name="navigate-outline" size={20} color="#ffffff" />
-                          <Text className="mt-1 font-semibold text-white text-xs text-center">Abrir Setor</Text>
+                          <Text className="mt-1 font-semibold text-white text-xs text-center">
+                            Abrir Setor
+                          </Text>
                         </TouchableOpacity>
                       </View>
                     ) : motoEncontrada.setor ? (
@@ -821,7 +833,9 @@ export default function BuscaMotoScreen() {
                           activeOpacity={0.8}
                         >
                           <Ionicons name="create-outline" size={20} color="#ffffff" />
-                          <Text className="mt-1 font-semibold text-white text-xs text-center">Editar Status</Text>
+                          <Text className="mt-1 font-semibold text-white text-xs text-center">
+                            Editar Status
+                          </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -830,7 +844,9 @@ export default function BuscaMotoScreen() {
                           activeOpacity={0.8}
                         >
                           <Ionicons name="add-circle-outline" size={20} color="#ffffff" />
-                          <Text className="mt-1 font-semibold text-white text-xs text-center">Alocar em Setor</Text>
+                          <Text className="mt-1 font-semibold text-white text-xs text-center">
+                            Alocar em Setor
+                          </Text>
                         </TouchableOpacity>
                       </View>
                     ) : (
@@ -845,7 +861,8 @@ export default function BuscaMotoScreen() {
                           <Text className="ml-2 font-semibold text-white">Editar Status</Text>
                         </View>
                       </TouchableOpacity>
-                    )}                    {/* Botão de Rastrear Moto - só aparece se tiver rastreador e estiver alocada */}
+                    )}{" "}
+                    {/* Botão de Rastrear Moto - só aparece se tiver rastreador e estiver alocada */}
                     {motoEncontrada.codRastreador && motoEncontrada.setor && (
                       <TouchableOpacity
                         className="mt-3 h-16 w-full items-center justify-center rounded-xl bg-green-600"
@@ -857,7 +874,9 @@ export default function BuscaMotoScreen() {
                       >
                         <View className="flex-row items-center">
                           <Ionicons name="walk-outline" size={24} color="#ffffff" />
-                          <Text className="mx-2 font-semibold text-lg text-white">Rastrear Moto</Text>
+                          <Text className="mx-2 font-semibold text-lg text-white">
+                            Rastrear Moto
+                          </Text>
                         </View>
                       </TouchableOpacity>
                     )}
@@ -1045,7 +1064,8 @@ export default function BuscaMotoScreen() {
               </TouchableOpacity>
             </View>
           </View>
-        </View>      </Modal>
+        </View>{" "}
+      </Modal>
 
       {/* Modal de Edição de Rastreador */}
       <Modal

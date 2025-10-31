@@ -138,13 +138,13 @@ export default function CadastroMotoScreen() {
         : "";
 
       Alert.alert(
-        "Foto processada!",
-        `Dados identificados:${tipo_moto ? `\nTipo: ${tipo_moto}` : ""}${
-          placa ? `\nPlaca: ${placa}` : ""
+        t("moto.photoProcessed"),
+        `${t("moto.dataIdentified")}${tipo_moto ? `\n${t("moto.type")}: ${tipo_moto}` : ""}${
+          placa ? `\n${t("moto.plate")}: ${placa}` : ""
         }`,
         [
           {
-            text: "OK",
+            text: t("common.ok"),
             onPress: () => {
               fecharCamera();
             },
@@ -154,7 +154,7 @@ export default function CadastroMotoScreen() {
     } catch (error) {
       console.error("Erro ao identificar moto:", error);
 
-      let mensagemErro = "Erro ao processar a foto. Tente novamente.";
+      let mensagemErro = t("moto.errorProcessingPhoto");
 
       if (axios.isAxiosError(error)) {
         if (error.code === "ECONNABORTED") {
@@ -166,7 +166,7 @@ export default function CadastroMotoScreen() {
         }
       }
 
-      Alert.alert("Erro", mensagemErro);
+      Alert.alert(t("common.error"), mensagemErro);
     } finally {
       setIsIdentificandoFoto(false);
     }
@@ -226,28 +226,28 @@ export default function CadastroMotoScreen() {
 
     // Validações
     if (!tipoMoto) {
-      Alert.alert("Erro", "Selecione o tipo da moto.");
+      Alert.alert(t("common.error"), t("moto.errorSelectType"));
       return;
     }
 
     if (!ano || Number.isNaN(ano) || ano.toString().length !== 4 || ano < 2012 || ano > anoMaximo) {
-      Alert.alert("Erro", "Digite um ano válido (mínimo 2012).");
+      Alert.alert(t("common.error"), t("moto.errorValidYear"));
       return;
     }
 
     const placaRegex = /^[A-Z0-9]{7}$/;
     if (!placa || !placaRegex.test(placa)) {
-      Alert.alert("Erro", "Digite uma placa válida (sem espaços ou símbolos).");
+      Alert.alert(t("common.error"), t("moto.errorValidPlateFormat"));
       return;
     }
 
     if (!codRastreador || !codRastreador.trim()) {
-      Alert.alert("Erro", "Digite um código de rastreador válido.");
+      Alert.alert(t("common.error"), t("moto.errorValidTracker"));
       return;
     }
 
     if (!setor) {
-      Alert.alert("Erro", "Selecione o setor para alocar a moto.");
+      Alert.alert(t("common.error"), t("moto.errorSelectSetor"));
       return;
     }
 
@@ -271,11 +271,15 @@ export default function CadastroMotoScreen() {
       });
 
       Alert.alert(
-        "Moto cadastrada e alocada!",
-        `Tipo: ${tipoMoto}\nPlaca: ${placa}\nAno: ${ano}\nRastreador: ${motoResponse?.codRastreador}\nSetor: ${motoResponse?.setor}`,
+        t("moto.motoRegisteredAllocated"),
+        `${t("moto.type")}: ${tipoMoto}\n${t("moto.plate")}: ${placa}\n${t(
+          "moto.year"
+        )}: ${ano}\n${t("moto.trackerCode")}: ${motoResponse?.codRastreador}\n${t("moto.setor")}: ${
+          motoResponse?.setor
+        }`,
         [
           {
-            text: "OK",
+            text: t("common.ok"),
             onPress: () => {
               limparFormulario();
               router.setParams({});
@@ -287,8 +291,8 @@ export default function CadastroMotoScreen() {
     } catch (error) {
       console.error("Erro ao cadastrar moto:", error);
       Alert.alert(
-        "Erro",
-        error instanceof Error ? error.message : "Erro desconhecido ao cadastrar moto"
+        t("common.error"),
+        error instanceof Error ? error.message : t("moto.errorRegisteringMoto")
       );
     } finally {
       setIsLoading(false);
@@ -355,7 +359,7 @@ export default function CadastroMotoScreen() {
                   className="bg-secondary p-3 rounded"
                   disabled={isIdentificandoFoto}
                 >
-                  <Text className="text-text font-medium">Tirar outra foto</Text>
+                  <Text className="text-text font-medium">{t("moto.photoPreview")}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={enviarFoto}
@@ -363,7 +367,7 @@ export default function CadastroMotoScreen() {
                   disabled={isIdentificandoFoto}
                 >
                   <Text className="text-white font-medium">
-                    {isIdentificandoFoto ? "Processando..." : "Enviar foto"}
+                    {isIdentificandoFoto ? t("moto.processing") : t("moto.sendPhoto")}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -374,25 +378,29 @@ export default function CadastroMotoScreen() {
         // Tela de cadastro normal
         <View className="flex-1 px-6 py-5">
           {/* Header */}
-          <Text className="text-center mb-6 font-bold text-3xl text-primary">Cadastre a moto</Text>
+          <Text className="text-center mb-6 font-bold text-3xl text-primary">
+            {t("moto.registerTitle")}
+          </Text>
 
           {/* Aviso se não houver setores */}
           {opcoesSetor.length === 0 ? (
             <View className="flex-1 items-center justify-center py-16">
               <Ionicons name="add-circle-outline" size={64} color="#05AF31" />
-              <Text className="mt-4 mb-2 font-semibold text-primary">Cadastrar Primeiro Setor</Text>
+              <Text className="mt-4 mb-2 font-semibold text-primary">
+                {t("moto.firstSetorPrompt")}
+              </Text>
               <Text className="text-center text-muted text-sm">
-                Ainda não há setores configurados neste pátio
+                {t("moto.noSetoresConfigured")}
               </Text>
               <Text className="mb-6 text-center text-muted text-sm">
-                Configure pelo menos um setor para cadastrar motos
+                {t("moto.needSetorForMoto")}
               </Text>
               <TouchableOpacity
                 className="h-12 items-center justify-center rounded-xl bg-primary px-6"
                 onPress={() => router.navigate("/setores/cadastro-setor")}
                 activeOpacity={0.8}
               >
-                <Text className="font-semibold text-white">Cadastrar Setor</Text>
+                <Text className="font-semibold text-white">{t("setor.register")}</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -402,7 +410,7 @@ export default function CadastroMotoScreen() {
                 <View className="gap-2">
                   {/* Dropdown Tipo de Moto */}
                   <View>
-                    <Text className="mb-2 ml-1 font-medium text-text">Tipo da Moto *</Text>
+                    <Text className="mb-2 ml-1 font-medium text-text">{t("moto.typeLabel")}</Text>
                     <DropDownPicker
                       open={openTipoMoto}
                       value={tipoMoto}
@@ -410,7 +418,7 @@ export default function CadastroMotoScreen() {
                       setOpen={setOpenTipoMoto}
                       setValue={setTipoMoto}
                       setItems={setOpcoesTipoMoto}
-                      placeholder="Selecione o tipo da moto"
+                      placeholder={t("moto.selectTypeLabel")}
                       style={[
                         styles.dropdown,
                         isDark && { backgroundColor: "#222222" },
@@ -434,9 +442,11 @@ export default function CadastroMotoScreen() {
                   <View className="flex-row justify-between gap-4 mb-4">
                     {/* Campo Placa */}
                     <View className="flex-1">
-                      <Text className="mb-2 ml-1 font-medium text-text">Placa *</Text>
+                      <Text className="mb-2 ml-1 font-medium text-text">
+                        {t("moto.plateLabel")}
+                      </Text>
                       <TextInput
-                        placeholder="Ex: ABC1234"
+                        placeholder={t("moto.enterPlateRegister")}
                         className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
                         style={{ width: "100%" }}
                         placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
@@ -448,9 +458,9 @@ export default function CadastroMotoScreen() {
                     </View>
                     {/* Campo Ano */}
                     <View className="flex-1">
-                      <Text className="mb-2 ml-1 font-medium text-text">Ano *</Text>
+                      <Text className="mb-2 ml-1 font-medium text-text">{t("moto.yearLabel")}</Text>
                       <TextInput
-                        placeholder="Ex: 2024"
+                        placeholder={t("moto.enterYear")}
                         className="h-14 rounded-xl border border-secondary bg-card px-4 text-text"
                         style={{ width: "100%" }}
                         placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
@@ -473,9 +483,11 @@ export default function CadastroMotoScreen() {
                   </View>
                   {/* Campo Código do Rastreador */}
                   <View className="mb-4">
-                    <Text className="mb-2 ml-1 font-medium text-text">Código do Rastreador *</Text>
+                    <Text className="mb-2 ml-1 font-medium text-text">
+                      {t("moto.trackerLabel")}
+                    </Text>
                     <TextInput
-                      placeholder="Ex: ABC123XYZ"
+                      placeholder={t("moto.enterTrackerCodeRegister")}
                       className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
                       placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
                       value={codRastreador || ""}
@@ -484,7 +496,7 @@ export default function CadastroMotoScreen() {
                   </View>
                   {/* Dropdown Setor */}
                   <View className="mb-10">
-                    <Text className="mb-1 ml-1 font-medium text-text">Setor *</Text>
+                    <Text className="mb-1 ml-1 font-medium text-text">{t("moto.setorLabel")}</Text>
                     <DropDownPicker
                       open={openSetor}
                       value={setor}
@@ -492,7 +504,7 @@ export default function CadastroMotoScreen() {
                       setOpen={setOpenSetor}
                       setValue={setSetor}
                       setItems={setOpcoesSetor}
-                      placeholder="Selecione um setor para alocar a moto"
+                      placeholder={t("moto.selectSetorAllocatePrompt")}
                       style={[
                         styles.dropdown,
                         isDark && { backgroundColor: "#222222" },
@@ -523,20 +535,20 @@ export default function CadastroMotoScreen() {
                     onPress={abrirCamera}
                   >
                     <Ionicons name="camera" color={isDark ? "white" : "black"} size={20} />
-                    <Text className="ml-2 font-semibold text-text">Foto</Text>
+                    <Text className="ml-2 font-semibold text-text">{t("moto.photoButton")}</Text>
                   </TouchableOpacity>
 
                   <View style={{ flex: 2 }}>
                     <SubmitButton
                       isLoading={isLoading}
                       onSubmit={cadastrar}
-                      text="Cadastrar e Alocar"
+                      text={t("moto.registerAllocate")}
                     />
                   </View>
                 </View>
 
                 {/* Campos obrigatórios */}
-                <Text className="text-center text-muted text-xs">* Campos obrigatórios</Text>
+                <Text className="text-center text-muted text-xs">{t("moto.requiredFields")}</Text>
               </View>
             </>
           )}

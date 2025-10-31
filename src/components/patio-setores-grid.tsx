@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 interface SetorPatio {
   setor: string;
@@ -17,6 +18,7 @@ export function PatioSetoresGrid({ setores: setoresProp }: PatioSetoresGridProps
   const [setores, setSetores] = useState<SetorPatio[]>(setoresProp || []);
   const [loading, setLoading] = useState(false);
   const { token, patioId } = useAuth();
+  const { t } = useTranslation();
 
   const fetchSetores = useCallback(async () => {
     if (!token || !patioId) return;
@@ -53,7 +55,7 @@ export function PatioSetoresGrid({ setores: setoresProp }: PatioSetoresGridProps
       <View className="rounded-xl bg-card p-5 shadow-sm">
         <View className="mb-4 flex-row items-center">
           <Ionicons name="grid-outline" size={20} color="#05AF31" />
-          <Text className="ml-2 font-bold text-text">Setores do Pátio</Text>
+          <Text className="ml-2 font-bold text-text">{t("patio.setoresTitle")}</Text>
         </View>
         <View className="items-center py-4">
           <ActivityIndicator size="small" color="#05AF31" />
@@ -67,11 +69,12 @@ export function PatioSetoresGrid({ setores: setoresProp }: PatioSetoresGridProps
       <View className="mb-4 flex-row items-center justify-between">
         <View className="flex-row items-center">
           <Ionicons name="grid-outline" size={24} color="#05AF31" />
-          <Text className="ml-2 font-semibold text-lg text-text">Setores do Pátio</Text>
+          <Text className="ml-2 font-semibold text-lg text-text">{t("patio.setoresTitle")}</Text>
         </View>
         <View className="rounded-full bg-primary/10 px-3 py-1">
           <Text className="font-medium text-primary text-sm">
-            {setores.length} {setores.length > 1 ? "setores" : "setor"}
+            {setores.length}{" "}
+            {setores.length > 1 ? t("patio.setoresCount") : t("patio.setoresCountSingle")}
           </Text>
         </View>
       </View>

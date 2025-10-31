@@ -54,49 +54,41 @@ export default function PosicaoHorizontalScreen() {
   const excluirSetor = async () => {
     if (!token || !patioId || !setor) return;
 
-    Alert.alert(
-      t("setor.deleteSetor"),
-      t("setor.confirmDelete", { setor }),
-      [
-        {
-          text: t("common.cancel"),
-          style: "cancel",
+    Alert.alert(t("setor.deleteSetor"), t("setor.confirmDelete", { setor }), [
+      {
+        text: t("common.cancel"),
+        style: "cancel",
+      },
+      {
+        text: t("common.delete"),
+        style: "destructive",
+        onPress: async () => {
+          setIsDeleting(true);
+          try {
+            await request(`/posicoes/${setor}/${patioId}`, "delete", null, {
+              authToken: token,
+            });
+
+            Alert.alert(t("common.success"), t("setor.successDelete", { setor }), [
+              {
+                text: t("common.ok"),
+                onPress: () => {
+                  router.push("/setores/");
+                },
+              },
+            ]);
+          } catch (error) {
+            console.error("Erro ao excluir setor:", error);
+            Alert.alert(
+              t("common.error"),
+              error instanceof Error ? error.message : t("setor.errorDelete")
+            );
+          } finally {
+            setIsDeleting(false);
+          }
         },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: async () => {
-            setIsDeleting(true);
-            try {
-              await request(`/posicoes/${setor}/${patioId}`, "delete", null, {
-                authToken: token,
-              });
-              
-              Alert.alert(
-                t("common.success"),
-                t("setor.successDelete", { setor }),
-                [
-                  {
-                    text: t("common.ok"),
-                    onPress: () => {
-                      router.push("/setores/");
-                    },
-                  },
-                ]
-              );
-            } catch (error) {
-              console.error("Erro ao excluir setor:", error);
-              Alert.alert(
-                t("common.error"),
-                error instanceof Error ? error.message : t("setor.errorDelete")
-              );
-            } finally {
-              setIsDeleting(false);
-            }
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
   const renderVagas = () => {
     if (!data) return null;
@@ -120,7 +112,7 @@ export default function PosicaoHorizontalScreen() {
           }}
         />
       );
-    });    // Adicionar card para adicionar nova moto (se houver vagas disponíveis)
+    }); // Adicionar card para adicionar nova moto (se houver vagas disponíveis)
     if (motos.length < data.vagasTotais) {
       elementos.push(
         <TouchableOpacity
@@ -173,32 +165,33 @@ export default function PosicaoHorizontalScreen() {
               <Ionicons name="arrow-back" size={24} color="#05AF31" />
             </TouchableOpacity>
             <View className="flex-1">
-              <Text className="font-bold text-2xl text-primary">Setor {setor}</Text>
+              <Text className="font-bold text-2xl text-primary">
+                {t("setor.title")} {setor}
+              </Text>
               <Text className="text-muted">
-                {stats.ocupadas} de {stats.vagasTotais} vagas ocupadas
+                {stats.ocupadas} {t("patio.of")} {stats.vagasTotais} {t("setor.vagas")}{" "}
+                {t("setor.occupiedP")}
               </Text>
             </View>
           </View>
         </View>
-
         {/* Error */}
         {error && (
           <View className="mb-4">
             <NotificationCard title="Erro" message={error} type="error" />
           </View>
         )}
-
         {/* Estatísticas */}
         {data && (
           <View className="mb-6">
-            <Text className="mb-4 font-bold text-lg text-text">Resumo</Text>
+            <Text className="mb-4 font-bold text-lg text-text">{t("setor.summary")}</Text>
             <View className="flex-row gap-3">
               <View className="flex-1 rounded-xl bg-primary p-4">
                 <View className="mb-2 flex-row items-center justify-between">
                   <Ionicons name="checkmark-circle" size={20} color="white" />
                   <Text className="font-bold text-white text-xl">{stats.ocupadas}</Text>
                 </View>
-                <Text className="font-medium text-white/90">Motos no setor</Text>
+                <Text className="font-medium text-white/90">{t("setor.motosInSetor")}</Text>
               </View>
 
               <View className="flex-1 rounded-xl bg-blue-500 p-4">
@@ -206,65 +199,65 @@ export default function PosicaoHorizontalScreen() {
                   <Ionicons name="analytics" size={20} color="white" />
                   <Text className="font-bold text-white text-xl">{stats.taxaOcupacao}%</Text>
                 </View>
-                <Text className="font-medium text-white/90">Ocupação</Text>
+                <Text className="font-medium text-white/90">{t("setor.occupancy")}</Text>
               </View>
             </View>
           </View>
         )}
-
         {/* Legenda */}
         <View className="mb-6 rounded-xl bg-card p-4">
-          <Text className="mb-3 font-bold text-text">Legenda</Text>
+          <Text className="mb-3 font-bold text-text">{t("setor.legend")}</Text>
 
           {/* Status das Vagas */}
           <View className="mb-4">
-            <Text className="mb-2 font-medium text-sm text-text">Status das Vagas</Text>
+            <Text className="mb-2 font-medium text-sm text-text">{t("setor.vagasStatus")}</Text>
             <View className="gap-2">
               <View className="flex-row items-center">
                 <View className="mr-3 size-4 rounded bg-primary" />
-                <Text className="text-muted">Disponível</Text>
+                <Text className="text-muted">{t("setor.availableVaga")}</Text>
               </View>
               <View className="flex-row items-center">
                 <View className="mr-3 size-4 rounded bg-gray-300" />
-                <Text className="text-muted">Vaga vazia</Text>
+                <Text className="text-muted">{t("setor.emptyVaga")}</Text>
               </View>
             </View>
           </View>
 
           {/* Tipos de Moto */}
           <View>
-            <Text className="mb-2 font-medium text-sm text-text">Tipos de Moto</Text>
+            <Text className="mb-2 font-medium text-sm text-text">{t("setor.motoTypes")}</Text>
             <View className="gap-2">
               <View className="flex-row items-center">
                 <Ionicons name="flash" size={16} color="#05AF31" className="mr-3" />
-                <Text className="ml-3 text-muted">Mottu E (Elétrica)</Text>
+                <Text className="ml-3 text-muted">{t("motoTypes.mottuEFull")}</Text>
               </View>
               <View className="flex-row items-center">
                 <Ionicons name="speedometer" size={16} color="#05AF31" className="mr-3" />
-                <Text className="ml-3 text-muted">Mottu Sport (Esportiva)</Text>
+                <Text className="ml-3 text-muted">{t("motoTypes.mottuSportFull")}</Text>
               </View>
               <View className="flex-row items-center">
                 <Ionicons name="bicycle" size={16} color="#05AF31" className="mr-3" />
-                <Text className="ml-3 text-muted">Mottu Pop (Popular)</Text>
+                <Text className="ml-3 text-muted">{t("motoTypes.mottuPopFull")}</Text>
               </View>
             </View>
           </View>
         </View>
-
         {/* Grid de Vagas */}
         <View className="mb-6">
-          <Text className="mb-4 font-bold text-lg text-text">Mapa do Setor {setor}</Text>
+          <Text className="mb-4 font-bold text-lg text-text">
+            {t("setor.setorMap")} {setor}
+          </Text>
           <View className="rounded-xl bg-card p-4">
             <View className="flex-row flex-wrap justify-center">{renderVagas()}</View>
           </View>
-        </View>        {/* Footer */}
+        </View>{" "}
+        {/* Footer */}
         <View className="items-center pb-8">
-          <Text className="text-muted text-sm">Toque em uma vaga para ver detalhes</Text>
+          <Text className="text-muted text-sm">{t("setor.touchVaga")}</Text>
           <Text className="text-muted text-xs">
-            Última atualização: {new Date().toLocaleTimeString()}
+            {t("common.lastUpdate")}: {new Date().toLocaleTimeString()}
           </Text>
         </View>
-
         {/* Botão de Excluir Setor */}
         <View className="px-4 pb-8">
           <TouchableOpacity
@@ -281,7 +274,7 @@ export default function PosicaoHorizontalScreen() {
               <Ionicons name="trash-outline" size={20} color="#dc2626" className="mr-2" />
             )}
             <Text className="ml-2 font-semibold text-red-600">
-              {isDeleting ? "Excluindo..." : "Excluir Setor"}
+              {isDeleting ? t("setor.deleting") : t("setor.deleteSetorButton")}
             </Text>
           </TouchableOpacity>
         </View>

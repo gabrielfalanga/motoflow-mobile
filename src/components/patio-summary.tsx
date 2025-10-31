@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 interface PatioSummaryProps {
   ocupadas: number;
@@ -9,6 +10,8 @@ interface PatioSummaryProps {
 }
 
 export function PatioSummary({ ocupadas, capacidadeMax, disponiveis, apelido }: PatioSummaryProps) {
+  const { t } = useTranslation();
+
   const calculateOccupancyPercentage = () => {
     if (capacidadeMax === 0) return 0;
     return Math.round((ocupadas / capacidadeMax) * 100);
@@ -16,10 +19,10 @@ export function PatioSummary({ ocupadas, capacidadeMax, disponiveis, apelido }: 
 
   const getOccupancyStatus = () => {
     const percentage = calculateOccupancyPercentage();
-    if (percentage >= 90) return { status: "Crítico", color: "#ef4444" };
-    if (percentage >= 70) return { status: "Alto", color: "#f59e0b" };
-    if (percentage >= 40) return { status: "Médio", color: "#05AF31" };
-    return { status: "Baixo", color: "#05AF31" };
+    if (percentage >= 90) return { status: t("patio.critical"), color: "#ef4444" };
+    if (percentage >= 70) return { status: t("patio.high"), color: "#f59e0b" };
+    if (percentage >= 40) return { status: t("patio.medium"), color: "#05AF31" };
+    return { status: t("patio.low"), color: "#05AF31" };
   };
 
   const occupancyData = getOccupancyStatus();
@@ -28,7 +31,7 @@ export function PatioSummary({ ocupadas, capacidadeMax, disponiveis, apelido }: 
     <View className="rounded-xl bg-card p-5 shadow-sm">
       <View className="mb-4 flex-row items-center justify-between">
         <View>
-          <Text className="font-bold text-lg text-text">Status do Pátio</Text>
+          <Text className="font-bold text-lg text-text">{t("patio.patioStatus")}</Text>
           {apelido && <Text className="text-muted text-sm">{apelido}</Text>}
         </View>
         <Ionicons name="analytics-outline" size={24} color="#05AF31" />
@@ -37,7 +40,9 @@ export function PatioSummary({ ocupadas, capacidadeMax, disponiveis, apelido }: 
       <View className="mb-4 flex-row items-end justify-between">
         <View>
           <Text className="font-bold text-3xl text-primary">{ocupadas}</Text>
-          <Text className="text-muted">de {capacidadeMax} posições</Text>
+          <Text className="text-muted">
+            {t("patio.of")} {capacidadeMax} {t("patio.positions")}
+          </Text>
         </View>
 
         <View className="items-end">

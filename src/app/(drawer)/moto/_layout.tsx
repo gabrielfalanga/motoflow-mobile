@@ -1,10 +1,12 @@
-import { Ionicons } from "@expo/vector-icons"
-import { Tabs } from "expo-router/tabs"
-import { useTheme } from "@/context/theme-context"
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router/tabs";
+import { useTheme } from "@/context/theme-context";
+import { useTranslation } from "react-i18next";
 
 export default function TabsLayout() {
-  const { theme } = useTheme()
-  const isDark = theme === "dark"
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const isDark = theme === "dark";
   return (
     <Tabs
       screenOptions={{
@@ -19,7 +21,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="cadastro-moto"
         options={{
-          title: "Cadastrar Moto",
+          title: t("navigation.registerMoto"),
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "add-circle" : "add-circle-outline"}
@@ -32,16 +34,12 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="busca-moto"
         options={{
-          title: "Buscar Motos",
+          title: t("navigation.searchMoto"),
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons
-              name={focused ? "search" : "search-outline"}
-              size={size}
-              color={color}
-            />
+            <Ionicons name={focused ? "search" : "search-outline"} size={size} color={color} />
           ),
         }}
       />
     </Tabs>
-  )
+  );
 }

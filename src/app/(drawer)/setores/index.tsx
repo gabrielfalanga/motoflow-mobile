@@ -117,17 +117,20 @@ export default function SetoresScreen() {
                 <View>
                   {/* Header do Setor */}
                   <View className="flex-row items-center justify-between mb-4">
-                    <Text className="font-bold text-xl text-text">Setor {setor.setor}</Text>
+                    <Text className="font-bold text-xl text-text">
+                      {t("setor.title")} {setor.setor}
+                    </Text>
                     <Ionicons name="chevron-forward-outline" size={20} color="#999" />
                   </View>{" "}
                   {/* Estatísticas das Vagas */}
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1">
                       <Text className="text-muted text-sm">
-                        {setor.vagasDisponiveis} {setor.vagasDisponiveis === 1 ? t("setor.free") : t("setor.freeP")}{" "}
-                        • {setor.posicoesOcupadas}{" "}
-                        {setor.posicoesOcupadas === 1 ? t("setor.occupied") : t("setor.occupiedP")} •{" "}
-                        {setor.capacidadeSetor} {t("setor.total")}
+                        {setor.vagasDisponiveis}{" "}
+                        {setor.vagasDisponiveis === 1 ? t("setor.free") : t("setor.freeP")} •{" "}
+                        {setor.posicoesOcupadas}{" "}
+                        {setor.posicoesOcupadas === 1 ? t("setor.occupied") : t("setor.occupiedP")}{" "}
+                        • {setor.capacidadeSetor} {t("setor.total")}
                       </Text>
                     </View>
                   </View>
@@ -155,17 +158,15 @@ export default function SetoresScreen() {
         {posicoes.length === 0 && (
           <View className="flex-1 items-center justify-center py-16">
             <Ionicons name="add-circle-outline" size={64} color="#05AF31" />
-            <Text className="mt-4 font-semibold text-primary">Cadastrar Primeiro Setor</Text>
-            <Text className="mb-6 text-center text-muted text-sm">
-              Ainda não há setores configurados neste pátio
-            </Text>
+            <Text className="mt-4 font-semibold text-primary">{t("setor.registerFirst")}</Text>
+            <Text className="mb-6 text-center text-muted text-sm">{t("setor.noSetoresYet")}</Text>
 
             <TouchableOpacity
               className="h-12 items-center justify-center rounded-xl bg-primary px-6"
               onPress={() => router.navigate("/setores/cadastro-setor")}
               activeOpacity={0.8}
             >
-              <Text className="font-semibold text-white">Cadastrar Setor</Text>
+              <Text className="font-semibold text-white">{t("setor.register")}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -173,10 +174,10 @@ export default function SetoresScreen() {
         {/* Footer */}
         <View className="items-center pt-6">
           <Text className="text-muted text-xs">
-            Total de {posicoes.length}{" "}
-            {posicoes.length !== 1 ? "setores cadastrados" : "setor cadastrado"}
+            {t("setor.totalSetoresCount")} {posicoes.length}{" "}
+            {posicoes.length !== 1 ? t("setor.setoresRegistered") : t("setor.setorRegistered")}
           </Text>
-          <Text className="text-muted text-xs">Puxe para baixo para atualizar</Text>
+          <Text className="text-muted text-xs">{t("setor.pullDownRefresh")}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

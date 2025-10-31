@@ -70,7 +70,11 @@ export default function CadastroSetorScreen() {
 
       Alert.alert(
         t("setor.successRegister"),
-        t("setor.successRegisterMessage", { setor: setor.toUpperCase(), capacity: capacidadeSetor, plural: capacidadeSetor > 1 ? "s" : "" }),
+        t("setor.successRegisterMessage", {
+          setor: setor.toUpperCase(),
+          capacity: capacidadeSetor,
+          plural: capacidadeSetor > 1 ? "s" : "",
+        }),
         [
           {
             text: t("setor.registerAnother"),
@@ -141,17 +145,17 @@ export default function CadastroSetorScreen() {
           <View className="h-8 w-8 items-center justify-center rounded-full bg-primary">
             <Ionicons name="eye-outline" size={16} color="white" />
           </View>
-          <Text className="ml-3 font-semibold text-lg text-text">Preview do Setor</Text>
+          <Text className="ml-3 font-semibold text-lg text-text">{t("setor.preview")}</Text>
         </View>
 
         <View className="rounded-2xl bg-card p-5">
           {/* Título da área */}
           <View className="mb-4 items-center">
             <Text className="font-bold text-primary text-xl">
-              Setor {setor.toUpperCase() || "?"}
+              {t("setor.title")} {setor.toUpperCase() || "?"}
             </Text>
             <Text className="text-muted text-sm">
-              {capacidadeSetor} vaga{capacidadeSetor > 1 ? "s" : ""}
+              {capacidadeSetor} {capacidadeSetor > 1 ? t("setor.vagas") : t("setor.vaga")}
             </Text>
           </View>
 
@@ -188,8 +192,8 @@ export default function CadastroSetorScreen() {
         {/* Header fixo */}
 
         <View className="items-center">
-          <Text className="font-bold text-3xl text-primary">Novo Setor</Text>
-          <Text className="text-muted text-sm mb-5">Configure um novo setor do pátio</Text>
+          <Text className="font-bold text-3xl text-primary">{t("setor.newSetor")}</Text>
+          <Text className="text-muted text-sm mb-5">{t("setor.configureNewSetor")}</Text>
         </View>
 
         <ScrollView
@@ -202,10 +206,10 @@ export default function CadastroSetorScreen() {
             <View className="gap-4">
               {/* Campo Identificador */}
               <View>
-                <Text className="mb-1 ml-1 font-medium text-text">Nome do Setor *</Text>
+                <Text className="mb-1 ml-1 font-medium text-text">{t("setor.identifier")} *</Text>
 
                 <TextInput
-                  placeholder="Digite o identificador (Ex: A, B, C...)"
+                  placeholder={t("setor.enterIdentifier")}
                   className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
                   placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
                   value={setor}
@@ -219,10 +223,10 @@ export default function CadastroSetorScreen() {
 
               {/* Campo Quantidade de Vagas */}
               <View className="mb-4">
-                <Text className="mb-1 ml-1 font-medium text-text">Quantidade de Vagas *</Text>
+                <Text className="mb-1 ml-1 font-medium text-text">{t("setor.capacity")} *</Text>
 
                 <TextInput
-                  placeholder="Quantas vagas terá este setor?"
+                  placeholder={t("setor.capacityGreaterZero")}
                   className="h-14 w-full rounded-xl border border-secondary bg-card px-4 text-text"
                   placeholderTextColor={theme === "dark" ? "#cccccc" : "#666666"}
                   value={capacidadeSetor?.toString() || ""}
@@ -248,11 +252,12 @@ export default function CadastroSetorScreen() {
               <View className="rounded-2xl bg-card p-4">
                 <View className="mb-2 flex-row items-center">
                   <Ionicons name="bulb-outline" size={20} color="#3B82F6" />
-                  <Text className="ml-2 font-semibold text-text">Dicas</Text>
+                  <Text className="ml-2 font-semibold text-text">{t("common.info")}</Text>
                 </View>
                 <Text className="text-sm text-text leading-8">
-                  • Use identificadores simples e claros{"\n"}• Considere a capacidade real do
-                  espaço físico{"\n"}• Setores menores são mais fáceis de gerenciar
+                  • {t("setor.enterIdentifier")}
+                  {"\n"}• {t("setor.capacityGreaterZero")}
+                  {"\n"}• {t("setor.maxCharacters")}
                 </Text>
               </View>
             </View>
@@ -264,12 +269,10 @@ export default function CadastroSetorScreen() {
 
         {/* Botão fixo na parte inferior */}
         <View className="p-6">
-          <SubmitButton isLoading={isLoading} onSubmit={cadastrar} text="Cadastrar Setor" />
+          <SubmitButton isLoading={isLoading} onSubmit={cadastrar} text={t("setor.register")} />
 
           {!isLoading && (
-            <Text className="mt-3 text-center text-muted text-sm">
-              Preencha todos os campos obrigatórios * para continuar
-            </Text>
+            <Text className="mt-3 text-center text-muted text-sm">{t("common.info")}</Text>
           )}
         </View>
       </KeyboardAvoidingView>

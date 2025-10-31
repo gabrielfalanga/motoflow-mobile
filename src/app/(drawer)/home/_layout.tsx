@@ -1,10 +1,12 @@
-import { useTheme } from "@/context/theme-context"
-import { Ionicons } from "@expo/vector-icons"
-import { Tabs } from "expo-router"
+import { useTheme } from "@/context/theme-context";
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function HomeTabsLayout() {
-  const { theme } = useTheme()
-  const isDark = theme === "dark"
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const isDark = theme === "dark";
   return (
     <Tabs
       screenOptions={{
@@ -19,25 +21,19 @@ export default function HomeTabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: t("navigation.home"),
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons
-              name={focused ? "home" : "home-outline"}
-              color={color}
-              size={size}
-            />
+            <Ionicons name={focused ? "home" : "home-outline"} color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
         name="devs"
         options={{
-          title: "Desenvolvedores",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="code" color={color} size={size} />
-          ),
+          title: t("navigation.developers"),
+          tabBarIcon: ({ color, size }) => <Ionicons name="code" color={color} size={size} />,
         }}
       />
     </Tabs>
-  )
+  );
 }

@@ -2,9 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { Drawer } from "expo-router/drawer";
 import { useTheme } from "@/context/theme-context";
 import { Header } from "@/components/Header";
+import { useTranslation } from "react-i18next";
 
 export default function DrawerLayout() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Drawer
@@ -23,7 +25,7 @@ export default function DrawerLayout() {
       <Drawer.Screen
         name="home"
         options={{
-          title: "Home",
+          title: t("navigation.home"),
           drawerIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
         }}
       />
@@ -31,7 +33,7 @@ export default function DrawerLayout() {
       <Drawer.Screen
         name="patio"
         options={{
-          title: "Pátio",
+          title: t("navigation.patio"),
           drawerIcon: ({ color, size }) => <Ionicons name="business" color={color} size={size} />,
         }}
       />
@@ -39,7 +41,7 @@ export default function DrawerLayout() {
       <Drawer.Screen
         name="setores"
         options={{
-          title: "Setores",
+          title: t("navigation.setores"),
           drawerIcon: ({ color, size }) => <Ionicons name="map" color={color} size={size} />,
         }}
       />
@@ -47,7 +49,7 @@ export default function DrawerLayout() {
       <Drawer.Screen
         name="moto"
         options={{
-          title: "Motos",
+          title: t("navigation.motos"),
           drawerIcon: ({ color, size }) => <Ionicons name="bicycle" color={color} size={size} />,
         }}
         initialParams={{ posicaoHorizontal: null, posicaoVertical: null }}
