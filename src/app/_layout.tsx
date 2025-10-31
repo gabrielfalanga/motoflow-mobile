@@ -5,6 +5,7 @@ import { ThemeProvider, useTheme } from "@/context/theme-context";
 import { useColorScheme } from "nativewind";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "@/context/auth-context";
+import { NotificationProvider } from "@/context/notification-context";
 import { ActivityIndicator, View } from "react-native";
 
 function InitialLayout() {
@@ -37,7 +38,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <InitialLayout />
+        <NotificationProvider>
+          <InitialLayout />
+        </NotificationProvider>
       </AuthProvider>
     </ThemeProvider>
   );

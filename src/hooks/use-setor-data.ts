@@ -1,6 +1,8 @@
 import { useAuth } from "@/context/auth-context";
+import { useNotification } from "@/context/notification-context";
 import { request } from "@/helper/request";
 import type { SetorDetalhado } from "@/interfaces/interfaces";
+import { checkAndNotifyOccupancy, notifySetorFull } from "@/services/notification";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 
@@ -10,18 +12,49 @@ export function useSetorData(setor: string) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string>("");
   const { token, patioId } = useAuth();
+  const { isEnabled, notifiedSetores, addNotifiedSetor } = useNotification();
 
   const fetchData = useCallback(
     async (isRefresh = false) => {
       if (!token || !patioId || !setor) return;
 
       if (isRefresh) setRefreshing(true);
-      else setLoading(true);      try {
-        const response = await request<SetorDetalhado>(`/posicoes/${patioId}/${setor}`, "get", null, {
-          authToken: token,
-        });
+      else setLoading(true);
+
+      try {
+        const response = await request<SetorDetalhado>(
+          `/posicoes/${patioId}/${setor}`,
+          "get",
+          null,
+          {
+            authToken: token,
+          }
+        );
         setData(response);
         setError("");
+
+        // Verificar ocupação e notificar se necessário
+        if (isEnabled && response) {
+          const ocupacao = Math.round((response.ocupadas / response.vagasTotais) * 100);
+
+          // Notificar se >= 80%
+          const notified = await checkAndNotifyOccupancy(
+            response.setor,
+            response.ocupadas,
+            response.vagasTotais,
+            notifiedSetores
+          );
+
+          if (notified) {
+            addNotifiedSetor(`${response.setor}-${ocupacao}`);
+          }
+
+          // Notificação especial se atingir 100%
+          if (ocupacao === 100 && !notifiedSetores.has(`${response.setor}-full`)) {
+            await notifySetorFull(response.setor);
+            addNotifiedSetor(`${response.setor}-full`);
+          }
+        }
       } catch (err) {
         console.error("Erro ao buscar dados do setor:", err);
         setError("Erro ao carregar dados do setor");
@@ -30,7 +63,7 @@ export function useSetorData(setor: string) {
         if (isRefresh) setRefreshing(false);
       }
     },
-    [token, patioId, setor]
+    [token, patioId, setor, isEnabled, notifiedSetores, addNotifiedSetor]
   );
 
   useFocusEffect(
@@ -50,7 +83,8 @@ export function useSetorData(setor: string) {
       return data?.motos.find((moto) => moto.id === id);
     },
     [data]
-  );  const getEstatisticas = useCallback(() => {
+  );
+  const getEstatisticas = useCallback(() => {
     if (!data)
       return {
         ocupadas: 0,
