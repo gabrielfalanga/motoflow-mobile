@@ -29,6 +29,15 @@
       "favicon": "./src/assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": ["expo-router", "@react-native-firebase/app"]
+    "plugins": [
+      "expo-router",
+      "@react-native-firebase/app"
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "21331829-6d1c-4832-9404-5dfc93f48078"
+      }
+    }
   }
 }
