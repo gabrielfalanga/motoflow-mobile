@@ -8,13 +8,15 @@
       "android": {
         "buildType": "apk"
       },
-      "distribution": "internal"
+      "distribution": "internal",
+      "prebuildCommand": "git rev-parse HEAD > commit-hash.txt"
     },
     "production": {
       "android": {
         "buildType": "app-bundle"
       },
-      "autoIncrement": true
+      "autoIncrement": true,
+      "prebuildCommand": "git rev-parse HEAD > commit-hash.txt"
     }
   },
   "submit": {
