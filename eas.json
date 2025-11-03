@@ -3,20 +3,21 @@
     "version": ">= 3.0.0",
     "appVersionSource": "remote"
   },
+  "hooks": {
+    "postinstall": "node scripts/generate-commit-hash.js"
+  },
   "build": {
     "preview": {
       "android": {
         "buildType": "apk"
       },
-      "distribution": "internal",
-      "prebuildCommand": "git rev-parse HEAD > commit-hash.txt"
+      "distribution": "internal"
     },
     "production": {
       "android": {
         "buildType": "app-bundle"
       },
-      "autoIncrement": true,
-      "prebuildCommand": "git rev-parse HEAD > commit-hash.txt"
+      "autoIncrement": true
     }
   },
   "submit": {
