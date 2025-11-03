@@ -21,6 +21,7 @@ import { router } from "expo-router";
 import { useFocusEffect } from "expo-router";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useTranslation } from "react-i18next";
+import { abrirAppRastreamento } from "@/utils/deep-linking";
 
 interface MotoEncontrada {
   placa: string;
@@ -340,6 +341,22 @@ export default function BuscaMotoScreen() {
     } finally {
       setIsEditandoRastreador(false);
     }
+  };
+
+  const rastrearMoto = async () => {
+    if (!motoEncontrada) return;
+
+    await abrirAppRastreamento(
+      {
+        placa: motoEncontrada.placa,
+        codRastreador: motoEncontrada.codRastreador,
+        tipoMoto: motoEncontrada.tipoMoto,
+        ano: motoEncontrada.ano,
+        statusMoto: motoEncontrada.statusMoto,
+        setor: motoEncontrada.setor,
+      },
+      "O aplicativo de rastreamento não está instalado neste dispositivo."
+    );
   };
 
   const alocarMoto = async () => {
@@ -866,10 +883,7 @@ export default function BuscaMotoScreen() {
                     {motoEncontrada.codRastreador && motoEncontrada.setor && (
                       <TouchableOpacity
                         className="mt-3 h-16 w-full items-center justify-center rounded-xl bg-green-600"
-                        onPress={() => {
-                          // Função de rastreamento será implementada
-                          console.log("Rastreando moto...");
-                        }}
+                        onPress={rastrearMoto}
                         activeOpacity={0.8}
                       >
                         <View className="flex-row items-center">

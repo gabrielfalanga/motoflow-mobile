@@ -17,6 +17,7 @@ import {
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useTranslation } from "react-i18next";
+import { abrirAppRastreamento } from "@/utils/deep-linking";
 
 interface MotoDetailsModalProps {
   visible: boolean;
@@ -363,6 +364,19 @@ export function MotoDetailsModal({
     }
   };
 
+  const rastrearMoto = async () => {
+    if (!moto) return;
+
+    await abrirAppRastreamento({
+      placa: moto.placa,
+      codRastreador: moto.codRastreador,
+      tipoMoto: moto.tipoMoto,
+      ano: moto.ano,
+      statusMoto: moto.statusMoto,
+      setor: setor,
+    });
+  };
+
   return (
     <>
       {/* Modal de Edição de Rastreador - Renderizado independentemente */}
@@ -580,10 +594,7 @@ export function MotoDetailsModal({
                   {moto.codRastreador && setor && (
                     <TouchableOpacity
                       className="mt-3 h-16 w-full items-center justify-center rounded-xl bg-green-600"
-                      onPress={() => {
-                        // Função de rastreamento será implementada
-                        console.log("Rastreando moto...");
-                      }}
+                      onPress={rastrearMoto}
                       activeOpacity={0.8}
                     >
                       <View className="flex-row items-center">

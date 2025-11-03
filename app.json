@@ -23,16 +23,25 @@
       },
       "edgeToEdgeEnabled": true,
       "googleServicesFile": "./google-services.json",
-      "package": "com.motoflow.motoflow"
+      "package": "com.motoflow.motoflow",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "appkotlinmotoflow",
+              "host": "abrir"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./src/assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": [
-      "expo-router",
-      "@react-native-firebase/app"
-    ],
+    "plugins": ["expo-router", "@react-native-firebase/app"],
     "extra": {
       "router": {},
       "eas": {
