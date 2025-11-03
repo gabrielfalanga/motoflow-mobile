@@ -34,6 +34,19 @@ export default function HomeTabsLayout() {
           tabBarIcon: ({ color, size }) => <Ionicons name="code" color={color} size={size} />,
         }}
       />
+      <Tabs.Screen
+        name="sobre"
+        options={{
+          title: t("navigation.about"),
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? "information-circle" : "information-circle-outline"}
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

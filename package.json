@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "prebuild": "git rev-parse HEAD > commit-hash.txt"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",

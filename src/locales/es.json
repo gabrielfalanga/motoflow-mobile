@@ -60,7 +60,8 @@
     "registerSetor": "Registrar Sector",
     "registerMoto": "Registrar Moto",
     "searchMoto": "Buscar Motos",
-    "developers": "Desarrolladores"
+    "developers": "Desarrolladores",
+    "about": "Acerca de"
   },
   "home": {
     "title": "Centro de Operaciones",
@@ -120,6 +121,22 @@
   "devs": {
     "title": "Desarrolladores",
     "subtitle": "Conozca el equipo detrás de MotoFlow"
+  },
+  "about": {
+    "title": "Acerca de la App",
+    "subtitle": "Sistema de Gestión de Patio de Motos",
+    "appInfo": "Información de la App",
+    "version": "Versión",
+    "commitHash": "Commit",
+    "releaseDate": "Año de Lanzamiento",
+    "platform": "Plataforma",
+    "features": "Recursos",
+    "feature1": "Gestión completa de patio de motos",
+    "feature2": "Control de sectores y posiciones",
+    "feature3": "Búsqueda y registro de motocicletas",
+    "feature4": "Visualización en tiempo real",
+    "feature5": "Interfaz intuitiva y responsiva",
+    "allRightsReserved": "Todos los derechos reservados."
   },
   "moto": {
     "search": "Buscar Moto",
