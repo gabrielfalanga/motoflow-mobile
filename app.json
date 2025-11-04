@@ -35,6 +35,11 @@
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }
+      ],
+      "queries": [
+        {
+          "scheme": "appkotlinmotoflow"
+        }
       ]
     },
     "web": {
