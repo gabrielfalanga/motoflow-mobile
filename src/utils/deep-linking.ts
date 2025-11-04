@@ -31,8 +31,11 @@ export async function abrirAppRastreamento(
   // URL customizada que o app Kotlin vai "ouvir"
   const url = `appkotlinmotoflow://abrir?${params.toString()}`;
 
+  console.log("Deep Link URL:", url);
+
   try {
     const supported = await Linking.canOpenURL(url);
+    console.log("URL suportada:", supported);
     if (supported) {
       await Linking.openURL(url);
     } else {

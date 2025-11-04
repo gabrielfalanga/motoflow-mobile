@@ -35,18 +35,17 @@
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }
-      ],
-      "queries": [
-        {
-          "scheme": "appkotlinmotoflow"
-        }
       ]
     },
     "web": {
       "favicon": "./src/assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": ["expo-router", "@react-native-firebase/app"],
+    "plugins": [
+      "expo-router",
+      "@react-native-firebase/app",
+      "./plugins/withAndroidQueries.js"
+    ],
     "extra": {
       "router": {},
       "eas": {
