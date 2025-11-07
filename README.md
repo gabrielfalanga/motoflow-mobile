@@ -38,7 +38,7 @@ O motoflow é uma solução completa para gerenciamento de pátios de motos, ofe
 
 ### 🛵 **Gestão de Motos**
 
-- **Cadastro de motos**: Formulário completo com validação de dados
+- **Cadastro de motos**: Formulário completo com validação de dados e captura de fotos
 - **Busca inteligente**: Localização rápida por tipo, modelo ou posição
 - **Rastreamento Bluetooth**: Sistema de localização em tempo real através de dispositivos BLE (Bluetooth Low Energy) instalados nas motos
 
@@ -58,6 +58,8 @@ O motoflow é uma solução completa para gerenciamento de pátios de motos, ofe
 - Temas light e dark com preferência salva localmente
 - Design responsivo e intuitivo
 - Navegação simplificada com drawer navigation
+- Suporte a múltiplos idiomas (Português e Espanhol)
+- Notificações em tempo real
 
 ### 🎯 Objetivo
 
@@ -72,21 +74,68 @@ Garantir eficiência, escalabilidade e precisão na operação dos pátios da Mo
 
 ```
 src/
-├── app/               # Páginas e navegação (Expo Router)
-│   ├── auth/          # Telas de autenticação
-│   ├── (drawer)/      # Páginas principais com drawer navigation
-│   │   ├── home/      # Dashboard e página de desenvolvedores
-│   │   ├── moto/      # Cadastro e busca de motos
-│   │   ├── setor/     # Detalhes de setores
-│   │   └── setores/   # Listagem e cadastro de setores
-│   └── _layout.tsx    # Layout principal
-├── assets/            # Imagens e recursos estáticos
-├── components/        # Componentes reutilizáveis
-├── context/           # Contextos React (Auth, Theme)
-├── helper/            # Utilitários para requisições
-├── hooks/             # Custom hooks
-├── interfaces/        # Definições de tipos TypeScript
-└── utils/             # Funções utilitárias
+├── app/                    # Páginas e navegação (Expo Router)
+│   ├── _layout.tsx         # Layout principal da aplicação
+│   ├── index.tsx           # Página inicial/redirecionamento
+│   ├── auth/               # Telas de autenticação
+│   │   ├── _layout.tsx     # Layout das páginas de autenticação
+│   │   └── login.tsx       # Tela de login
+│   └── (drawer)/           # Páginas principais com drawer navigation
+│       ├── _layout.tsx     # Layout do drawer
+│       ├── account.tsx     # Página de conta do usuário
+│       ├── logout.tsx      # Página de logout
+│       ├── patio.tsx       # Visão geral do pátio
+│       ├── home/           # Dashboard e informações
+│       │   ├── _layout.tsx # Layout das páginas home
+│       │   ├── index.tsx   # Dashboard principal
+│       │   ├── devs.tsx    # Página de desenvolvedores
+│       │   └── sobre.tsx   # Página sobre o app
+│       ├── moto/           # Gestão de motos
+│       │   ├── _layout.tsx # Layout das páginas de moto
+│       │   ├── cadastro-moto.tsx  # Cadastro de motos
+│       │   └── busca-moto.tsx     # Busca de motos
+│       ├── setor/          # Detalhes de setores
+│       │   └── [setor].tsx # Página dinâmica de setor individual
+│       └── setores/        # Gestão de setores
+│           ├── _layout.tsx # Layout das páginas de setores
+│           ├── index.tsx   # Listagem de setores
+│           └── cadastro-setor.tsx # Cadastro de setores
+├── assets/                 # Imagens e recursos estáticos
+├── components/             # Componentes reutilizáveis
+│   ├── Header.tsx          # Cabeçalho da aplicação
+│   ├── language-toggle.tsx # Toggle de idioma (pt/es)
+│   ├── moto-details-modal.tsx    # Modal de detalhes da moto
+│   ├── notification-card.tsx     # Card de notificação
+│   ├── patio-details-card.tsx    # Card de detalhes do pátio
+│   ├── patio-header.tsx          # Cabeçalho do pátio
+│   ├── patio-setores-grid.tsx    # Grade de setores do pátio
+│   ├── patio-stats-cards.tsx     # Cards de estatísticas do pátio
+│   ├── patio-summary.tsx         # Resumo do pátio
+│   ├── quick-action-card.tsx     # Card de ação rápida
+│   ├── submit-button.tsx         # Botão de submit customizado
+│   ├── theme-toggle.tsx          # Toggle de tema (light/dark)
+│   └── vaga-posicao.tsx          # Componente de vaga/posição
+├── context/                # Contextos React
+│   ├── auth-context.tsx    # Contexto de autenticação
+│   ├── notification-context.tsx # Contexto de notificações
+│   └── theme-context.tsx   # Contexto de tema
+├── helper/                 # Helpers e utilitários
+│   └── request.ts          # Helper para requisições HTTP
+├── hooks/                  # Custom hooks
+│   ├── use-patio-data.ts   # Hook para dados do pátio
+│   └── use-setor-data.ts   # Hook para dados de setores
+├── interfaces/             # Definições de tipos TypeScript
+│   └── interfaces.ts       # Interfaces do projeto
+├── locales/                # Arquivos de internacionalização
+│   ├── pt.json             # Traduções em português
+│   └── es.json             # Traduções em espanhol
+├── services/               # Serviços da aplicação
+│   ├── i18n.ts             # Configuração de internacionalização
+│   └── notification.ts     # Serviço de notificações
+├── utils/                  # Funções utilitárias
+│   ├── color-theme.ts      # Utilitários de tema/cores
+│   └── deep-linking.ts     # Configuração de deep linking
+└── global.css              # Estilos globais (Tailwind CSS)
 ```
 
 ## 🚀 Como rodar o projeto localmente
