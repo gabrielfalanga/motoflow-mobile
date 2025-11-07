@@ -112,12 +112,16 @@ export default function CadastroMotoScreen() {
       } as any);
 
       // Fazer requisição para a API Flask
-      const response = await axios.post("http://192.168.0.69:5000/api/analisar-moto", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        timeout: 10000, // 10 segundos de timeout
-      });
+      const response = await axios.post(
+        "https://motoflow-python.azurewebsites.net/api/analisar-moto",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          timeout: 10000, // 10 segundos de timeout
+        }
+      );
 
       const { tipo_moto, placa, probabilidades } = response.data;
 
